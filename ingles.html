@@ -1,0 +1,4306 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inglés técnico policial</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand+SC&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root {
+            --blue: #2196f3;
+            --green: #4caf50;
+            --red: #f44336;
+            --yellow: #ffc107;
+            --purple: #673ab7;
+            --radius: 14px;
+            /* menos redondeo = más tarjeta */
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Nunito Sans", sans-serif;
+            background: url('https://www.h50.es/wp-content/uploads/2019/03/52323A7E-E505-49EF-AB9E-FFCA398A2AC4.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: -1;
+
+        }
+
+        h1 {
+            font-family: "Nunito Sans", sans-serif;
+            text-align: center;
+            margin: 20px 0 12px;
+            font-size: 2rem;
+        }
+
+        /* ---------- TABS ---------- */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .tabs button {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 999px;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+        }
+
+        .tabs button.active {
+            background: var(--blue);
+            color: white;
+        }
+
+        /* ---------- SECTIONS ---------- */
+        .section {
+            display: none;
+            max-width: 440px;
+            margin: 0 auto;
+            padding: 0 12px;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* ---------- CARD AREA ---------- */
+        .card-wrapper {
+            width: 100%;
+            height: 500px;
+            /* altura fija tipo tarjeta */
+            margin-bottom: 24px;
+
+        }
+
+        .card-container {
+            perspective: 1200px;
+            height: 100%;
+        }
+
+        .card {
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            height: 100%;
+            transition: transform 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* ---------- CARD FACE ---------- */
+        .card-face {
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 18px 20px;
+            box-sizing: border-box;
+
+
+            font-family: "Nunito Sans", sans-serif;
+            font-size: clamp(1.05rem, 3.2vw, 1.35rem);
+            line-height: 1.3;
+            text-align: center;
+
+            overflow: hidden;
+            word-break: break-word;
+            white-space: normal;
+
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.35);
+            backface-visibility: hidden;
+        }
+
+        .front {
+            background: #ffffff;
+            color: #111;
+        }
+
+        .back {
+            background: var(--blue);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        /* ---------- CONTROLS ---------- */
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .play {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--green);
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .fail {
+            background: var(--red);
+            color: white;
+        }
+
+        .mark {
+            background: var(--yellow);
+        }
+
+        .mode {
+            background: var(--purple);
+            color: white;
+        }
+
+        .pdf {
+            background: var(--blue);
+            color: white;
+        }
+
+        /* ---------- SEARCH ---------- */
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: none;
+        }
+
+        .result {
+            background: white;
+            color: black;
+            padding: 16px;
+            border-radius: 14px;
+            margin-top: 12px;
+            font-size: 1rem;
+        }
+
+        /* ---------- MOBILE ---------- */
+        @media (max-width:480px) {
+            .card-wrapper {
+                height: 110px;
+            }
+
+            h1 {
+                font-size: 1.7rem;
+            }
+        }
+
+        .volver {
+            background-color: #000000;
+            color: #0091ff;
+            font-weight: bold;
+        }
+
+        .clear {
+            background: #f44336;
+            color: white;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .75);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            z-index: 999999;
+            font-family: "Nunito Sans", sans-serif !important;
+
+        }
+
+        .popup {
+            width: 90%;
+            max-width: 500px;
+
+            background: linear-gradient(135deg,
+                    #164C96,
+                    #090535);
+
+            color: white;
+
+            padding: 2rem;
+
+            border-radius: 1.5rem;
+
+            text-align: left;
+
+            box-shadow: 0 0 40px rgba(0, 0, 0, .6);
+
+            animation: entrada .4s ease;
+            font-family: "Nunito Sans", sans-serif !important;
+
+        }
+
+        .popup h2 {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            font-family: "Nunito Sans", sans-serif !important;
+
+        }
+
+
+
+
+        .popup button {
+            display: flex;
+            margin: 2rem auto;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            padding: .8rem 1.5rem;
+            border-radius: .8rem;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: "Nunito Sans", sans-serif !important;
+
+
+        }
+
+        @keyframes entrada {
+            from {
+                opacity: 0;
+                transform: scale(.7);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+
+
+
+
+
+
+
+
+
+
+
+<body>
+
+    <h1>Inglés técnico policial</h1>
+
+    <div class="tabs">
+        <button class="active" onclick="showTab('cards')">Tarjetas</button>
+        <button onclick="showTab('search')">Buscador</button>
+        <button class="volver" onclick="window.location.href='index.html'">Volver a herramientas</button>
+    </div>
+
+    <!-- TARJETAS -->
+    <div id="cards" class="section active">
+
+        <div class="card-wrapper">
+            <div class="card-container">
+                <div class="card" id="card">
+                    <div class="card-inner">
+                        <div class="card-face front" id="spanish"></div>
+                        <div class="card-face back" id="english"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+
+            <button class="play" onclick="speak()">▶</button>
+            <button onclick="nextCard()">Siguiente</button>
+            <button class="mark" onclick="toggleMark()">⭐ Marcar</button>
+
+
+            <button class="clear" onclick="clearMarked()">🗑 Borrar todas las marcadas</button>
+            <button class="pdf" onclick="downloadPDF()">📄 Imprimir</button>
+
+
+
+
+
+            <div id="counter" style="
+margin-top:15px;
+font-weight:bold;
+text-align:center;
+font-size:18px;">
+                Marcadas: 0
+            </div>
+        </div>
+    </div>
+
+    <!-- BUSCADOR -->
+    <div id="search" class="section">
+        <input id="q" name="x_84729_search" autocomplete="new-password" placeholder="Buscar en español o inglés"
+            oninput="searchWord()">
+        <div class="result" id="result">Escribe para buscar</div>
+    </div>
+
+    <script>
+        const cards = [
+            ...JSON.parse(JSON.stringify([
+
+
+
+                { "es": "abandonar", "en": "abandon" },
+                { "es": "abatir (con arma de fuego)", "en": "shoot" },
+                { "es": "aberracion", "en": "aberration" },
+                { "es": "aberrante", "en": "aberrant" },
+                { "es": "abofetear", "en": "slap" },
+                { "es": "abogacía", "en": "advocacy" },
+                { "es": "Ejercer la abogacía", "en": "practise" },
+                { "es": "Abogado", "en": "lawyer" },
+                { "es": "Abogado de oficio", "en": "duty-lawyer" },
+                { "es": "abolir", "en": "abolish" },
+                { "es": "abortar", "en": "abort" },
+                { "es": "aborto", "en": "abortion" },
+                { "es": "absolución", "en": "acquittal" },
+                { "es": "absolver", "en": "acquit" },
+                { "es": "absuelto", "en": "acquitted" },
+                { "es": "abusador", "en": "abuser" },
+                { "es": "abuso sexual", "en": "abuse" },
+                { "es": "violación", "en": "rape" },
+                { "es": "acceso carnal", "en": "intercourse" },
+                { "es": "accidente de carretera", "en": "accident" },
+                { "es": "acción delitiva", "en": "offence" },
+                { "es": "acción procesal", "en": "lawsuit" },
+                { "es": "acosador", "en": "harasser" },
+                { "es": "acosar", "en": "harass" },
+                { "es": "acoso", "en": "harassment" },
+                { "es": "acreditación", "en": "credentials" },
+                { "es": "acreedor", "en": "creditor" },
+                { "es": "acribillar", "en": "riddle" },
+                { "es": "acta", "en": "record" },
+                { "es": "actuación", "en": "proceedings" },
+                { "es": "acuerdo", "en": "agreement" },
+                { "es": "acusación", "en": "indictment" },
+                { "es": "acusado", "en": "defendant" },
+                { "es": "acusador", "en": "prosecutor" },
+                { "es": "acusar", "en": "indict" },
+                { "es": "adicto", "en": "addict" },
+                { "es": "administrador", "en": "administrator" },
+                { "es": "adormidera", "en": "poppy" },
+                { "es": "aduana", "en": "customs" },
+                { "es": "aduanero", "en": "customs-officer" },
+                { "es": "adulteración", "en": "adulteration" },
+                { "es": "adulterio", "en": "adultery" },
+                { "es": "adulto", "en": "adult" },
+                { "es": "agente", "en": "officer" },
+                { "es": "autoridad", "en": "authority" },
+                { "es": "agravante", "en": "aggravating" },
+                { "es": "agravar", "en": "aggravate" },
+                { "es": "agraviado", "en": "aggrieved" },
+                { "es": "agraviar", "en": "aggrieve" },
+                { "es": "agravio", "en": "grievance" },
+                { "es": "agredir", "en": "assault" },
+                { "es": "agresión", "en": "assault" },
+                { "es": "agresor", "en": "attacker" },
+                { "es": "aguja percutora", "en": "firing-pin" },
+                { "es": "ahogado", "en": "drowned" },
+                { "es": "ahogar", "en": "drown" },
+                { "es": "ahorcado", "en": "hanged" },
+                { "es": "ahorcar", "en": "hang" },
+                { "es": "ajuste de cuentas", "en": "revenge" },
+                { "es": "alarma", "en": "alarm" },
+                { "es": "alboroto", "en": "uproar" },
+                { "es": "alcoholímetro", "en": "breathalyzer" },
+                { "es": "alegar", "en": "allege" },
+                { "es": "alegato", "en": "plea" },
+                { "es": "alevosía", "en": "premeditation" },
+                { "es": "alguacil", "en": "bailiff" },
+                { "es": "alias", "en": "alias" },
+                { "es": "alijo", "en": "cache" },
+                { "es": "allanamiento", "en": "trespass" },
+                { "es": "allanar", "en": "trespass" },
+                { "es": "alta", "en": "discharge" },
+                { "es": "alteración", "en": "alteration" },
+                { "es": "altercado", "en": "altercation" },
+                { "es": "alunicero", "en": "ram-raider" },
+                { "es": "alunizaje", "en": "ram-raiding" },
+                { "es": "alza", "en": "sight" },
+                { "es": "alzada", "en": "appeal" },
+                { "es": "amenaza", "en": "threat" },
+                { "es": "amenazar", "en": "threaten" },
+                { "es": "ametrallar", "en": "pepper" },
+                { "es": "amnistía", "en": "amnesty" },
+                { "es": "amonestación", "en": "caution" },
+                { "es": "amonestar", "en": "caution" },
+                { "es": "amotinado", "en": "riotous" },
+                { "es": "amotinar", "en": "riot" },
+                { "es": "amparo", "en": "protection" },
+                { "es": "análisis", "en": "analysis" },
+                { "es": "analogía", "en": "analogy" },
+                { "es": "anfeta", "en": "meth" },
+                { "es": "anfetamina", "en": "amphetamine" },
+                { "es": "ánima", "en": "chamber" },
+                { "es": "ánimo", "en": "intent" },
+                { "es": "anónimo", "en": "anonymous" },
+                { "es": "antecedente", "en": "record" },
+                { "es": "antibala", "en": "bulletproof" },
+                { "es": "antidisturbios", "en": "riot-police" },
+
+
+                { "es": "antijurídico", "en": "unlawful" },
+                { "es": "antirrobo", "en": "anti-theft" },
+                { "es": "anulación", "en": "annulment" },
+                { "es": "apalear", "en": "batter" },
+                { "es": "apelación", "en": "appeal" },
+                { "es": "apelar", "en": "appeal" },
+                { "es": "apellido", "en": "surname" },
+                { "es": "apodar", "en": "nickname" },
+                { "es": "apoderado", "en": "representative" },
+                { "es": "apoderar", "en": "authorise" },
+                { "es": "apodo", "en": "nickname" },
+                { "es": "apología", "en": "advocacy" },
+                { "es": "aprehender", "en": "apprehend" },
+                { "es": "aprehensión", "en": "apprehension" },
+                { "es": "apremio", "en": "compulsion" },
+                { "es": "apresamiento", "en": "capture" },
+                { "es": "apresar", "en": "arrest" },
+                { "es": "apropiación", "en": "misappropriation" },
+                { "es": "apuntar", "en": "aim" },
+                { "es": "apuñalar", "en": "stab" },
+                { "es": "arancel", "en": "tariff" },
+                { "es": "archivar", "en": "file" },
+                { "es": "archivo", "en": "file" },
+                { "es": "ariete", "en": "battering-ram" },
+                { "es": "armamento", "en": "armament" },
+                { "es": "armar", "en": "arm" },
+                { "es": "armazón", "en": "frame" },
+                { "es": "armería", "en": "armoury" },
+                { "es": "armero", "en": "armourer" },
+                { "es": "arraigo", "en": "ties" },
+                { "es": "arrebato", "en": "rage" },
+                { "es": "arrepentimiento", "en": "cooperation" },
+                { "es": "arrestar", "en": "arrest" },
+                { "es": "arresto", "en": "detention" },
+                { "es": "arsenal", "en": "arsenal" },
+                { "es": "artefacto", "en": "device" },
+                { "es": "artículo", "en": "article" },
+                { "es": "artificiero", "en": "technician" },
+                { "es": "asaltacunas", "en": "snatcher" },
+                { "es": "asaltante", "en": "assailant" },
+                { "es": "asaltar", "en": "rob" },
+                { "es": "asalto", "en": "assault" },
+                { "es": "asalto a mano armada", "en": "robbery" },
+                { "es": "equipo de asalto", "en": "team" },
+                { "es": "fusil de asalto", "en": "rifle" },
+                { "es": "asamblea", "en": "assembly" },
+                { "es": "ascender", "en": "promote" },
+                { "es": "ascenso", "en": "promotion" },
+                { "es": "asesorar", "en": "advise" },
+                { "es": "asesinar", "en": "murder" },
+                { "es": "asesinato", "en": "murder" },
+                { "es": "asesino", "en": "murderer" },
+                { "es": "asesino a sueldo", "en": "hitman" },
+                { "es": "asesino en potencia", "en": "murderer" },
+                { "es": "asfixia", "en": "asphyxia" },
+                { "es": "asfixiar", "en": "suffocate" },
+                { "es": "asilo", "en": "asylum" },
+                { "es": "asilo y refugio", "en": "asylum" },
+                { "es": "estatus de asilado", "en": "status" },
+                { "es": "solicitante de asilo", "en": "seeker" },
+                { "es": "asistencia", "en": "assistance" },
+                { "es": "asistencia letrada al detenido", "en": "counsel" },
+                { "es": "derecho a asistencia letrada", "en": "counsel" },
+                { "es": "asociación", "en": "association" },
+                { "es": "asociación de delincuentes", "en": "conspiracy" },
+                { "es": "asociación ilícita", "en": "assembly" },
+                { "es": "arma", "en": "weapon" },
+                { "es": "arma automática", "en": "automatic" },
+                { "es": "astucia", "en": "cunning" },
+                { "es": "asuntos internos", "en": "affairs" },
+                { "es": "atacar", "en": "attack" },
+                { "es": "atentado", "en": "attack" },
+                { "es": "atentado con bomba", "en": "bombing" },
+                { "es": "atentado contra la autoridad", "en": "assault" },
+                { "es": "atentado contra la Seguridad del Estado", "en": "attack" },
+                { "es": "atentado terrorista", "en": "terrorism" },
+                { "es": "atentar", "en": "attack" },
+                { "es": "atentar contra", "en": "attack" },
+                { "es": "atenuante", "en": "mitigating" },
+                { "es": "atestado", "en": "report" },
+                { "es": "atestiguar", "en": "testify" },
+                { "es": "atracador", "en": "robber" },
+                { "es": "atracar", "en": "rob" },
+                { "es": "atraco", "en": "robbery" },
+                { "es": "atraco a mano armada", "en": "robbery" },
+                { "es": "atribuir", "en": "impute" },
+                { "es": "atropellar", "en": "run-over" },
+                { "es": "audiencia", "en": "hearing" },
+                { "es": "Audiencia Nacional", "en": "High-Court" },
+                { "es": "Audiencia Provincial", "en": "Court" },
+                { "es": "audiencia pública", "en": "hearing" },
+                { "es": "Audiencia Territorial", "en": "Appeal-Court" },
+                { "es": "auto", "en": "order" },
+                { "es": "auto de ejecución de sentencia", "en": "execution" },
+                { "es": "auto judicial", "en": "order" },
+                { "es": "auto de prisión", "en": "warrant" },
+                { "es": "auto de prisión preventiva", "en": "committal" },
+                { "es": "auto de procesamiento", "en": "indictment" },
+                { "es": "autos", "en": "records" },
+                { "es": "autodefensa", "en": "self-defence" },
+                { "es": "autolesión", "en": "self-harm" },
+                { "es": "autolesionarse", "en": "self-harm" },
+                { "es": "Policía Autónoma", "en": "police" },
+                { "es": "autoprotección", "en": "self-protection" },
+                { "es": "medidas de autoprotección", "en": "protection" },
+                { "es": "autor", "en": "perpetrator" },
+                { "es": "autor de un daño", "en": "wrongdoer" },
+                { "es": "autor principal", "en": "perpetrator" },
+                { "es": "autor responsable", "en": "perpetrator" },
+                { "es": "coautor", "en": "co-perpetrator" },
+                { "es": "autoridad", "en": "authority" },
+                { "es": "agente de la autoridad", "en": "officer" },
+                { "es": "autorización", "en": "authorization" },
+                { "es": "autorización expresa", "en": "permission" },
+                { "es": "autorizado", "en": "authorized" },
+                { "es": "auxiliar", "en": "assist" },
+                { "es": "auxilio", "en": "assistance" },
+                { "es": "auxilio o incitación al suicidio", "en": "abetment" },
+                { "es": "denegación de auxilio", "en": "omission" },
+                { "es": "primeros auxilios", "en": "first-aid" },
+                { "es": "avanzada", "en": "outrider" },
+                { "es": "averiguación", "en": "inquiry" },
+                { "es": "averiguación de domicilio y paradero", "en": "inquiry" },
+                { "es": "averiguar", "en": "investigate" },
+                { "es": "aviso", "en": "warning" },
+                { "es": "ayudar", "en": "assist" },
+                { "es": "ayudar en la comisión de un delito", "en": "abet" },
+
+                { "es": "baja laboral", "en": "leave" },
+                { "es": "baja por enfermedad", "en": "sick-leave" },
+                { "es": "baja por maternidad", "en": "maternity-leave" },
+                { "es": "bajo", "en": "under" },
+                { "es": "bajo coacción", "en": "duress" },
+                { "es": "bajo fianza", "en": "bail" },
+                { "es": "bajo los efectos del alcohol", "en": "intoxicated" },
+
+                { "es": "bala", "en": "bullet" },
+                { "es": "bala perforante", "en": "armor-piercing" },
+                { "es": "bala trazadora", "en": "tracer" },
+                { "es": "bala blindada", "en": "jacketed" },
+                { "es": "a prueba de balas", "en": "bulletproof" },
+
+                { "es": "balazo", "en": "gunshot" },
+                { "es": "balística", "en": "ballistics" },
+                { "es": "departamento de balística", "en": "ballistics" },
+
+                { "es": "banda", "en": "gang" },
+                { "es": "banda armada", "en": "organization" },
+                { "es": "banda de delincuentes", "en": "gang" },
+
+                { "es": "banquillo", "en": "dock" },
+                { "es": "banquillo de los acusados", "en": "dock" },
+                { "es": "banquillo de los testigos", "en": "witness-box" },
+
+                { "es": "barbitúrico", "en": "barbiturate" },
+
+                { "es": "base legal", "en": "basis" },
+
+                { "es": "batida", "en": "raid" },
+                { "es": "batida policial", "en": "raid" },
+
+                { "es": "beneficio", "en": "benefit" },
+                { "es": "beneficio de la duda", "en": "doubt" },
+                { "es": "beneficios penitenciarios", "en": "privileges" },
+
+                { "es": "biela", "en": "lever" },
+                { "es": "biela del disparador", "en": "trigger" },
+
+                { "es": "bienes", "en": "assets" },
+                { "es": "bienes gananciales", "en": "property" },
+                { "es": "bienes inmuebles", "en": "real-estate" },
+                { "es": "bienes muebles", "en": "chattels" },
+                { "es": "alzamiento de bienes", "en": "concealment" },
+
+                { "es": "bigamia", "en": "bigamy" },
+                { "es": "bígamo", "en": "bigamist" },
+                { "es": "billete", "en": "banknote" },
+
+                { "es": "birlar", "en": "steal" },
+
+                { "es": "blanco", "en": "target" },
+                { "es": "hacer blanco", "en": "hit" },
+                { "es": "tiro al blanco", "en": "marksmanship" },
+
+                { "es": "blanquear dinero", "en": "launder" },
+                { "es": "blanqueo de dinero", "en": "laundering" },
+
+                { "es": "blindado", "en": "armoured" },
+                { "es": "vehículo blindado", "en": "armoured-vehicle" },
+
+                { "es": "blindaje", "en": "armour" },
+
+                { "es": "boca de un arma", "en": "muzzle" },
+
+                { "es": "a bocajarro", "en": "point-blank" },
+
+                { "es": "bofetada", "en": "slap" },
+
+                { "es": "bomba", "en": "bomb" },
+                { "es": "bomba incendiaria", "en": "firebomb" },
+                { "es": "bomba lapa", "en": "limpet-bomb" },
+                { "es": "amenaza de bomba", "en": "threat" },
+                { "es": "aviso de bomba", "en": "warning" },
+                { "es": "carta bomba", "en": "letter-bomb" },
+                { "es": "chaleco bomba", "en": "suicide-vest" },
+                { "es": "coche bomba", "en": "car-bomb" },
+                { "es": "paquete bomba", "en": "package-bomb" },
+                { "es": "trampa bomba", "en": "booby-trap" },
+
+                { "es": "borracho", "en": "drunk" },
+
+                { "es": "botellón", "en": "binge-drinking" },
+
+                { "es": "botín", "en": "loot" },
+
+                { "es": "brigada", "en": "unit" },
+                { "es": "brigada de estupefacientes", "en": "narcotics" },
+                { "es": "brigada de explosivos", "en": "bomb-squad" },
+                { "es": "brigada de homicidios", "en": "homicide" },
+                { "es": "brigada de robos", "en": "robbery" },
+                { "es": "brigada de investigación tecnológica", "en": "cybercrime" },
+
+                { "es": "bronca", "en": "argument" },
+                { "es": "armar una bronca", "en": "commotion" },
+
+                { "es": "brutalidad", "en": "brutality" },
+
+                { "es": "buena conducta", "en": "conduct" },
+                { "es": "de buena fe", "en": "good-faith" },
+
+                { "es": "bufete", "en": "law-firm" },
+
+                { "es": "bulón", "en": "bolt" },
+                { "es": "bulón de cierre", "en": "locking-bolt" },
+
+                { "es": "burdel", "en": "brothel" },
+
+                { "es": "busca", "en": "search" },
+                { "es": "busca y captura", "en": "wanted" },
+                { "es": "orden de busca y captura", "en": "warrant" },
+
+                { "es": "buscar", "en": "search" },
+
+                { "es": "butrón", "en": "break-in" },
+                { "es": "butronero", "en": "burglar" },
+
+                { "es": "caballo", "en": "heroin" },
+
+                { "es": "cabeza rapada", "en": "skinhead" },
+
+                { "es": "cacha", "en": "grip" },
+
+                { "es": "cachear", "en": "frisk" },
+
+                { "es": "cacheo", "en": "frisk" },
+
+                { "es": "cadáver", "en": "corpse" },
+
+                { "es": "cadena perpetua", "en": "life-sentence" },
+
+                { "es": "caimán", "en": "veteran" },
+
+                { "es": "caja", "en": "box" },
+                { "es": "caja de seguridad", "en": "safe-deposit-box" },
+                { "es": "caja fuerte", "en": "safe" },
+                { "es": "caja registradora", "en": "till" },
+
+                { "es": "calabozo", "en": "cell" },
+
+                { "es": "calibre", "en": "caliber" },
+
+                { "es": "calumnia", "en": "defamation" },
+                { "es": "demandar por calumnia", "en": "sue" },
+
+                { "es": "calumniador", "en": "slanderer" },
+
+                { "es": "calumniar", "en": "defame" },
+
+                { "es": "calumnioso", "en": "defamatory" },
+
+                { "es": "camello", "en": "dealer" },
+
+                { "es": "camuflado", "en": "undercover" },
+                { "es": "vehículo camuflado", "en": "unmarked" },
+
+                { "es": "cantar", "en": "snitch" },
+
+                { "es": "cáñamo", "en": "hemp" },
+
+                { "es": "cañón", "en": "barrel" },
+
+                { "es": "capacidad", "en": "capacity" },
+                { "es": "capacidad jurídica", "en": "standing" },
+                { "es": "capacidad legal", "en": "capacity" },
+
+                { "es": "carabina", "en": "carbine" },
+
+                { "es": "cárcel", "en": "prison" },
+
+                { "es": "carcelero", "en": "warden" },
+
+                { "es": "careo", "en": "confrontation" },
+                { "es": "efectuar un careo", "en": "confront" },
+
+                { "es": "carga", "en": "charge" },
+                { "es": "carga explosiva", "en": "charge" },
+
+                { "es": "cargador", "en": "magazine" },
+                { "es": "funda de cargador", "en": "pouch" },
+
+                { "es": "cargar", "en": "load" },
+
+                { "es": "cargo", "en": "charge" },
+                { "es": "cargo público", "en": "office" },
+                { "es": "presentar cargos", "en": "prosecute" },
+
+                { "es": "carnet", "en": "card" },
+                { "es": "carnet de conducir", "en": "license" },
+                { "es": "carnet de identidad", "en": "ID" },
+                { "es": "carnet profesional", "en": "warrant-card" },
+
+                { "es": "carta bomba", "en": "letter-bomb" },
+
+                { "es": "carta nigeriana", "en": "scam" },
+
+                { "es": "cártel", "en": "cartel" },
+
+                { "es": "carterista", "en": "pickpocket" },
+
+                { "es": "cartuchera", "en": "holster" },
+
+                { "es": "cartucho", "en": "cartridge" },
+                { "es": "cartucho de dinamita", "en": "dynamite" },
+                { "es": "cartucho de fogueo", "en": "blank" },
+
+                { "es": "casación", "en": "cassation" },
+
+                { "es": "casco", "en": "helmet" },
+                { "es": "casco antidisturbios", "en": "riot-helmet" },
+                { "es": "casco protector", "en": "helmet" },
+
+                { "es": "caso", "en": "case" },
+                { "es": "caso fortuito", "en": "fortuity" },
+
+                { "es": "casquillo", "en": "casing" },
+
+                { "es": "castigar", "en": "punish" },
+
+                { "es": "castigo", "en": "punishment" },
+
+                { "es": "castración", "en": "castration" },
+
+                { "es": "categoría", "en": "rank" },
+
+                { "es": "causa", "en": "case" },
+                { "es": "causa apelada", "en": "appeal" },
+                { "es": "causa criminal", "en": "prosecution" },
+                { "es": "instruir la causa", "en": "investigate" },
+                { "es": "por causa desconocida", "en": "unknown" },
+
+                { "es": "causante", "en": "causer" },
+
+                { "es": "cautelar", "en": "precautionary" },
+                { "es": "medida cautelar", "en": "injunction" },
+
+                { "es": "cebo", "en": "primer" },
+
+                { "es": "celda", "en": "cell" },
+                { "es": "celda de aislamiento", "en": "isolation" },
+
+                { "es": "célula", "en": "cell" },
+
+                { "es": "celular", "en": "van" },
+
+                { "es": "certificado", "en": "certificate" },
+                { "es": "certificado de defunción", "en": "death-certificate" },
+
+                { "es": "chaleco", "en": "vest" },
+                { "es": "chaleco antibalas", "en": "bulletproof-vest" },
+
+                { "es": "chantaje", "en": "blackmail" },
+
+                { "es": "chantajear", "en": "blackmail" },
+
+                { "es": "chantajista", "en": "blackmailer" },
+
+                { "es": "cheque", "en": "check" },
+                { "es": "cheque sin fondos", "en": "bounced-check" },
+
+                { "es": "chicharra", "en": "tracker" },
+
+                { "es": "chinche", "en": "bug" },
+
+                { "es": "chirona", "en": "jail" },
+                { "es": "meter en chirona", "en": "imprison" },
+
+                { "es": "chivarse", "en": "snitch" },
+
+                { "es": "chivatazo", "en": "tip-off" },
+                { "es": "dar un chivatazo", "en": "inform" },
+
+                { "es": "chivato", "en": "informant" },
+
+                { "es": "choque", "en": "collision" },
+                { "es": "chorizo", "en": "crook" },
+
+                { "es": "chulo", "en": "pimp" },
+
+                { "es": "chuloputa", "en": "pimp" },
+
+                { "es": "chutarse", "en": "inject" },
+                { "es": "chutarse heroína", "en": "inject" },
+
+                { "es": "chuta", "en": "syringe" },
+
+                { "es": "chute", "en": "injection" },
+
+                { "es": "ciberdelincuencia", "en": "cybercrime" },
+
+                { "es": "cifrado", "en": "encrypted" },
+
+                { "es": "cifrar", "en": "encrypt" },
+
+                { "es": "circunstancia", "en": "circumstance" },
+                { "es": "circunstancia agravante", "en": "aggravation" },
+                { "es": "circunstancia atenuante", "en": "mitigation" },
+                { "es": "circunstancia eximente", "en": "exculpation" },
+                { "es": "circunstancia modificativa", "en": "modification" },
+
+                { "es": "citación", "en": "summons" },
+                { "es": "citación judicial", "en": "summons" },
+
+                { "es": "citar", "en": "summon" },
+                { "es": "citar como testigo", "en": "summon" },
+
+                { "es": "ciudadanía", "en": "citizenship" },
+                { "es": "derechos de ciudadanía", "en": "rights" },
+
+                { "es": "ciudadano", "en": "citizen" },
+                { "es": "ciudadano nacionalizado", "en": "naturalized" },
+
+                { "es": "civil", "en": "civil" },
+                { "es": "Código Civil", "en": "Code" },
+                { "es": "Derecho Civil", "en": "Law" },
+                { "es": "libertades civiles", "en": "liberties" },
+
+                { "es": "cláusula", "en": "clause" },
+
+                { "es": "clavar", "en": "stab" },
+
+                { "es": "clave", "en": "key" },
+
+                { "es": "cleptomanía", "en": "kleptomania" },
+
+                { "es": "cleptómano", "en": "kleptomaniac" },
+
+                { "es": "coacción", "en": "duress" },
+                { "es": "coacción física", "en": "coercion" },
+                { "es": "bajo coacción", "en": "duress" },
+
+                { "es": "coaccionado", "en": "coerced" },
+
+                { "es": "coaccionar", "en": "coerce" },
+
+                { "es": "coadyuvar", "en": "assist" },
+
+                { "es": "coartada", "en": "alibi" },
+
+                { "es": "coartar", "en": "restrict" },
+
+                { "es": "coautor", "en": "accomplice" },
+
+                { "es": "cobijar", "en": "harbor" },
+
+                { "es": "cobijo", "en": "shelter" },
+
+                { "es": "coca", "en": "cocaine" },
+
+                { "es": "cocaína", "en": "cocaine" },
+
+                { "es": "coche", "en": "vehicle" },
+                { "es": "coche bomba", "en": "car-bomb" },
+                { "es": "coche camuflado de la policía", "en": "unmarked" },
+                { "es": "coche celular", "en": "van" },
+                { "es": "coche patrulla", "en": "patrol-car" },
+                { "es": "coche policial", "en": "police-car" },
+
+                { "es": "codificar", "en": "encode" },
+
+                { "es": "código", "en": "code" },
+                { "es": "Código Penal", "en": "Criminal-Code" },
+                { "es": "Código Civil", "en": "Civil-Code" },
+                { "es": "código de tráfico", "en": "Highway-Code" },
+                { "es": "código postal", "en": "postcode" },
+
+                { "es": "coerción", "en": "coercion" },
+
+                { "es": "coercitivo", "en": "coercive" },
+                { "es": "medidas coercitivas", "en": "measures" },
+
+                { "es": "cohecho", "en": "bribery" },
+                { "es": "cohecho activo", "en": "bribery" },
+                { "es": "cohecho pasivo", "en": "bribery" },
+
+
+
+
+                { "es": "cola de milano", "en": "dovetail" },
+                { "es": "cola del disparador", "en": "trigger-bar" },
+
+                { "es": "colega", "en": "colleague" },
+
+                { "es": "colgado", "en": "high" },
+
+                { "es": "colisión", "en": "collision" },
+
+                { "es": "cometer", "en": "commit" },
+                { "es": "cometer un delito", "en": "offend" },
+
+                { "es": "comisaría", "en": "precinct" },
+                { "es": "comisaría de distrito", "en": "precinct" },
+
+                { "es": "comisario", "en": "commissioner" },
+
+                { "es": "comisión", "en": "commission" },
+                { "es": "comisión de un delito", "en": "perpetration" },
+                { "es": "comisión por omisión", "en": "omission" },
+                { "es": "comisión ilegal", "en": "kickback" },
+
+                { "es": "comisionar", "en": "assign" },
+
+                { "es": "comiso", "en": "forfeiture" },
+
+                { "es": "comparecencia", "en": "appearance" },
+                { "es": "escrito de comparecencia", "en": "notice" },
+
+                { "es": "comparecer", "en": "appear" },
+                { "es": "comparecer ante un juez", "en": "appear" },
+
+                { "es": "compensación por daños", "en": "damages" },
+
+                { "es": "competencia", "en": "jurisdiction" },
+                { "es": "competencia de un tribunal", "en": "jurisdiction" },
+
+                { "es": "cómplice", "en": "accomplice" },
+                { "es": "cómplice encubridor", "en": "accessory" },
+                { "es": "cómplice instigador", "en": "abettor" },
+                { "es": "cómplice necesario", "en": "accessory" },
+
+                { "es": "complicidad", "en": "complicity" },
+
+                { "es": "complot", "en": "conspiracy" },
+
+                { "es": "comportamiento", "en": "conduct" },
+                { "es": "comportamiento criminal", "en": "criminality" },
+                { "es": "buen comportamiento", "en": "conduct" },
+
+                { "es": "conclusiones", "en": "findings" },
+
+                { "es": "concurso de acreedores", "en": "bankruptcy" },
+
+                { "es": "concurso de delitos", "en": "concurrence" },
+
+                { "es": "condecorar", "en": "decorate" },
+
+                { "es": "condena", "en": "sentence" },
+                { "es": "condena a perpetuidad", "en": "life-sentence" },
+                { "es": "cumplir una condena", "en": "serve" },
+
+                { "es": "condenado", "en": "convict" },
+
+                { "es": "condenar", "en": "convict" },
+
+                { "es": "condicional", "en": "conditional" },
+                { "es": "libertad condicional", "en": "parole" },
+
+                { "es": "conducción", "en": "driving" },
+                { "es": "conducción bajo los efectos del alcohol", "en": "DUI" },
+                { "es": "conducción bajo los efectos de drogas", "en": "drug-driving" },
+                { "es": "conducción de presos", "en": "transport" },
+                { "es": "conducción temeraria", "en": "reckless-driving" },
+
+                { "es": "conducta", "en": "conduct" },
+                { "es": "conducta desordenada", "en": "disorderly-conduct" },
+                { "es": "mala conducta", "en": "misconduct" },
+
+                { "es": "confesar", "en": "confess" },
+
+                { "es": "confesión", "en": "confession" },
+                { "es": "confesión bajo coacción", "en": "confession" },
+                { "es": "confesión de culpabilidad", "en": "plea" },
+                { "es": "confesión judicial", "en": "deposition" },
+
+                { "es": "confidencial", "en": "confidential" },
+
+                { "es": "confidente", "en": "informant" },
+
+                { "es": "confinamiento", "en": "confinement" },
+
+                { "es": "confinar", "en": "confine" },
+
+                { "es": "confiscar", "en": "confiscate" },
+
+                { "es": "conjunción de delitos", "en": "joinder" },
+
+                { "es": "connivencia", "en": "collusion" },
+
+                { "es": "conocimiento", "en": "knowledge" },
+                { "es": "conocimiento fundado", "en": "belief" },
+                { "es": "conocimiento real", "en": "knowledge" },
+
+                { "es": "compinche", "en": "accomplice" },
+
+                { "es": "consejo", "en": "advice" },
+                { "es": "consejo legal", "en": "advice" },
+
+                { "es": "conspiración", "en": "conspiracy" },
+                { "es": "conspiración para asesinar", "en": "conspiracy" },
+                { "es": "conspiración para delinquir", "en": "conspiracy" },
+                { "es": "conspiración", "en": "conspiracy" },
+                { "es": "conspiración para robar", "en": "conspiracy" },
+                { "es": "montaje policial", "en": "frame-up" },
+
+                { "es": "conspirador", "en": "conspirator" },
+
+                { "es": "conspirar", "en": "conspire" },
+
+                { "es": "consumado", "en": "consummated" },
+
+                { "es": "consumado", "en": "loot" },
+
+                { "es": "consumar", "en": "consummate" },
+
+                { "es": "consumo", "en": "consumption" },
+                { "es": "consumo de drogas", "en": "drug-use" },
+
+                { "es": "contingente", "en": "contingent" },
+
+                { "es": "contrabandista", "en": "smuggler" },
+
+                { "es": "contrabando", "en": "smuggling" },
+                { "es": "contrabando de drogas", "en": "trafficking" },
+                { "es": "contrabando de licores", "en": "bootlegging" },
+
+                { "es": "control", "en": "checkpoint" },
+                { "es": "control de alcoholemia", "en": "checkpoint" },
+                { "es": "control de carretera", "en": "roadblock" },
+                { "es": "control fronterizo", "en": "checkpoint" },
+                { "es": "puesto de control", "en": "checkpoint" },
+                { "es": "montar un control", "en": "roadblock" },
+
+                { "es": "cooperador necesario", "en": "accomplice" },
+
+                { "es": "cordón detonante", "en": "cordex" },
+
+                { "es": "correccional", "en": "reformatory" },
+
+                { "es": "corredera", "en": "slide" },
+
+                { "es": "corrupción", "en": "corruption" },
+                { "es": "corrupción de menores", "en": "abuse" },
+
+                { "es": "cortar", "en": "slash" },
+
+                { "es": "corte", "en": "wound" },
+
+                { "es": "costas", "en": "costs" },
+                { "es": "costas judiciales", "en": "costs" },
+
+                { "es": "cotejar", "en": "match" },
+                { "es": "cotejar una huella", "en": "match" },
+
+                { "es": "crack", "en": "crack" },
+                { "es": "adicto al crack", "en": "addict" },
+
+                { "es": "crimen", "en": "crime" },
+                { "es": "crimen de guerra", "en": "war-crime" },
+                { "es": "crimen organizado", "en": "racketeering" },
+                { "es": "crimen pasional", "en": "passion-crime" },
+
+                { "es": "criminal", "en": "criminal" },
+                { "es": "criminal de guerra", "en": "war-criminal" },
+                { "es": "biología criminal", "en": "criminology" },
+                { "es": "Ley de Enjuiciamiento Criminal", "en": "Criminal-Procedure-Code" },
+
+                { "es": "criminalidad", "en": "criminality" },
+                { "es": "índice de criminalidad", "en": "crime-rate" },
+
+                { "es": "criminalista", "en": "attorney" },
+
+                { "es": "criminología", "en": "criminology" },
+
+                { "es": "criminólogo", "en": "criminologist" },
+
+                { "es": "crueldad", "en": "cruelty" },
+                { "es": "crueldad mental", "en": "cruelty" },
+
+                { "es": "cuadrilla", "en": "gang" },
+
+                { "es": "cuchillada", "en": "stab-wound" },
+
+                { "es": "cuchillo", "en": "knife" },
+                { "es": "cuchillo de cocina", "en": "kitchen-knife" },
+                { "es": "cuchillo de mesa", "en": "table-knife" },
+                { "es": "cuchillo de monte", "en": "bowie-knife" },
+                { "es": "a punta de cuchillo", "en": "knifepoint" },
+                { "es": "herida de cuchillo", "en": "stab-wound" },
+
+                { "es": "cuerpo", "en": "body" },
+                { "es": "cuerpo del delito", "en": "corpus-delicti" },
+
+                { "es": "culata", "en": "buttstock" },
+
+                { "es": "culatazo", "en": "buttstroke" },
+
+                { "es": "culpa", "en": "guilt" },
+                { "es": "culpa penal", "en": "guilt" },
+
+                { "es": "culpabilidad", "en": "culpability" },
+                { "es": "confesión de culpabilidad", "en": "plea" },
+
+                { "es": "culpable", "en": "guilty" },
+
+                { "es": "culposo", "en": "negligent" },
+
+                { "es": "cumplir", "en": "comply" },
+                { "es": "cumplir condena", "en": "serve" },
+
+                { "es": "custodia", "en": "custody" },
+                { "es": "bajo custodia", "en": "custody" },
+                { "es": "guarda y custodia", "en": "custody" },
+
+                { "es": "dactilar", "en": "fingerprint" },
+                { "es": "huella dactilar", "en": "fingerprint" },
+
+                { "es": "dactilograma", "en": "dactylogram" },
+
+                { "es": "dactiloscopia", "en": "dactyloscopy" },
+
+                { "es": "dañar", "en": "damage" },
+
+                { "es": "dañarse", "en": "injure" },
+
+                { "es": "daño", "en": "damage" },
+                { "es": "daño compensatorio", "en": "damages" },
+                { "es": "daño corporal", "en": "injury" },
+                { "es": "daño cuantioso", "en": "substantial" },
+                { "es": "daño físico", "en": "injury" },
+                { "es": "daño doloso", "en": "malicious" },
+                { "es": "daño premeditado", "en": "willful" },
+                { "es": "daños y perjuicios", "en": "damages" },
+                { "es": "compensación por daños", "en": "damages" },
+                { "es": "valoración de daños", "en": "assessment" },
+
+                { "es": "decadactilar", "en": "ten-print" },
+
+                { "es": "decapitar", "en": "behead" },
+
+                { "es": "decidir", "en": "decide" },
+
+                { "es": "decisión", "en": "decision" },
+                { "es": "tomar una decisión", "en": "decide" },
+                { "es": "decisión judicial", "en": "ruling" },
+
+                { "es": "declaración", "en": "statement" },
+                { "es": "declaración de bienes", "en": "declaration" },
+                { "es": "declaración de derechos", "en": "rights" },
+                { "es": "declaración de exportación", "en": "declaration" },
+                { "es": "declaración de importación", "en": "declaration" },
+                { "es": "declaración falsa", "en": "falsehood" },
+                { "es": "declaración firmada", "en": "statement" },
+                { "es": "declaración de impuestos", "en": "return" },
+                { "es": "declaración de incapacidad", "en": "certificate" },
+                { "es": "declaración de inocencia", "en": "plea" },
+                { "es": "declaración jurada", "en": "affidavit" },
+                { "es": "declaración notarial", "en": "affidavit" },
+                { "es": "declaración de testigos", "en": "statement" },
+                { "es": "prestar declaración", "en": "testify" },
+                { "es": "tomar declaración", "en": "interview" },
+
+                { "es": "declarado", "en": "declared" },
+                { "es": "declarado en rebeldía", "en": "defaulted" },
+
+                { "es": "declarar", "en": "testify" },
+                { "es": "declarar culpable", "en": "convict" },
+
+                { "es": "declararse culpable", "en": "plead" },
+
+                { "es": "declararse inocente", "en": "plead" },
+
+                { "es": "decodificador de tonos", "en": "decoder" },
+
+                { "es": "decomisar", "en": "confiscate" },
+
+                { "es": "decreto", "en": "decree" },
+                { "es": "decreto ley", "en": "decree-law" },
+
+                { "es": "decúbito prono", "en": "prone" },
+                { "es": "decúbito supino", "en": "supine" },
+
+                { "es": "defecto", "en": "defect" },
+                { "es": "defecto físico", "en": "defect" },
+                { "es": "defecto de forma", "en": "irregularity" },
+
+                { "es": "defender", "en": "defend" },
+
+                { "es": "defensa", "en": "defense" },
+                { "es": "en defensa propia", "en": "self-defense" },
+                { "es": "defensa", "en": "baton" },
+                { "es": "defensa eléctrica", "en": "stun-baton" },
+                { "es": "defensa extensible", "en": "baton" },
+                { "es": "defensa antidisturbios", "en": "riot-baton" },
+
+                { "es": "defensiva", "en": "defensive" },
+                { "es": "estar a la defensiva", "en": "defensive" },
+
+                { "es": "defensor", "en": "counsel" },
+
+                { "es": "deflagración", "en": "deflagration" },
+
+                { "es": "deformidad", "en": "deformity" },
+
+                { "es": "defraudar", "en": "defraud" },
+                { "es": "defraudar impuestos", "en": "evade" },
+
+                { "es": "defunción", "en": "death" },
+                { "es": "certificado de defunción", "en": "death-certificate" },
+
+                { "es": "degollar", "en": "slit" },
+
+                { "es": "delación", "en": "informing" },
+
+                { "es": "delatar", "en": "inform" },
+                { "es": "delatar ante un tribunal", "en": "cooperate" },
+
+                { "es": "delator", "en": "informant" },
+
+                { "es": "deliberación", "en": "deliberation" },
+
+                { "es": "deliberar", "en": "deliberate" },
+
+                { "es": "delictivo", "en": "criminal" },
+                { "es": "hecho delictivo", "en": "offense" },
+                { "es": "mapa delictivo", "en": "crime-map" },
+
+                { "es": "delincuencia", "en": "criminality" },
+                { "es": "delincuencia juvenil", "en": "delinquency" },
+                { "es": "delincuencia organizada", "en": "racketeering" },
+
+                { "es": "delincuencial", "en": "criminal" },
+
+                { "es": "delincuente", "en": "offender" },
+                { "es": "delincuente habitual", "en": "recidivist" },
+                { "es": "delincuente juvenil", "en": "delinquent" },
+                { "es": "delincuente peligroso", "en": "felon" },
+                { "es": "delincuente sexual", "en": "sex-offender" },
+
+                { "es": "delinquir", "en": "offend" },
+
+                { "es": "delito", "en": "offense" },
+                { "es": "delito complejo", "en": "compound-offense" },
+                { "es": "delito común", "en": "offense" },
+                { "es": "delito consumado", "en": "consummated" },
+                { "es": "delito continuado", "en": "continuing-offense" },
+                { "es": "delito contra el honor", "en": "defamation" },
+                { "es": "delito contra la administración de justicia", "en": "obstruction" },
+                { "es": "delito contra la libertad sexual", "en": "sexual-offense" },
+                { "es": "delito contra la persona", "en": "violent-crime" },
+                { "es": "delito contra la propiedad", "en": "property-crime" },
+                { "es": "delito contra la propiedad intelectual", "en": "piracy" },
+                { "es": "delito contra la salud pública", "en": "drug-offense" },
+                { "es": "delito contra la seguridad del Estado", "en": "treason" },
+                { "es": "delito contra la seguridad del tráfico", "en": "traffic-offense" },
+                { "es": "delito de guante blanco", "en": "white-collar-crime" },
+                { "es": "delito de omisión", "en": "omission" },
+                { "es": "delito doloso", "en": "intentional" },
+                { "es": "delito ecológico", "en": "environmental-crime" },
+                { "es": "delito fiscal", "en": "tax-evasion" },
+                { "es": "delito flagrante", "en": "flagrante" },
+                { "es": "delito frustrado", "en": "attempt" },
+                { "es": "delito grave", "en": "felony" },
+                { "es": "delito informático", "en": "cybercrime" },
+                { "es": "delito menor", "en": "misdemeanor" },
+                { "es": "delito pasional", "en": "passion-crime" },
+                { "es": "delito tipificado", "en": "statutory" },
+                { "es": "cometer un delito", "en": "offend" },
+                { "es": "concurso de delitos", "en": "concurrence" },
+                { "es": "elementos de un delito", "en": "elements" },
+                { "es": "escena del delito", "en": "crime-scene" },
+                { "es": "lugar del delito", "en": "crime-scene" },
+
+                { "es": "demanda", "en": "lawsuit" },
+                { "es": "demanda de desahucio", "en": "eviction" },
+                { "es": "demanda de divorcio", "en": "petition" },
+                { "es": "demanda por daños y perjuicios", "en": "damages" },
+                { "es": "entablar una demanda", "en": "sue" },
+                { "es": "presentar una demanda", "en": "file" },
+
+                { "es": "demandado", "en": "defendant" },
+
+                { "es": "demandante", "en": "plaintiff" },
+
+                { "es": "demandar", "en": "sue" },
+
+                { "es": "demencia", "en": "insanity" },
+
+                { "es": "denegación", "en": "denial" },
+                { "es": "denegación de auxilio", "en": "omission" },
+                { "es": "denegación de entrada", "en": "refusal" },
+                { "es": "denegación de servicios", "en": "DDoS" },
+
+                { "es": "denuncia", "en": "complaint" },
+                { "es": "denuncia falsa", "en": "false-report" },
+                { "es": "ampliación de denuncia", "en": "supplement" },
+                { "es": "presentar una denuncia", "en": "report" },
+
+                { "es": "denunciable", "en": "indictable" },
+
+                { "es": "denunciante", "en": "complainant" },
+
+                { "es": "denunciar", "en": "report" },
+
+                { "es": "deportación", "en": "deportation" },
+
+                { "es": "deportar", "en": "deport" },
+
+                { "es": "depósito de valores", "en": "safe-deposit-box" },
+                { "es": "depósito ilegal de armas", "en": "possession" },
+
+                { "es": "depresivo", "en": "depressant" },
+
+                { "es": "derecho", "en": "right" },
+                { "es": "derecho de asistencia letrada", "en": "counsel" },
+                { "es": "derecho de asociación", "en": "association" },
+                { "es": "derecho a la intimidad", "en": "privacy" },
+                { "es": "derecho a no declarar", "en": "silence" },
+                { "es": "derecho a ser oído", "en": "audience" },
+                { "es": "derecho civil", "en": "civil-law" },
+                { "es": "derecho comunitario", "en": "EU-law" },
+                { "es": "derecho de asilo", "en": "asylum" },
+                { "es": "derecho de entrada", "en": "entry" },
+                { "es": "derecho de visita", "en": "visitation" },
+                { "es": "derecho penal", "en": "criminal-law" },
+                { "es": "derecho procesal", "en": "procedure" },
+                { "es": "derechos humanos", "en": "human-rights" },
+                { "es": "derechos individuales", "en": "liberties" },
+                { "es": "informar de los derechos", "en": "Mirandize" },
+
+                { "es": "desacato", "en": "contempt" },
+
+                { "es": "desactivador", "en": "EOD" },
+
+                { "es": "desactivar", "en": "defuse" },
+
+                { "es": "desahuciar", "en": "evict" },
+
+                { "es": "desahucio", "en": "eviction" },
+                { "es": "orden de desahucio", "en": "eviction-order" },
+
+                { "es": "desalojar", "en": "evict" },
+
+                { "es": "desalojo", "en": "eviction" },
+                { "es": "orden de desalojo", "en": "eviction-order" },
+
+                { "es": "desaparecido", "en": "missing" },
+                { "es": "personas desaparecidas", "en": "missing-persons" },
+
+                { "es": "descargar", "en": "unload" },
+
+                { "es": "deserción", "en": "desertion" },
+
+                { "es": "desertar", "en": "desert" },
+
+                { "es": "desertor", "en": "deserter" },
+
+                { "es": "desfalcar", "en": "embezzle" },
+
+                { "es": "desfalco", "en": "embezzlement" },
+
+                { "es": "desobediencia", "en": "disobedience" },
+                { "es": "desobediencia y resistencia a la autoridad", "en": "resistance" },
+
+                { "es": "desórdenes públicos", "en": "disorder" },
+                { "es": "desórdenes violentos", "en": "riot" },
+
+                { "es": "detectar", "en": "detect" },
+
+                { "es": "detective", "en": "detective" },
+                { "es": "detective privado", "en": "investigator" },
+
+                { "es": "detector", "en": "detector" },
+                { "es": "detector de metales", "en": "metal-detector" },
+
+                { "es": "detención", "en": "arrest" },
+                { "es": "detención en masa", "en": "roundup" },
+                { "es": "detención ilegal", "en": "false-imprisonment" },
+                { "es": "detención preventiva", "en": "remand" },
+                { "es": "detención sin orden judicial", "en": "warrantless-arrest" },
+                { "es": "orden de detención", "en": "warrant" },
+
+                { "es": "detener", "en": "arrest" },
+                { "es": "detener un vehículo", "en": "stop" },
+
+                { "es": "detenido", "en": "detainee" },
+
+                { "es": "detonación", "en": "detonation" },
+
+                { "es": "detonador", "en": "detonator" },
+
+                { "es": "detonante", "en": "explosive" },
+                { "es": "cordón detonante", "en": "cordex" },
+
+                { "es": "detonar", "en": "detonate" },
+
+                { "es": "dictamen", "en": "opinion" },
+                { "es": "dictamen pericial", "en": "report" },
+
+                { "es": "dictar sentencia", "en": "sentence" },
+
+                { "es": "difamación", "en": "defamation" },
+
+                { "es": "difamador", "en": "slanderer" },
+
+                { "es": "difamar", "en": "defame" },
+
+                { "es": "difunto", "en": "deceased" },
+
+                { "es": "diligencia", "en": "proceeding" },
+                { "es": "diligencia de embargo", "en": "attachment" },
+                { "es": "diligencias policiales", "en": "proceedings" },
+                { "es": "diligencias previas", "en": "preliminaries" },
+                { "es": "abrir diligencias", "en": "investigate" },
+
+                { "es": "dinamita", "en": "dynamite" },
+                { "es": "cartucho de dinamita", "en": "dynamite" },
+
+                { "es": "discusión", "en": "argument" },
+
+                { "es": "discutir", "en": "argue" },
+
+                { "es": "disfraz", "en": "disguise" },
+
+                { "es": "disminuido físico", "en": "disabled" },
+                { "es": "disminuido psíquico", "en": "disabled" },
+
+                { "es": "disparador", "en": "trigger" },
+                { "es": "cola del disparador", "en": "trigger-bar" },
+
+                { "es": "disparar", "en": "shoot" },
+                { "es": "disparar contra", "en": "shoot" },
+                { "es": "disparar mortalmente", "en": "kill" },
+
+                { "es": "disparo", "en": "gunshot" },
+                { "es": "disparo de intimidación", "en": "warning-shot" },
+
+                { "es": "disputa", "en": "dispute" },
+
+                { "es": "distrito", "en": "district" },
+                { "es": "distrito policial", "en": "precinct" },
+                { "es": "fiscal del distrito", "en": "DA" },
+
+                { "es": "disturbio", "en": "riot" },
+
+                { "es": "documento", "en": "document" },
+                { "es": "documento público", "en": "document" },
+
+                { "es": "doble acción", "en": "double-action" },
+
+                { "es": "dolo", "en": "intent" },
+                { "es": "dolo eventual", "en": "recklessness" },
+                { "es": "dolo directo", "en": "intent" },
+                { "es": "dolo premeditado", "en": "premeditation" },
+
+                { "es": "dolosamente", "en": "wilfully" },
+
+                { "es": "doloso", "en": "intentional" },
+
+                { "es": "domicilio", "en": "residence" },
+                { "es": "domicilio desconocido", "en": "whereabouts" },
+                { "es": "domicilio legal", "en": "domicile" },
+                { "es": "domicilio social", "en": "headquarters" },
+                { "es": "sin domicilio fijo", "en": "NFA" },
+                { "es": "robo en domicilio", "en": "burglary" },
+
+                { "es": "dopaje", "en": "doping" },
+
+                { "es": "dosis", "en": "dose" },
+
+                { "es": "droga", "en": "drug" },
+                { "es": "droga adictiva", "en": "addictive" },
+                { "es": "droga de diseño", "en": "designer-drug" },
+                { "es": "cártel de la droga", "en": "cartel" },
+                { "es": "consumo de droga", "en": "abuse" },
+                { "es": "mercado de la droga", "en": "market" },
+                { "es": "traficante de droga", "en": "trafficker" },
+                { "es": "tráfico de drogas", "en": "trafficking" },
+                { "es": "sobredosis de droga", "en": "overdose" },
+
+                { "es": "drogadicción", "en": "addiction" },
+
+                { "es": "drogadicto", "en": "addict" },
+
+                { "es": "drogar", "en": "drug" },
+
+                { "es": "drogata", "en": "junkie" },
+
+                { "es": "drogodependencia", "en": "dependence" },
+
+                { "es": "duda razonable", "en": "reasonable-doubt" },
+
+                { "es": "ebrio", "en": "intoxicated" },
+
+                { "es": "edad legal", "en": "majority" },
+                { "es": "mayoría de edad", "en": "majority" },
+
+                { "es": "bajo los efectos de", "en": "influence" },
+
+                { "es": "efectos personales", "en": "belongings" },
+
+                { "es": "efectuar una detención", "en": "arrest" },
+
+                { "es": "ejecución", "en": "enforcement" },
+                { "es": "ejecución de sentencia", "en": "enforcement" },
+
+                { "es": "ejecutar", "en": "enforce" },
+                { "es": "ejecutar una orden de detención", "en": "serve" },
+                { "es": "ejecutar una sentencia", "en": "enforce" },
+
+                { "es": "ejecutoria", "en": "judgment" },
+
+                { "es": "ejercer acción judicial", "en": "litigate" },
+                { "es": "ejercer un derecho", "en": "exercise" },
+
+                { "es": "ejercicio de tiro", "en": "marksmanship" },
+                { "es": "ejercicio fiscal", "en": "tax-year" },
+
+                { "es": "elemento de juicio", "en": "evidence" },
+                { "es": "elementos del delito", "en": "elements" },
+
+                { "es": "eludir la acción de la justicia", "en": "abscond" },
+
+                { "es": "embargar", "en": "seize" },
+                { "es": "embargar bienes", "en": "attach" },
+                { "es": "embargar una cuenta", "en": "freeze" },
+
+                { "es": "embargo", "en": "attachment" },
+                { "es": "embargo de bienes", "en": "forfeiture" },
+                { "es": "orden de embargo de una cuenta", "en": "freezing-order" },
+                { "es": "orden de embargo hipotecario", "en": "foreclosure" },
+
+                { "es": "embargar", "en": "attach" },
+                { "es": "embargar bienes", "en": "attach" },
+                { "es": "embargar una cuenta", "en": "freeze" },
+
+                { "es": "embaucar", "en": "deceive" },
+
+                { "es": "emboscada", "en": "ambush" },
+                { "es": "tender una emboscada", "en": "ambush" },
+
+                { "es": "embriagarse", "en": "intoxicate" },
+                { "es": "embriaguez", "en": "intoxication" },
+                { "es": "embriaguez habitual", "en": "alcoholism" },
+                { "es": "en estado de embriaguez", "en": "intoxicated" },
+
+                { "es": "emergencia", "en": "emergency" },
+                { "es": "estado de emergencia", "en": "emergency" },
+
+                { "es": "emporrado", "en": "stoned" },
+                { "es": "estar emporrado", "en": "stoned" },
+
+                { "es": "empuñadura", "en": "grip" },
+                { "es": "empuñar", "en": "wield" },
+
+                { "es": "encarcelamiento", "en": "imprisonment" },
+                { "es": "encarcelar", "en": "imprison" },
+
+                { "es": "encerrar", "en": "confine" },
+
+                { "es": "encubierto", "en": "undercover" },
+                { "es": "agente encubierto", "en": "undercover-officer" },
+                { "es": "operación encubierta", "en": "sting" },
+                { "es": "encubridor", "en": "accessory" },
+                { "es": "encubrimiento", "en": "concealment" },
+                { "es": "encubrir", "en": "conceal" },
+                { "es": "encubrir un delito", "en": "conceal" },
+                { "es": "encubrir a un delincuente", "en": "harbour" },
+
+                { "es": "enfermedad", "en": "disease" },
+                { "es": "baja por enfermedad", "en": "sick-leave" },
+
+                { "es": "enfrentamiento", "en": "confrontation" },
+                { "es": "enfrentarse", "en": "confront" },
+
+                { "es": "engañar", "en": "deceive" },
+                { "es": "engaño", "en": "deception" },
+                { "es": "mediante engaño", "en": "deception" },
+
+                { "es": "engrilletar", "en": "shackle" },
+
+                { "es": "enlace", "en": "liaison" },
+                { "es": "oficial de enlace", "en": "liaison-officer" },
+                { "es": "enlace sindical", "en": "steward" },
+
+                { "es": "ensañar", "en": "maul" },
+
+                { "es": "entrada", "en": "entry" },
+                { "es": "entrada en vigor", "en": "effect" },
+                { "es": "entrada ilegal", "en": "trespass" },
+                { "es": "prohibición de entrada", "en": "ban" },
+
+                { "es": "entrada y registro", "en": "search" },
+                { "es": "orden de entrada y registro", "en": "warrant" },
+
+                { "es": "entrega", "en": "handover" },
+                { "es": "entrega controlada de droga", "en": "delivery" },
+
+                { "es": "envenenar", "en": "poison" },
+
+                { "es": "epilepsia", "en": "epilepsy" },
+
+                { "es": "equipo", "en": "team" },
+                { "es": "equipo de asalto", "en": "SWAT" },
+                { "es": "equipo de reacción", "en": "response-team" },
+                { "es": "equipo de trabajo", "en": "task-force" },
+                { "es": "equipo de primeros auxilios", "en": "kit" },
+                { "es": "equipo policial", "en": "gear" },
+
+                { "es": "escabullirse", "en": "slip-away" },
+
+                { "es": "escalafón", "en": "seniority" },
+
+                { "es": "escalo", "en": "burglary" },
+                { "es": "robo con escalo", "en": "burglary" },
+                { "es": "escalamiento", "en": "burglary" },
+
+                { "es": "escapar", "en": "escape" },
+                { "es": "escapar de la cárcel", "en": "escape" },
+
+                { "es": "esclarecer", "en": "solve" },
+
+                { "es": "escolta", "en": "bodyguard" },
+                { "es": "dar escolta", "en": "escort" },
+                { "es": "escoltar", "en": "escort" },
+
+                { "es": "esconder", "en": "hide" },
+                { "es": "escondrijo", "en": "hideout" },
+
+                { "es": "escopeta", "en": "shotgun" },
+                { "es": "escopeta de aire comprimido", "en": "airgun" },
+                { "es": "escopeta de dos cañones", "en": "double-barrel" },
+                { "es": "escopeta recortada", "en": "sawn-off" },
+
+                { "es": "escrito", "en": "filing" },
+
+                { "es": "escucha", "en": "wiretap" },
+                { "es": "escucha telefónica", "en": "wiretap" },
+                { "es": "escucha electrónica", "en": "surveillance" },
+
+                { "es": "escudo", "en": "shield" },
+                { "es": "escudo antidisturbios", "en": "riot-shield" },
+                { "es": "escudo protector", "en": "shield" },
+
+                { "es": "esnifar", "en": "snort" },
+
+                { "es": "especulación", "en": "speculation" },
+                { "es": "especulador", "en": "speculator" },
+                { "es": "especular", "en": "speculate" },
+
+                { "es": "esposar", "en": "handcuff" },
+                { "es": "esposas", "en": "handcuffs" },
+                { "es": "esposas de pulgares", "en": "thumbcuffs" },
+                { "es": "esposas de tobillos", "en": "leg-irons" },
+                { "es": "poner las esposas", "en": "handcuff" },
+
+                { "es": "esquirol", "en": "strikebreaker" },
+
+                { "es": "estafa", "en": "fraud" },
+                { "es": "estafa piramidal", "en": "Ponzi-scheme" },
+
+                { "es": "estafador", "en": "fraudster" },
+
+                { "es": "estafar", "en": "defraud" },
+                { "es": "estafar a un banco", "en": "defraud" },
+
+                { "es": "estallar", "en": "explode" },
+                { "es": "hacer estallar", "en": "detonate" },
+
+                { "es": "estallido", "en": "explosion" },
+
+                { "es": "estampita", "en": "pigeon-drop" },
+
+                { "es": "estimar", "en": "assess" },
+                { "es": "estimar daños", "en": "assess" },
+
+                { "es": "estimulante", "en": "stimulant" },
+
+                { "es": "estrago", "en": "havoc" },
+
+                { "es": "estrangular", "en": "strangle" },
+
+                { "es": "estupefaciente", "en": "narcotic" },
+
+                { "es": "estupro", "en": "statutory-rape" },
+
+                { "es": "eutanasia", "en": "euthanasia" },
+
+                { "es": "evacuación", "en": "evacuation" },
+                { "es": "plan de evacuación", "en": "evacuation-plan" },
+
+                { "es": "evacuar", "en": "evacuate" },
+
+                { "es": "evaluación", "en": "assessment" },
+                { "es": "evaluación de daños", "en": "assessment" },
+
+                { "es": "evaluar", "en": "assess" },
+
+                { "es": "evidente", "en": "obvious" },
+
+                { "es": "exhibicionismo", "en": "exhibitionism" },
+                { "es": "exhibicionista", "en": "exhibitionist" },
+
+                { "es": "exhorto", "en": "rogatory-letter" },
+
+                { "es": "exhumación", "en": "exhumation" },
+
+                { "es": "eximente", "en": "defence" },
+                { "es": "eximente de enajenación mental", "en": "insanity-defence" },
+                { "es": "eximente de necesidad", "en": "necessity-defence" },
+                { "es": "circunstancia eximente", "en": "exculpation" },
+
+                { "es": "expedición de moneda falsa", "en": "counterfeiting" },
+
+                { "es": "expediente", "en": "file" },
+                { "es": "expediente disciplinario", "en": "proceedings" },
+                { "es": "expediente judicial", "en": "file" },
+                { "es": "expediente policial", "en": "dossier" },
+                { "es": "instruir un expediente", "en": "compile" },
+                { "es": "abrir expediente", "en": "initiate" },
+
+                { "es": "explosión", "en": "explosion" },
+                { "es": "explosión de una bomba", "en": "blast" },
+                { "es": "hacer explosión", "en": "explode" },
+
+                { "es": "explosivo", "en": "explosive" },
+                { "es": "explosivo rompedor", "en": "high-explosive" },
+                { "es": "onda explosiva", "en": "blast-wave" },
+                { "es": "perro detector de explosivos", "en": "sniffer-dog" },
+                { "es": "técnico en explosivos", "en": "bomb-technician" },
+
+                { "es": "expulsar", "en": "deport" },
+
+                { "es": "expulsión", "en": "deportation" },
+                { "es": "orden de expulsión", "en": "deportation-order" },
+
+                { "es": "expulsor", "en": "ejector" },
+
+                { "es": "extensible", "en": "baton" },
+
+                { "es": "extorsión", "en": "extortion" },
+                { "es": "extorsionador", "en": "extortionist" },
+                { "es": "extorsionar", "en": "extort" },
+
+                { "es": "extractor", "en": "extractor" },
+
+                { "es": "extradición", "en": "extradition" },
+                { "es": "extraditar", "en": "extradite" },
+
+                { "es": "extranjería", "en": "immigration" },
+                { "es": "ley de extranjería", "en": "Immigration-Act" },
+
+                { "es": "extranjero", "en": "foreigner" },
+                { "es": "extranjero ilegal", "en": "illegal-immigrant" },
+                { "es": "extranjero residente", "en": "resident" },
+
+                { "es": "facción", "en": "faction" },
+
+                { "es": "factura", "en": "invoice" },
+
+                { "es": "facultad", "en": "authority" },
+
+                { "es": "fallar", "en": "adjudicate" },
+                { "es": "fallar a favor", "en": "uphold" },
+                { "es": "fallar en contra", "en": "deny" },
+
+                { "es": "fallecer", "en": "die" },
+                { "es": "fallecido", "en": "deceased" },
+                { "es": "fallecimiento", "en": "death" },
+
+                { "es": "fallo", "en": "verdict" },
+
+                { "es": "falsificación", "en": "forgery" },
+                { "es": "falsificación de medios de pago", "en": "counterfeiting" },
+                { "es": "falsificación de pruebas", "en": "fabrication" },
+
+                { "es": "falsificado", "en": "forged" },
+
+                { "es": "falsificador", "en": "forger" },
+                { "es": "falsificador de moneda", "en": "counterfeiter" },
+
+                { "es": "falsificar", "en": "forge" },
+                { "es": "falsificar una firma", "en": "forge" },
+                { "es": "falsificar documentos", "en": "forge" },
+                { "es": "falsificar dinero", "en": "counterfeit" },
+                { "es": "falsificar una matrícula", "en": "tamper" },
+
+                { "es": "falso", "en": "false" },
+                { "es": "falsa alarma", "en": "false-alarm" },
+                { "es": "falsa alarma de bomba", "en": "hoax" },
+                { "es": "falso fondo", "en": "compartment" },
+                { "es": "falso testimonio", "en": "perjury" },
+                { "es": "dinero falso", "en": "counterfeit" },
+                { "es": "pista falsa", "en": "red-herring" },
+
+                { "es": "falta", "en": "offence" },
+                { "es": "falta de lesiones", "en": "negligence" },
+                { "es": "falta grave", "en": "misconduct" },
+                { "es": "falta leve", "en": "petty-offence" },
+
+                { "es": "farlopa", "en": "cocaine" },
+
+                { "es": "farsante", "en": "impostor" },
+
+                { "es": "fecha de nacimiento", "en": "DOB" },
+
+                { "es": "fechoría", "en": "misdeed" },
+
+                { "es": "feto", "en": "fetus" },
+
+                { "es": "fiambre", "en": "corpse" },
+
+                { "es": "fianza", "en": "bail" },
+                { "es": "bajo fianza", "en": "bailed" },
+
+                { "es": "ficticio", "en": "fictitious" },
+                { "es": "empresa ficticia", "en": "shell-company" },
+                { "es": "nombre ficticio", "en": "alias" },
+
+                { "es": "filiación", "en": "identification" },
+
+                { "es": "fingir", "en": "feign" },
+
+                { "es": "fiscal", "en": "prosecutor" },
+                { "es": "fiscal general", "en": "Attorney-General" },
+                { "es": "Ministerio Fiscal", "en": "prosecution" },
+
+                { "es": "fiscalía", "en": "prosecution-service" },
+
+                { "es": "flagrante", "en": "flagrant" },
+                { "es": "delito flagrante", "en": "in-flagrante" },
+
+                { "es": "fomentar", "en": "promote" },
+
+                { "es": "fomento", "en": "promotion" },
+                { "es": "actos de fomento", "en": "promotion" },
+
+                { "es": "fondo", "en": "bottom" },
+                { "es": "investigación a fondo", "en": "thorough" },
+                { "es": "falso fondo", "en": "compartment" },
+
+                { "es": "forense", "en": "coroner" },
+                { "es": "técnica forense", "en": "forensics" },
+
+                { "es": "fotocomposición", "en": "lineup" },
+
+                { "es": "forzar", "en": "force" },
+                { "es": "forzar una casa", "en": "burglarize" },
+                { "es": "forzar una cerradura", "en": "pick" },
+                { "es": "forzar una puerta", "en": "force" },
+                { "es": "forzar a una mujer", "en": "rape" },
+
+                { "es": "fractura", "en": "fracture" },
+                { "es": "fractura con allanamiento de morada", "en": "burglary" },
+
+                { "es": "francotirador", "en": "sniper" },
+
+                { "es": "fraude", "en": "fraud" },
+                { "es": "fraude carrusel", "en": "carousel-fraud" },
+
+                { "es": "fraudulento", "en": "fraudulent" },
+
+                { "es": "frontera", "en": "border" },
+                { "es": "rechazo en frontera", "en": "refusal" },
+
+                { "es": "fronterizo", "en": "border" },
+                { "es": "puesto fronterizo", "en": "checkpoint" },
+
+                { "es": "frustrar", "en": "thwart" },
+                { "es": "delito frustrado", "en": "attempt" },
+
+                { "es": "fuego", "en": "fire" },
+                { "es": "fuego cruzado", "en": "crossfire" },
+                { "es": "hacer fuego", "en": "fire" },
+                { "es": "hacer fuego sobre", "en": "fire" },
+                { "es": "prender fuego a", "en": "ignite" },
+                { "es": "apagar el fuego", "en": "extinguish" },
+
+                { "es": "fuerza", "en": "force" },
+                { "es": "fuerza ilegítima", "en": "unlawful-force" },
+                { "es": "fuerza mayor", "en": "force-majeure" },
+                { "es": "fuerza pública", "en": "police" },
+                { "es": "fuerzas de seguridad", "en": "law-enforcement" },
+                { "es": "a la fuerza", "en": "forcibly" },
+                { "es": "recurrir a la fuerza", "en": "resort" },
+                { "es": "robo con fuerza", "en": "burglary" },
+                { "es": "robo sin usar la fuerza", "en": "theft" },
+
+                { "es": "fuga", "en": "escape" },
+                { "es": "darse a la fuga", "en": "flee" },
+                { "es": "fuga de información", "en": "leak" },
+                { "es": "fuga de la cárcel", "en": "jailbreak" },
+
+                { "es": "fugarse", "en": "escape" },
+                { "es": "fugarse de la cárcel", "en": "escape" },
+
+                { "es": "fugitivo", "en": "fugitive" },
+
+                { "es": "fulminante", "en": "primer" },
+
+                { "es": "funcionario", "en": "official" },
+                { "es": "funcionario judicial", "en": "court-officer" },
+                { "es": "funcionario de policía", "en": "police-officer" },
+                { "es": "funcionario de prisiones", "en": "correctional-officer" },
+                { "es": "funcionario público", "en": "public-official" },
+
+                { "es": "funda", "en": "holster" },
+                { "es": "funda de pistola", "en": "holster" },
+                { "es": "funda de sobaquera", "en": "shoulder-holster" },
+                { "es": "funda de cintura", "en": "holster" },
+
+                { "es": "fusil", "en": "rifle" },
+
+                { "es": "gabinete", "en": "office" },
+
+                { "es": "gamberrismo", "en": "hooliganism" },
+
+                { "es": "gamberro", "en": "hooligan" },
+
+                { "es": "gancho ciego", "en": "rip-off" },
+
+                { "es": "gánster", "en": "gangster" },
+
+                { "es": "ganzúa", "en": "lockpick" },
+
+                { "es": "garantía", "en": "guarantee" },
+
+                { "es": "gas", "en": "gas" },
+                { "es": "gas lacrimógeno", "en": "tear-gas" },
+                { "es": "pistola de gas", "en": "gas-pistol" },
+
+                { "es": "gatillazo", "en": "misfire" },
+
+                { "es": "gatillo", "en": "trigger" },
+                { "es": "apretar el gatillo", "en": "fire" },
+                { "es": "tener el gatillo fácil", "en": "trigger-happy" },
+
+                { "es": "gelatina explosiva", "en": "gelignite" },
+
+                { "es": "gelignita", "en": "gelignite" },
+
+                { "es": "gitano", "en": "Romani" },
+
+                { "es": "golpe", "en": "blow" },
+                { "es": "dar un golpe", "en": "strike" },
+
+                { "es": "golpe", "en": "robbery" },
+                { "es": "dar un golpe", "en": "rob" },
+                { "es": "dar un golpe en un banco", "en": "rob" },
+                { "es": "preparar un golpe", "en": "plan" },
+
+                { "es": "golpear", "en": "hit" },
+                { "es": "gorila", "en": "bodyguard" },
+
+                { "es": "grado", "en": "degree" },
+                { "es": "grados del delito", "en": "degrees" },
+                { "es": "en grado de tentativa", "en": "attempted" },
+                { "es": "en grado de frustración", "en": "attempted" },
+
+                { "es": "graduación", "en": "rank" },
+
+                { "es": "grafitero", "en": "tagger" },
+
+                { "es": "grafiti", "en": "graffiti" },
+                { "es": "hacer un grafiti", "en": "tag" },
+
+                { "es": "grafología", "en": "graphology" },
+                { "es": "graphanalysis", "en": "handwriting-analysis" },
+
+                { "es": "granada", "en": "grenade" },
+                { "es": "granada aturdidora", "en": "stun-grenade" },
+                { "es": "granada de mano", "en": "grenade" },
+                { "es": "a prueba de granadas", "en": "grenade-proof" },
+
+                { "es": "grave", "en": "serious" },
+                { "es": "heridas graves", "en": "serious" },
+                { "es": "lesiones graves", "en": "serious" },
+
+                { "es": "grilletes", "en": "shackles" },
+
+                { "es": "grupo", "en": "group" },
+                { "es": "grupo de trabajo", "en": "task-force" },
+
+                { "es": "guante", "en": "glove" },
+                { "es": "delito de guante blanco", "en": "white-collar-crime" },
+                { "es": "echar el guante", "en": "nab" },
+
+                { "es": "guarda", "en": "guard" },
+                { "es": "guarda forestal", "en": "ranger" },
+                { "es": "guarda de seguridad", "en": "security-guard" },
+
+                { "es": "guarda", "en": "guardianship" },
+                { "es": "guarda de hecho", "en": "guardian" },
+                { "es": "guarda y custodia", "en": "custody" },
+
+                { "es": "guardacostas", "en": "coast-guard" },
+
+                { "es": "guardaespaldas", "en": "bodyguard" },
+
+                { "es": "guardamonte", "en": "trigger-guard" },
+
+                { "es": "guardar", "en": "keep" },
+
+                { "es": "guardia", "en": "guard" },
+                { "es": "guardia civil", "en": "Civil-Guard" },
+                { "es": "guardia forestal", "en": "ranger" },
+                { "es": "guardia jurado", "en": "security-guard" },
+                { "es": "guardia de prisiones", "en": "warder" },
+                { "es": "guardia de tráfico", "en": "traffic-officer" },
+                { "es": "estar de guardia", "en": "on-duty" },
+
+                { "es": "guardia y custodia", "en": "custody" },
+
+                { "es": "guardián", "en": "guardian" },
+
+                { "es": "guías caninos", "en": "K-9" },
+
+                { "es": "hábeas corpus", "en": "habeas-corpus" },
+
+                { "es": "habitación de seguridad", "en": "secure-ward" },
+
+                { "es": "habitual", "en": "habitual" },
+                { "es": "delincuente habitual", "en": "recidivist" },
+                { "es": "embriaguez habitual", "en": "alcoholism" },
+
+                { "es": "hachís", "en": "hashish" },
+                { "es": "aceite de hachís", "en": "hash-oil" },
+
+                { "es": "hecho", "en": "fact" },
+                { "es": "hecho consumado", "en": "fait-accompli" },
+                { "es": "hecho punible", "en": "offence" },
+                { "es": "hecho delictivo", "en": "offence" },
+                { "es": "hecho penal", "en": "offence" },
+                { "es": "hecho probado", "en": "fact" },
+                { "es": "de hecho", "en": "de-facto" },
+
+                { "es": "helicóptero", "en": "helicopter" },
+
+                { "es": "herida", "en": "wound" },
+                { "es": "herida contusa", "en": "bruise" },
+                { "es": "herida grave", "en": "wound" },
+                { "es": "herida leve", "en": "wound" },
+                { "es": "causar heridas", "en": "injure" },
+
+                { "es": "herir", "en": "wound" },
+
+                { "es": "heroína", "en": "heroin" },
+
+                { "es": "heroinómano", "en": "addict" },
+
+                { "es": "hierba", "en": "marijuana" },
+
+                { "es": "historial delictivo", "en": "record" },
+
+                { "es": "hombre de confianza", "en": "associate" },
+                { "es": "hombre paja", "en": "frontman" },
+
+                { "es": "homicida", "en": "homicidal" },
+                { "es": "homicida", "en": "killer" },
+
+                { "es": "homicidio", "en": "homicide" },
+                { "es": "homicidio culposo", "en": "manslaughter" },
+                { "es": "homicidio con dolo eventual", "en": "manslaughter" },
+                { "es": "homicidio doloso", "en": "murder" },
+                { "es": "homicidio intencionado", "en": "murder" },
+                { "es": "homicidio premeditado", "en": "first-degree-murder" },
+                { "es": "homicidio involuntario", "en": "manslaughter" },
+                { "es": "homicidio pasional", "en": "manslaughter" },
+                { "es": "homicidio por imprudencia", "en": "manslaughter" },
+                { "es": "homicidio sin premeditación", "en": "manslaughter" },
+
+                { "es": "huelga", "en": "strike" },
+                { "es": "huelga de celo", "en": "work-to-rule" },
+                { "es": "huelga general", "en": "strike" },
+                { "es": "huelga de hambre", "en": "hunger-strike" },
+                { "es": "estar en huelga", "en": "strike" },
+
+                { "es": "huelguista", "en": "striker" },
+
+                { "es": "huella", "en": "trace" },
+                { "es": "huella digital", "en": "fingerprint" },
+                { "es": "huella dactilar", "en": "fingerprint" },
+                { "es": "huella digital latente", "en": "latent-print" },
+                { "es": "huella de pisada", "en": "footprint" },
+                { "es": "cotejar una huella", "en": "match" },
+                { "es": "sin dejar huella", "en": "trace" },
+                { "es": "seguir las huellas de alguien", "en": "track" },
+                { "es": "tomar las huellas", "en": "fingerprint" },
+
+                { "es": "huida", "en": "escape" },
+
+                { "es": "huir", "en": "flee" },
+
+                { "es": "hurtar", "en": "steal" },
+
+                { "es": "hurto", "en": "theft" },
+                { "es": "hurto en tiendas", "en": "shoplifting" },
+
+                { "es": "identidad", "en": "identity" },
+                { "es": "carnet de identidad", "en": "ID-card" },
+
+                { "es": "identificación", "en": "identification" },
+                { "es": "identificación por ADN", "en": "DNA-identification" },
+                { "es": "rueda de identificación", "en": "lineup" },
+                { "es": "identificación por voz", "en": "voice-identification" },
+
+                { "es": "identificación", "en": "clearance" },
+
+                { "es": "identificar", "en": "identify" },
+                { "es": "víctima sin identificar", "en": "unidentified" },
+
+                { "es": "ilegal", "en": "illegal" },
+                { "es": "inmigrante ilegal", "en": "illegal-immigrant" },
+
+                { "es": "ilegalidad", "en": "illegality" },
+
+                { "es": "ilegítimo", "en": "unlawful" },
+
+                { "es": "imitación", "en": "replica" },
+                { "es": "arma de imitación", "en": "replica-firearm" },
+
+                { "es": "impacto", "en": "impact" },
+
+                { "es": "impostor", "en": "impostor" },
+
+                { "es": "imprudencia", "en": "recklessness" },
+                { "es": "imprudencia temeraria", "en": "gross-negligence" },
+
+                { "es": "imputabilidad penal", "en": "responsibility" },
+
+                { "es": "imputado", "en": "defendant" },
+
+                { "es": "incapacidad", "en": "incapacity" },
+                { "es": "incapacidad legal", "en": "legal-incapacity" },
+                { "es": "incapacidad parcial", "en": "disability" },
+                { "es": "incapacidad total", "en": "disability" },
+
+                { "es": "incapacitado", "en": "disabled" },
+
+                { "es": "incapacitar", "en": "incapacitate" },
+
+                { "es": "incendiar", "en": "ignite" },
+
+                { "es": "incendiario", "en": "arsonist" },
+                { "es": "artefacto incendiario", "en": "incendiary-device" },
+                { "es": "incendio", "en": "fire" },
+                { "es": "incendio forestal", "en": "wildfire" },
+                { "es": "incendio provocado", "en": "arson" },
+                { "es": "delito de incendio", "en": "arson" },
+
+                { "es": "incesto", "en": "incest" },
+
+                { "es": "incitación al delito", "en": "incitement" },
+
+                { "es": "incitador", "en": "abettor" },
+
+                { "es": "incitar", "en": "incite" },
+                { "es": "incitar al delito", "en": "incite" },
+
+                { "es": "incoar", "en": "initiate" },
+                { "es": "incoar un expediente", "en": "initiate" },
+
+                { "es": "incomunicación", "en": "isolation" },
+
+                { "es": "incomunicado", "en": "isolated" },
+                { "es": "prisión incomunicada", "en": "solitary-confinement" },
+
+                { "es": "incomunicar", "en": "isolate" },
+
+                { "es": "incriminar", "en": "incriminate" },
+
+                { "es": "inculpado", "en": "accused" },
+
+                { "es": "inculpar", "en": "charge" },
+
+                { "es": "indemnización", "en": "compensation" },
+                { "es": "indemnización por daños y perjuicios", "en": "damages" },
+
+                { "es": "indemnizar", "en": "compensate" },
+
+                { "es": "índice", "en": "rate" },
+                { "es": "índice de alcohol en la sangre", "en": "BAC" },
+                { "es": "índice de criminalidad", "en": "crime-rate" },
+                { "es": "índice delincuencial", "en": "crime-rate" },
+
+                { "es": "inducción", "en": "abetment" },
+
+                { "es": "inducir", "en": "abet" },
+
+                { "es": "inductor", "en": "abettor" },
+
+                { "es": "infanticidio", "en": "infanticide" },
+
+                { "es": "infidelidad", "en": "malfeasance" },
+                { "es": "infidelidad en la custodia de documentos", "en": "malfeasance" },
+                { "es": "infidelidad en la custodia de presos", "en": "malfeasance" },
+
+                { "es": "infiltrado", "en": "undercover" },
+
+                { "es": "infligir", "en": "inflict" },
+
+                { "es": "influencia", "en": "influence" },
+                { "es": "tráfico de influencias", "en": "influence-peddling" },
+
+                { "es": "información", "en": "intelligence" },
+                { "es": "servicio de información", "en": "intelligence-service" },
+                { "es": "servicio de inteligencia", "en": "intelligence-service" },
+
+                { "es": "informador", "en": "informant" },
+
+                { "es": "informar", "en": "inform" },
+
+                { "es": "infracción", "en": "offence" },
+                { "es": "infracción leve", "en": "minor-offence" },
+                { "es": "infracción grave", "en": "major-offence" },
+                { "es": "infracción muy grave", "en": "serious-offence" },
+
+                { "es": "infractor", "en": "offender" },
+
+                { "es": "infraganti", "en": "red-handed" },
+
+                { "es": "infringir", "en": "violate" },
+                { "es": "infringir la ley", "en": "break" },
+
+                { "es": "ingresar en la cárcel", "en": "imprison" },
+                { "es": "ingresar cadáver", "en": "DOA" },
+                { "es": "ingresar dinero", "en": "deposit" },
+
+                { "es": "inhumación", "en": "burial" },
+                { "es": "inhumación ilegal", "en": "illegal-burial" },
+
+                { "es": "iniciador", "en": "primer" },
+
+                { "es": "inmigrante", "en": "immigrant" },
+                { "es": "inmigrante ilegal", "en": "illegal-immigrant" },
+
+                { "es": "inmunidad", "en": "immunity" },
+                { "es": "inmunidad diplomática", "en": "diplomatic-immunity" },
+                { "es": "inmunidad parlamentaria", "en": "parliamentary-immunity" },
+
+                { "es": "inocente", "en": "innocent" },
+
+                { "es": "insolvencia", "en": "insolvency" },
+                { "es": "insolvencia punible", "en": "asset-concealment" },
+
+                { "es": "inspector", "en": "inspector" },
+
+                { "es": "instigador", "en": "instigator" },
+
+                { "es": "instigación", "en": "abetment" },
+
+                { "es": "instigar", "en": "instigate" },
+
+                { "es": "instrucción", "en": "investigation" },
+                { "es": "instrucción judicial", "en": "inquiry" },
+                { "es": "fase de instrucción", "en": "pretrial" },
+
+                { "es": "instructor", "en": "instructor" },
+                { "es": "instructor del atestado policial", "en": "drafter" },
+                { "es": "juez instructor", "en": "magistrate" },
+
+                { "es": "instruir", "en": "prepare" },
+                { "es": "instruir un expediente disciplinario", "en": "process" },
+
+                { "es": "insultar", "en": "insult" },
+
+                { "es": "insulto", "en": "insult" },
+
+                { "es": "intencionado", "en": "wilful" },
+                { "es": "homicidio intencionado", "en": "murder" },
+                { "es": "homicidio intencionado con circunstancias atenuantes", "en": "manslaughter" },
+
+                { "es": "intento", "en": "attempt" },
+                { "es": "intento de asesinato", "en": "attempted-murder" },
+
+                { "es": "Ministerio del Interior", "en": "Home-Office" },
+
+                { "es": "interno", "en": "inmate" },
+                { "es": "asuntos internos", "en": "internal-affairs" },
+
+                { "es": "interrogatorio", "en": "interrogation" },
+                { "es": "interrogatorio policial", "en": "interrogation" },
+
+                { "es": "intervención", "en": "intervention" },
+                { "es": "intervención policial", "en": "operation" },
+                { "es": "intervención telefónica", "en": "wiretap" },
+
+                { "es": "intervenir", "en": "intervene" },
+                { "es": "intervenir un teléfono", "en": "tap" },
+                { "es": "intervenir con micrófonos", "en": "bug" },
+
+                { "es": "intimidación", "en": "intimidation" },
+                { "es": "robo con intimidación", "en": "robbery" },
+
+                { "es": "investigación", "en": "investigation" },
+                { "es": "investigación criminal", "en": "investigation" },
+                { "es": "investigación judicial", "en": "inquiry" },
+                { "es": "investigación oficial", "en": "inquest" },
+                { "es": "investigación policial", "en": "investigation" },
+                { "es": "investigación preliminar", "en": "inquiry" },
+
+                { "es": "investigador", "en": "investigator" },
+                { "es": "investigador privado", "en": "detective" },
+
+                { "es": "investigar", "en": "investigate" },
+
+                { "es": "involucrado", "en": "involved" },
+
+                { "es": "involucrar", "en": "involve" },
+
+                { "es": "irresistible", "en": "irresistible" },
+                { "es": "fuerza irresistible", "en": "force" },
+                { "es": "impulso irresistible", "en": "impulse" },
+
+                { "es": "jaleo", "en": "row" },
+                { "es": "armar un jaleo", "en": "row" },
+
+                { "es": "jefatura", "en": "headquarters" },
+                { "es": "jefatura de policía", "en": "headquarters" },
+
+                { "es": "judicial", "en": "judicial" },
+                { "es": "costas judiciales", "en": "costs" },
+
+                { "es": "juez", "en": "judge" },
+                { "es": "juez decano", "en": "chief-judge" },
+                { "es": "juez de carrera", "en": "circuit-judge" },
+                { "es": "juez de distrito", "en": "district-judge" },
+                { "es": "juez de guardia", "en": "duty-magistrate" },
+                { "es": "juez de instrucción", "en": "examining-magistrate" },
+                { "es": "juez de paz", "en": "justice-of-the-peace" },
+
+                { "es": "juicio", "en": "trial" },
+                { "es": "juicio con jurado", "en": "jury-trial" },
+                { "es": "juicio nulo", "en": "mistrial" },
+                { "es": "juicio oral", "en": "hearing" },
+
+                { "es": "jurado", "en": "jury" },
+
+                { "es": "jurar", "en": "swear" },
+                { "es": "jurar el cargo", "en": "swear-in" },
+                { "es": "declaración jurada", "en": "affidavit" },
+
+                { "es": "juramento", "en": "oath" },
+                { "es": "bajo juramento", "en": "under-oath" },
+                { "es": "prestar juramento", "en": "swear" },
+
+                { "es": "justicia", "en": "justice" },
+                { "es": "eludir la acción de la justicia", "en": "abscond" },
+                { "es": "obstrucción a la justicia", "en": "obstruction" },
+
+                { "es": "juzgado", "en": "court" },
+                { "es": "juzgado de distrito", "en": "district-court" },
+                { "es": "juzgado de guardia", "en": "night-court" },
+                { "es": "juzgado de instrucción", "en": "examining-court" },
+                { "es": "juzgado de lo penal", "en": "criminal-court" },
+                { "es": "juzgado de menores", "en": "juvenile-court" },
+                { "es": "juzgado de paz", "en": "justice-court" },
+                { "es": "juzgados", "en": "courthouse" },
+
+                { "es": "juvenil", "en": "juvenile" },
+                { "es": "delincuente juvenil", "en": "juvenile-delinquent" },
+
+                { "es": "juzgar", "en": "judge" },
+                { "es": "lacra", "en": "blight" },
+                { "es": "lacra social", "en": "blight" },
+
+                { "es": "ladrón", "en": "thief" },
+                { "es": "ladrón de pisos", "en": "housebreaker" },
+                { "es": "ladrón de cajas fuertes", "en": "safecracker" },
+                { "es": "ladrón de guante blanco", "en": "white-collar-thief" },
+                { "es": "ladrón especialista en escalo", "en": "cat-burglar" },
+
+                { "es": "lanzadestellos", "en": "lightbar" },
+                { "es": "poner lanzadestellos", "en": "code-three" },
+
+                { "es": "lazos de seguridad", "en": "plasticuffs" },
+
+                { "es": "legal", "en": "lawful" },
+
+                { "es": "legalidad", "en": "legality" },
+
+                { "es": "legalización", "en": "legalization" },
+
+                { "es": "legalizar", "en": "legalize" },
+
+                { "es": "legalmente", "en": "legally" },
+
+                { "es": "legítimo", "en": "legitimate" },
+
+                { "es": "legislación", "en": "legislation" },
+                { "es": "legislación vigente", "en": "legislation" },
+
+                { "es": "lesión", "en": "injury" },
+                { "es": "lesión corporal", "en": "bodily-injury" },
+                { "es": "lesión grave", "en": "GBH" },
+                { "es": "lesión leve", "en": "minor-injury" },
+                { "es": "causar lesiones", "en": "injure" },
+                { "es": "lesión jurídica", "en": "tort" },
+
+                { "es": "letal", "en": "lethal" },
+
+                { "es": "letrado", "en": "lawyer" },
+
+                { "es": "levantar", "en": "lift" },
+
+                { "es": "ley", "en": "law" },
+                { "es": "ley de enjuiciamiento criminal", "en": "Criminal-Procedure-Code" },
+                { "es": "ley de extranjería", "en": "Immigration-Law" },
+                { "es": "ley de protección de datos", "en": "Data-Protection-Act" },
+                { "es": "ley orgánica", "en": "Organic-Law" },
+
+                { "es": "liberar", "en": "release" },
+
+                { "es": "libertad", "en": "freedom" },
+                { "es": "libertad bajo fianza", "en": "bail" },
+                { "es": "libertades civiles", "en": "civil-liberties" },
+                { "es": "libertad condicional", "en": "parole" },
+                { "es": "libertad provisional", "en": "release" },
+                { "es": "estar en libertad", "en": "free" },
+                { "es": "poner en libertad", "en": "release" },
+
+                { "es": "licencia", "en": "licence" },
+                { "es": "licencia de armas", "en": "gun-licence" },
+                { "es": "licencia de caza", "en": "hunting-licence" },
+
+                { "es": "lícito", "en": "lawful" },
+
+                { "es": "limpiar", "en": "steal" },
+
+                { "es": "linchamiento", "en": "lynching" },
+
+                { "es": "linchar", "en": "lynch" },
+
+                { "es": "llave falsa", "en": "skeleton-key" },
+
+                { "es": "loco", "en": "insane" },
+
+                { "es": "locura", "en": "insanity" },
+
+                { "es": "lucro", "en": "profit" },
+                { "es": "ánimo de lucro", "en": "profit" },
+
+                { "es": "madero", "en": "cop" },
+
+                { "es": "mafia", "en": "mafia" },
+
+                { "es": "magistrado", "en": "magistrate" },
+
+                { "es": "magistratura", "en": "bench" },
+
+                { "es": "magnicidio", "en": "assassination" },
+
+                { "es": "malhechor", "en": "offender" },
+
+                { "es": "malicia", "en": "malice" },
+                { "es": "malicia constructiva", "en": "constructive-malice" },
+                { "es": "malicia expresa", "en": "actual-malice" },
+
+                { "es": "maliciosamente", "en": "maliciously" },
+
+                { "es": "malos tratos", "en": "abuse" },
+                { "es": "malos tratos en el ámbito familiar", "en": "domestic-violence" },
+
+                { "es": "maltrato", "en": "abuse" },
+
+                { "es": "malversación", "en": "embezzlement" },
+
+                { "es": "malversar", "en": "embezzle" },
+
+                { "es": "mandamiento judicial", "en": "warrant" },
+                { "es": "mandamiento de registro", "en": "search-warrant" },
+                { "es": "mandamiento de detención", "en": "arrest-warrant" },
+
+                { "es": "manifestación", "en": "demonstration" },
+
+                { "es": "manifiesto", "en": "apparent" },
+
+                { "es": "maría", "en": "cannabis" },
+
+                { "es": "marihuana", "en": "marijuana" },
+
+                { "es": "marrón", "en": "rap" },
+                { "es": "comerse el marrón", "en": "take-the-rap" },
+                { "es": "librarse del marrón", "en": "beat-the-rap" },
+
+                { "es": "martillo", "en": "hammer" },
+
+                { "es": "matar", "en": "kill" },
+
+                { "es": "matón", "en": "thug" },
+
+                { "es": "matrimonio", "en": "marriage" },
+                { "es": "matrimonio de conveniencia", "en": "sham-marriage" },
+                { "es": "matrimonio blanco", "en": "sham-marriage" },
+
+                { "es": "mayoría de edad", "en": "majority" },
+
+                { "es": "mecanismo", "en": "mechanism" },
+                { "es": "mecanismo de disparo", "en": "trigger-mechanism" },
+                { "es": "mecanismo de iniciación", "en": "initiator" },
+                { "es": "mecanismo de relojería", "en": "clockwork" },
+
+                { "es": "mecha", "en": "fuse" },
+                { "es": "mecha lenta", "en": "slow-fuse" },
+                { "es": "mecha rápida", "en": "fast-fuse" },
+                { "es": "mecha detonante", "en": "detonating-cord" },
+                { "es": "mecha retardada", "en": "time-fuse" },
+
+                { "es": "medios", "en": "means" },
+                { "es": "medios de comunicación", "en": "media" },
+                { "es": "medios de pago", "en": "payment-means" },
+                { "es": "carecer de medios lícitos de vida", "en": "destitute" },
+
+                { "es": "megáfono", "en": "megaphone" },
+
+                { "es": "mendicidad", "en": "begging" },
+
+                { "es": "mendigo", "en": "beggar" },
+
+                { "es": "menor", "en": "minor" },
+                { "es": "menor de edad", "en": "minor" },
+                { "es": "menor de 18 años", "en": "underage" },
+                { "es": "abuso de menores", "en": "child-abuse" },
+
+                { "es": "mercado negro", "en": "black-market" },
+
+                { "es": "merchero", "en": "shoplifter" },
+
+                { "es": "merodear", "en": "loiter" },
+                { "es": "merodear con intenciones delictivas", "en": "loiter-with-intent" },
+
+                { "es": "metralla", "en": "shrapnel" },
+
+                { "es": "metralleta", "en": "submachine-gun" },
+
+                { "es": "micrófono", "en": "microphone" },
+                { "es": "micrófono oculto", "en": "bug" },
+                { "es": "poner micrófonos", "en": "bug" },
+
+                { "es": "ministerio", "en": "ministry" },
+                { "es": "Ministerio del Interior", "en": "Ministry-of-the-Interior" },
+
+                { "es": "ministro", "en": "minister" },
+                { "es": "Ministro del Interior", "en": "Interior-Minister" },
+
+                { "es": "minoría", "en": "minority" },
+                { "es": "minoría de edad", "en": "minority" },
+                { "es": "minoría étnica", "en": "ethnic-minority" },
+
+                { "es": "mira", "en": "sight" },
+                { "es": "mira telescópica", "en": "scope" },
+                { "es": "punto de mira", "en": "front-sight" },
+
+                { "es": "misión", "en": "mission" },
+
+                { "es": "montar un arma", "en": "cock" },
+
+                { "es": "morada", "en": "dwelling" },
+                { "es": "allanamiento de morada", "en": "trespass" },
+
+                { "es": "mordida", "en": "bribe" },
+                { "es": "dar una mordida", "en": "bribe" },
+
+                { "es": "morfina", "en": "morphine" },
+
+                { "es": "morir", "en": "die" },
+
+                { "es": "mortal", "en": "lethal" },
+
+                { "es": "motín", "en": "riot" },
+                { "es": "motín carcelario", "en": "prison-riot" },
+
+                { "es": "móvil", "en": "motive" },
+                { "es": "móvil (teléfono)", "en": "mobile-phone" },
+
+                { "es": "muelle", "en": "spring" },
+                { "es": "muelle recuperador", "en": "recoil-spring" },
+
+                { "es": "muerte", "en": "death" },
+                { "es": "muerte natural", "en": "natural-death" },
+                { "es": "muerte por asfixia", "en": "death-by-asphyxiation" },
+                { "es": "muerte por compasión", "en": "mercy-killing" },
+                { "es": "muerte violenta", "en": "violent-death" },
+                { "es": "dar muerte", "en": "kill" },
+                { "es": "fallecer de muerte violenta", "en": "die-violently" },
+
+                { "es": "muerto", "en": "deceased" },
+                { "es": "muerto (persona)", "en": "dead-person" },
+
+                { "es": "mula", "en": "drug-mule" },
+                { "es": "mula de phishing", "en": "money-mule" },
+
+                { "es": "multa", "en": "fine" },
+                { "es": "poner una multa", "en": "issue-a-fine" },
+
+                { "es": "multar", "en": "fine" },
+
+                { "es": "munición", "en": "ammunition" },
+
+                { "es": "mutilación", "en": "maiming" },
+
+                { "es": "mutilar", "en": "maim" },
+
+                { "es": "nacionalidad", "en": "nationality" },
+                { "es": "doble nacionalidad", "en": "dual-nationality" },
+
+                { "es": "nacionalización", "en": "naturalization" },
+
+                { "es": "nacionalizar", "en": "naturalize" },
+
+                { "es": "narco", "en": "drug-trafficker" },
+
+                { "es": "narcótico", "en": "narcotic" },
+
+                { "es": "narcotraficante", "en": "drug-dealer" },
+
+                { "es": "narcotráfico", "en": "drug-trafficking" },
+
+                { "es": "navaja", "en": "pocketknife" },
+                { "es": "navaja de muelle", "en": "switchblade" },
+                { "es": "a punta de navaja", "en": "at-knifepoint" },
+
+                { "es": "navajazo", "en": "knife-slash" },
+
+                { "es": "navajero", "en": "knife-attacker" },
+
+                { "es": "negligencia", "en": "negligence" },
+                { "es": "negligencia clara o evidente", "en": "gross-negligence" },
+                { "es": "negligencia grave", "en": "criminal-negligence" },
+                { "es": "negligencia inexcusable", "en": "inexcusable-negligence" },
+                { "es": "negligencia temeraria", "en": "recklessness" },
+                { "es": "actuar con negligencia", "en": "act-negligently" },
+
+                { "es": "negligente", "en": "negligent" },
+
+                { "es": "negociador", "en": "negotiator" },
+                { "es": "negociador de rehenes", "en": "hostage-negotiator" },
+
+                { "es": "negociar", "en": "negotiate" },
+
+                { "es": "negocio", "en": "business" },
+                { "es": "negocio sucio", "en": "dirty-deal" },
+                { "es": "negocio turbio", "en": "shady-deal" },
+
+                { "es": "nieve", "en": "cocaine" },
+
+                { "es": "noche", "en": "night" },
+                { "es": "servicio de noche", "en": "night-duty" },
+                { "es": "turno de noche", "en": "night-shift" },
+
+                { "es": "nocturnidad", "en": "nighttime-aggravation" },
+                { "es": "con nocturnidad y alevosía", "en": "with-premeditation-and-treachery" },
+
+                { "es": "nombre", "en": "name" },
+                { "es": "nombre propio", "en": "first-name" },
+                { "es": "nombre de soltera", "en": "maiden-name" },
+                { "es": "nombre ficticio", "en": "fictitious-name" },
+                { "es": "nombre supuesto", "en": "alias" },
+
+                { "es": "non bis in idem", "en": "double-jeopardy" },
+
+                { "es": "norma", "en": "rule" },
+                { "es": "normas de seguridad", "en": "safety-regulations" },
+
+                { "es": "objetar", "en": "object" },
+
+                { "es": "objetor", "en": "objector" },
+                { "es": "objetor de conciencia", "en": "conscientious-objector" },
+
+                { "es": "objeto", "en": "object" },
+                { "es": "objeto procesal", "en": "subject-matter" },
+                { "es": "objetos robados", "en": "stolen-property" },
+                { "es": "objeto social", "en": "corporate-purpose" },
+
+                { "es": "obstrucción", "en": "obstruction" },
+                { "es": "obstrucción a la autoridad", "en": "resisting-arrest" },
+                { "es": "resistencia a la autoridad", "en": "resisting-arrest" },
+                { "es": "obstrucción a la justicia", "en": "obstruction-of-justice" },
+
+                { "es": "obstruir", "en": "obstruct" },
+
+                { "es": "ocultación", "en": "concealment" },
+                { "es": "ocultación de activos", "en": "asset-concealment" },
+                { "es": "ocultación de fondos", "en": "concealment-of-funds" },
+                { "es": "ocultación de pruebas", "en": "evidence-concealment" },
+                { "es": "ocultación de un delito", "en": "concealment-of-an-offence" },
+
+                { "es": "ocultar", "en": "conceal" },
+
+                { "es": "ocupación", "en": "squatting" },
+
+                { "es": "ocupar", "en": "squat" },
+
+                { "es": "oficial", "en": "official" },
+                { "es": "oficial (cargo)", "en": "officer" },
+                { "es": "oficial de aduanas", "en": "customs-officer" },
+                { "es": "oficial de enlace", "en": "liaison-officer" },
+                { "es": "oficial de justicia", "en": "court-clerk" },
+                { "es": "oficial de policía", "en": "police-officer" },
+
+                { "es": "okupa", "en": "squatter" },
+
+                { "es": "omisión", "en": "omission" },
+                { "es": "omisión del deber de socorro", "en": "failure-to-render-assistance" },
+
+                { "es": "onda expansiva", "en": "blast-wave" },
+
+                { "es": "operación", "en": "operation" },
+                { "es": "operación policial", "en": "police-operation" },
+                { "es": "operación de rescate", "en": "rescue-operation" },
+                { "es": "operación encubierta", "en": "undercover-operation" },
+
+                { "es": "operador", "en": "operator" },
+                { "es": "operador de radio", "en": "radio-operator" },
+
+                { "es": "opiáceo", "en": "opiate" },
+
+                { "es": "opio", "en": "opium" },
+
+                { "es": "orden", "en": "order" },
+                { "es": "orden de alejamiento", "en": "restraining-order" },
+                { "es": "orden de busca y captura", "en": "arrest-warrant" },
+                { "es": "orden de clausura", "en": "closure-order" },
+                { "es": "orden de cierre", "en": "closure-order" },
+                { "es": "orden de desalojo", "en": "eviction-order" },
+                { "es": "orden de desahucio", "en": "eviction-order" },
+                { "es": "orden de detención", "en": "arrest-warrant" },
+                { "es": "orden de expulsión", "en": "deportation-order" },
+                { "es": "orden de ingreso en prisión", "en": "committal-order" },
+                { "es": "orden de protección", "en": "protection-order" },
+                { "es": "orden público", "en": "public-order" },
+                { "es": "orden de puesta en libertad", "en": "release-order" },
+                { "es": "orden de registro", "en": "search-warrant" },
+                { "es": "fuerzas del orden", "en": "law-enforcement-agencies" },
+                { "es": "mantener el orden", "en": "maintain-public-order" },
+
+                { "es": "ordenar", "en": "order" },
+                { "es": "ordenar el ingreso en prisión", "en": "commit-to-prison" },
+
+                { "es": "organización", "en": "organization" },
+
+                { "es": "ministerio", "en": "ministry" },
+                { "es": "Ministerio del Interior", "en": "Ministry-of-the-Interior" },
+
+                { "es": "ministro", "en": "minister" },
+                { "es": "Ministro del Interior", "en": "Minister-of-the-Interior" },
+
+                { "es": "minoría", "en": "minority" },
+                { "es": "minoría de edad", "en": "minority" },
+                { "es": "minoría étnica", "en": "ethnic-minority" },
+
+                { "es": "mira", "en": "sight" },
+                { "es": "mira telescópica", "en": "scope" },
+                { "es": "punto de mira", "en": "front-sight" },
+
+                { "es": "misión", "en": "mission" },
+
+                { "es": "montar un arma", "en": "cock-a-firearm" },
+
+                { "es": "morada", "en": "dwelling" },
+                { "es": "allanamiento de morada", "en": "trespass" },
+
+                { "es": "mordida", "en": "bribe" },
+                { "es": "dar una mordida", "en": "pay-a-bribe" },
+
+                { "es": "morfina", "en": "morphine" },
+
+                { "es": "morir", "en": "die" },
+
+                { "es": "mortal", "en": "lethal" },
+
+                { "es": "motín", "en": "riot" },
+                { "es": "motín carcelario", "en": "prison-riot" },
+
+                { "es": "móvil", "en": "motive" },
+                { "es": "teléfono móvil", "en": "mobile-phone" },
+
+                { "es": "muelle", "en": "spring" },
+                { "es": "muelle recuperador", "en": "recoil-spring" },
+
+                { "es": "muerte", "en": "death" },
+                { "es": "muerte natural", "en": "natural-death" },
+                { "es": "muerte por asfixia", "en": "death-by-asphyxiation" },
+                { "es": "muerte por compasión", "en": "mercy-killing" },
+                { "es": "muerte violenta", "en": "violent-death" },
+                { "es": "dar muerte", "en": "kill" },
+                { "es": "fallecer de muerte violenta", "en": "die-a-violent-death" },
+
+                { "es": "muerto", "en": "deceased" },
+                { "es": "muerto (persona)", "en": "deceased-person" },
+
+                { "es": "mula", "en": "drug-mule" },
+                { "es": "mula de phishing", "en": "money-mule" },
+
+                { "es": "multa", "en": "fine" },
+                { "es": "poner una multa", "en": "issue-a-fine" },
+
+                { "es": "multar", "en": "fine" },
+
+                { "es": "munición", "en": "ammunition" },
+
+                { "es": "mutilación", "en": "maiming" },
+
+                { "es": "mutilar", "en": "maim" },
+
+                { "es": "nacionalidad", "en": "nationality" },
+                { "es": "doble nacionalidad", "en": "dual-nationality" },
+
+                { "es": "nacionalización", "en": "naturalization" },
+
+                { "es": "nacionalizar", "en": "naturalize" },
+
+                { "es": "narco", "en": "drug-trafficker" },
+
+                { "es": "narcótico", "en": "narcotic" },
+
+                { "es": "narcotraficante", "en": "drug-trafficker" },
+
+                { "es": "narcotráfico", "en": "drug-trafficking" },
+
+                { "es": "navaja", "en": "pocketknife" },
+                { "es": "navaja de muelle", "en": "switchblade" },
+                { "es": "a punta de navaja", "en": "at-knifepoint" },
+
+                { "es": "navajazo", "en": "knife-slash" },
+
+                { "es": "navajero", "en": "knife-attacker" },
+
+                { "es": "negligencia", "en": "negligence" },
+                { "es": "negligencia clara o evidente", "en": "manifest-negligence" },
+                { "es": "negligencia grave", "en": "criminal-negligence" },
+                { "es": "negligencia inexcusable", "en": "inexcusable-negligence" },
+                { "es": "negligencia temeraria", "en": "recklessness" },
+                { "es": "actuar con negligencia", "en": "act-negligently" },
+
+                { "es": "negligente", "en": "negligent" },
+
+                { "es": "negociador", "en": "negotiator" },
+                { "es": "negociador de rehenes", "en": "hostage-negotiator" },
+
+                { "es": "negociar", "en": "negotiate" },
+
+                { "es": "negocio", "en": "business" },
+                { "es": "negocio sucio", "en": "shady-deal" },
+                { "es": "negocio turbio", "en": "shady-deal" },
+
+                { "es": "nieve", "en": "cocaine" },
+
+                { "es": "noche", "en": "night" },
+                { "es": "servicio de noche", "en": "night-duty" },
+                { "es": "turno de noche", "en": "night-shift" },
+
+                { "es": "nocturnidad", "en": "nighttime" },
+                { "es": "con nocturnidad y alevosía", "en": "with-treachery-and-under-cover-of-darkness" },
+
+
+                { "es": "nombre", "en": "name" },
+                { "es": "nombre propio", "en": "first-name / given-name / forename" },
+                { "es": "nombre de soltera", "en": "maiden-name" },
+                { "es": "nombre ficticio", "en": "fictitious-name" },
+                { "es": "nombre supuesto", "en": "alias / assumed-name" },
+
+                { "es": "non bis in idem", "en": "double-jeopardy" },
+
+                { "es": "norma", "en": "rule / regulation / norm" },
+                { "es": "normas de seguridad", "en": "safety-regulations" },
+
+                { "es": "objetar", "en": "object" },
+
+                { "es": "objetor", "en": "objector" },
+                { "es": "objetor de conciencia", "en": "conscientious-objector" },
+
+                { "es": "objeto", "en": "object / item" },
+                { "es": "objeto procesal", "en": "subject-matter-of-the-proceedings" },
+                { "es": "objetos robados", "en": "stolen-property / stolen-goods" },
+                { "es": "objeto social", "en": "corporate-purpose" },
+
+                { "es": "obstrucción", "en": "obstruction" },
+                { "es": "obstrucción a la autoridad", "en": "obstruction-of-a-police-officer / resisting-arrest" },
+                { "es": "obstrucción a la justicia", "en": "obstruction-of-justice" },
+
+                { "es": "obstruir", "en": "obstruct / hinder" },
+
+                { "es": "ocultación", "en": "concealment" },
+                { "es": "ocultación de activos", "en": "asset-concealment" },
+                { "es": "ocultación de fondos", "en": "concealment-of-funds" },
+                { "es": "ocultación de pruebas", "en": "concealment-of-evidence" },
+                { "es": "ocultación de un delito", "en": "concealment-of-an-offence / misprision" },
+
+                { "es": "ocultar", "en": "conceal / hide" },
+
+                { "es": "ocupación", "en": "squatting" },
+                { "es": "ocupar", "en": "squat" },
+
+                { "es": "oficial", "en": "official" },
+                { "es": "oficial (agente)", "en": "officer" },
+                { "es": "oficial de aduanas", "en": "customs-officer" },
+                { "es": "oficial de enlace", "en": "liaison-officer" },
+                { "es": "oficial de justicia", "en": "court-clerk" },
+                { "es": "oficial de policía", "en": "police-officer" },
+
+                { "es": "okupa", "en": "squatter" },
+
+                { "es": "omisión", "en": "omission" },
+                { "es": "omisión del deber de socorro", "en": "failure-to-render-assistance" },
+
+                { "es": "onda expansiva", "en": "blast-wave" },
+
+                { "es": "operación", "en": "operation" },
+                { "es": "operación policial", "en": "police-operation" },
+                { "es": "operación de rescate", "en": "rescue-operation" },
+                { "es": "operación encubierta", "en": "sting-operation / undercover-operation" },
+
+                { "es": "operador", "en": "operator" },
+                { "es": "operador de radio", "en": "radio-operator" },
+
+                { "es": "opiáceo", "en": "opiate" },
+                { "es": "opio", "en": "opium" },
+
+                { "es": "orden", "en": "order / warrant" },
+                { "es": "orden de alejamiento", "en": "restraining-order / protection-order" },
+                { "es": "orden de busca y captura", "en": "arrest-warrant" },
+                { "es": "orden de clausura", "en": "closure-order" },
+                { "es": "orden de cierre", "en": "closure-order" },
+                { "es": "orden de desalojo", "en": "eviction-order" },
+                { "es": "orden de desahucio", "en": "eviction-order" },
+                { "es": "orden de detención", "en": "arrest-warrant" },
+                { "es": "orden de expulsión", "en": "deportation-order" },
+                { "es": "orden de ingreso en prisión", "en": "committal-order" },
+                { "es": "orden de protección", "en": "protection-order" },
+                { "es": "orden público", "en": "public-order" },
+                { "es": "orden de puesta en libertad", "en": "release-order" },
+                { "es": "orden de registro", "en": "search-warrant" },
+                { "es": "fuerzas del orden", "en": "law-enforcement-agencies" },
+                { "es": "mantener el orden", "en": "maintain-public-order" },
+
+                { "es": "ordenar", "en": "order" },
+                { "es": "ordenar el ingreso en prisión", "en": "commit-to-prison" },
+
+                { "es": "organización", "en": "organization" },
+
+                { "es": "pagaré", "en": "promissory-note / IOU" },
+
+                { "es": "paisano", "en": "civilian" },
+                { "es": "de paisano", "en": "in-plain-clothes" },
+
+                { "es": "pandilla", "en": "gang" },
+                { "es": "pandillero", "en": "gang-member / gangbanger" },
+
+                { "es": "papelina", "en": "drug-wrap / bindle" },
+
+                { "es": "paradero", "en": "whereabouts" },
+                { "es": "paradero desconocido", "en": "whereabouts-unknown" },
+                { "es": "averiguación de paradero", "en": "locating-a-person" },
+
+                { "es": "paramilitar", "en": "paramilitary" },
+                { "es": "organización paramilitar", "en": "paramilitary-organization" },
+
+                { "es": "parar", "en": "stop / pull-over" },
+
+                { "es": "parricidio", "en": "parricide" },
+
+                { "es": "parte perjudicada", "en": "injured-party / aggrieved-party" },
+                { "es": "parte agraviada", "en": "aggrieved-party" },
+
+                { "es": "partida", "en": "certificate" },
+                { "es": "partida de defunción", "en": "death-certificate" },
+                { "es": "partida de nacimiento", "en": "birth-certificate" },
+
+                { "es": "pasador", "en": "pin / pivot-pin" },
+
+                { "es": "pasaporte", "en": "passport" },
+
+                { "es": "patada", "en": "kick" },
+                { "es": "dar patadas", "en": "kick" },
+                { "es": "romper a patadas", "en": "kick-in" },
+
+                { "es": "patera", "en": "small-migrant-boat / dinghy" },
+                { "es": "piso patera", "en": "overcrowded-flat" },
+
+                { "es": "patrulla", "en": "patrol" },
+                { "es": "patrulla móvil", "en": "mobile-patrol" },
+                { "es": "coche patrulla", "en": "patrol-car / squad-car" },
+                { "es": "patrulla a pie", "en": "foot-patrol" },
+                { "es": "patrullar", "en": "patrol" },
+
+                { "es": "pederasta", "en": "child-sex-offender / pedophile" },
+
+                { "es": "pelea", "en": "fight / brawl" },
+                { "es": "pelear", "en": "fight / brawl" },
+
+                { "es": "peligro", "en": "danger" },
+                { "es": "fuera de peligro", "en": "out-of-danger" },
+                { "es": "poner en peligro", "en": "endanger / jeopardize" },
+
+                { "es": "peligroso", "en": "dangerous" },
+
+                { "es": "pena", "en": "sentence / penalty" },
+                { "es": "pena de muerte", "en": "death-penalty" },
+                { "es": "pena de prisión", "en": "prison-sentence / prison-term" },
+                { "es": "pena privativa de libertad", "en": "custodial-sentence" },
+
+
+                { "es": "penado", "en": "convict" },
+
+                { "es": "penal", "en": "criminal" },
+                { "es": "Código Penal", "en": "Criminal Code" },
+                { "es": "inimputabilidad penal", "en": "lack of criminal responsibility" },
+                { "es": "procedimiento penal", "en": "criminal proceedings" },
+
+                { "es": "penología", "en": "penology" },
+
+                { "es": "pensión", "en": "pension" },
+                { "es": "pensión alimenticia", "en": "alimony" },
+
+                { "es": "pentrita", "en": "PETN" },
+
+                { "es": "percusión anular", "en": "rimfire" },
+                { "es": "percusión central", "en": "centerfire" },
+
+                { "es": "percutor", "en": "firing pin" },
+
+                { "es": "perdón", "en": "pardon" },
+
+                { "es": "perdonar", "en": "pardon" },
+
+                { "es": "perforante", "en": "armor-piercing" },
+                { "es": "bala perforante", "en": "armor-piercing bullet" },
+
+                { "es": "pericial", "en": "forensic" },
+                { "es": "prueba pericial", "en": "expert evidence" },
+                { "es": "dictamen pericial", "en": "expert report" },
+
+                { "es": "perico", "en": "cocaine" },
+
+                { "es": "perista", "en": "fence" },
+
+                { "es": "peritaje", "en": "forensic examination" },
+
+                { "es": "perito", "en": "expert witness" },
+                { "es": "perito calígrafo", "en": "forensic document examiner" },
+                { "es": "perito de un siniestro", "en": "loss adjuster" },
+
+                { "es": "perjurio", "en": "perjury" },
+                { "es": "cometer perjurio", "en": "commit perjury" },
+
+                { "es": "permiso", "en": "permit" },
+                { "es": "permiso de armas", "en": "firearms licence" },
+                { "es": "permiso de circulación", "en": "vehicle registration certificate" },
+                { "es": "permiso de conducir", "en": "driving licence" },
+                { "es": "permiso de residencia", "en": "residence permit" },
+                { "es": "permiso de trabajo", "en": "work permit" },
+                { "es": "permiso paterno", "en": "parental consent" },
+
+                { "es": "perpetrar", "en": "perpetrate" },
+                { "es": "perpetrar un delito", "en": "commit a crime" },
+
+                { "es": "persecución", "en": "pursuit" },
+                { "es": "persecución en caliente", "en": "hot pursuit" },
+
+                { "es": "perseguir", "en": "pursue" },
+
+                { "es": "persona", "en": "person" },
+                { "es": "persona o personas desconocidas", "en": "persons unknown" },
+                { "es": "persona física", "en": "natural person" },
+                { "es": "persona jurídica", "en": "legal entity" },
+                { "es": "en persona", "en": "in person" },
+
+                { "es": "personal", "en": "personnel" },
+
+                { "es": "personalidad", "en": "personality" },
+                { "es": "personalidad jurídica", "en": "legal personality" },
+                { "es": "suplantación de personalidad", "en": "identity fraud" },
+
+                { "es": "pertenencia", "en": "membership" },
+                { "es": "pertenencia a banda armada", "en": "membership in an armed organization" },
+                { "es": "pertenencias", "en": "personal belongings" },
+
+                { "es": "pesquisa", "en": "investigation" },
+
+                { "es": "petición", "en": "request" },
+                { "es": "petición de antecedentes", "en": "criminal record request" },
+
+                { "es": "pillaje", "en": "looting" },
+
+                { "es": "pinchar", "en": "stab" },
+                { "es": "pinchar una rueda", "en": "puncture a tyre" },
+                { "es": "pinchar un teléfono", "en": "tap a phone" },
+                { "es": "pincharse", "en": "inject oneself" },
+                { "es": "pincharse droga", "en": "inject drugs" },
+
+                { "es": "piquete", "en": "picket" },
+                { "es": "piquete informativo", "en": "informational picket" },
+                { "es": "piquetero", "en": "picketer" },
+
+                { "es": "pirata", "en": "pirate" },
+                { "es": "pirata aéreo", "en": "skyjacker" },
+
+                { "es": "piratear", "en": "hack" },
+
+                { "es": "piratería", "en": "piracy" },
+                { "es": "piratería aérea", "en": "aircraft hijacking" },
+                { "es": "piratería informática", "en": "hacking" },
+
+                { "es": "pirómano", "en": "pyromaniac" },
+
+                { "es": "piso franco", "en": "safe house" },
+
+                { "es": "pista", "en": "lead" },
+                { "es": "pista falsa", "en": "red herring" },
+                { "es": "seguir una pista", "en": "follow a lead" },
+
+                { "es": "pistola", "en": "handgun" },
+                { "es": "pistola de aire comprimido", "en": "air pistol" },
+                { "es": "pistola de reglamento", "en": "service pistol" },
+                { "es": "a punta de pistola", "en": "at gunpoint" },
+
+                { "es": "pistolero", "en": "gunman" },
+                { "es": "pistolero a sueldo", "en": "hitman" },
+
+                { "es": "placa", "en": "badge" },
+                { "es": "placa de matrícula", "en": "license plate" },
+                { "es": "placa de policía", "en": "police badge" },
+
+
+                { "es": "policía", "en": "police-officer" },
+                { "es": "policía corrupto", "en": "corrupt-officer" },
+                { "es": "policía falso", "en": "impersonator" },
+                { "es": "policía de paisano", "en": "plainclothes-officer" },
+                { "es": "comisario de policía", "en": "commissioner" },
+                { "es": "inspector de policía", "en": "police-inspector" },
+                { "es": "jefe de policía", "en": "chief-of-police" },
+
+                { "es": "policía judicial", "en": "criminal-investigation-department" },
+                { "es": "policía militar", "en": "military-police" },
+                { "es": "policía municipal", "en": "municipal-police" },
+                { "es": "policía de tráfico", "en": "traffic-police" },
+                { "es": "policía uniformada", "en": "uniformed-police" },
+
+                { "es": "policial", "en": "police" },
+                { "es": "antecedentes policiales", "en": "police-records" },
+                { "es": "redada policial", "en": "police-raid" },
+
+                { "es": "pólvora", "en": "gunpowder" },
+                { "es": "pólvora sin humo", "en": "smokeless-powder" },
+
+                { "es": "pornografía", "en": "pornography" },
+                { "es": "pornografía infantil", "en": "child-pornography" },
+
+                { "es": "portaplacas", "en": "badge-holder" },
+
+                { "es": "porra", "en": "baton" },
+                { "es": "dar con la porra", "en": "strike-with-a-baton" },
+
+                { "es": "porro", "en": "joint" },
+                { "es": "liarse un porro", "en": "roll-a-joint" },
+
+                { "es": "posesión", "en": "possession" },
+                { "es": "posesión de armas de fuego", "en": "firearm-possession" },
+                { "es": "tomar posesión de un cargo", "en": "assume-office" },
+
+                { "es": "posta", "en": "slug" },
+
+                { "es": "precintar", "en": "seal" },
+
+                { "es": "precinto", "en": "seal" },
+                { "es": "poner un precinto", "en": "seal-off" },
+
+                { "es": "precisión", "en": "accuracy" },
+
+                { "es": "precursor", "en": "precursor" },
+
+                { "es": "premeditación", "en": "premeditation" },
+                { "es": "con premeditación", "en": "premeditatedly" },
+                { "es": "sin premeditación", "en": "unpremeditated" },
+
+                { "es": "premeditadamente", "en": "premeditatedly" },
+
+                { "es": "premeditado", "en": "premeditated" },
+                { "es": "asesinato premeditado", "en": "premeditated-murder" },
+                { "es": "daño premeditado", "en": "wilful-damage" },
+
+                { "es": "presentar", "en": "file" },
+                { "es": "presentar cargos", "en": "press-charges" },
+                { "es": "presentar una apelación", "en": "appeal" },
+                { "es": "presentar una denuncia", "en": "report" },
+                { "es": "presentar una queja", "en": "complain" },
+
+                { "es": "preso", "en": "prisoner" },
+
+                { "es": "presunción", "en": "presumption" },
+                { "es": "presunción de inocencia", "en": "presumption-of-innocence" },
+
+                { "es": "presunto", "en": "alleged" },
+                { "es": "presunto autor", "en": "alleged-offender" },
+                { "es": "presunto implicado en", "en": "allegedly-involved" },
+
+                { "es": "prevaricación", "en": "malfeasance" },
+                { "es": "prevenir", "en": "prevent" },
+
+                { "es": "prisión", "en": "prison" },
+                { "es": "prisión de alta seguridad", "en": "maximum-security-prison" },
+                { "es": "prisión de máxima seguridad", "en": "maximum-security-prison" },
+                { "es": "prisión incomunicada", "en": "solitary-confinement" },
+                { "es": "prisión mayor", "en": "major-imprisonment" },
+                { "es": "prisión menor", "en": "minor-imprisonment" },
+                { "es": "prisión preventiva", "en": "pretrial-detention" },
+                { "es": "prisión provisional", "en": "pretrial-detention" },
+                { "es": "ordenar el ingreso en prisión", "en": "commit-to-prison" },
+
+                { "es": "prisionero", "en": "prisoner" },
+
+                { "es": "privación", "en": "deprivation" },
+
+                { "es": "privar", "en": "deprive" },
+
+                { "es": "procedimiento", "en": "proceedings" },
+                { "es": "procedimiento abreviado", "en": "summary-proceedings" },
+                { "es": "procedimiento ordinario", "en": "ordinary-proceedings" },
+                { "es": "procedimiento penal", "en": "criminal-proceedings" },
+
+                { "es": "procesamiento", "en": "indictment" },
+                { "es": "auto de procesamiento", "en": "indictment-order" },
+
+                { "es": "procesar", "en": "indict" },
+
+                { "es": "proceso", "en": "proceedings" },
+                { "es": "proceso penal", "en": "criminal-proceedings" },
+
+                { "es": "proferir", "en": "utter" },
+                { "es": "proferir amenazas", "en": "utter-threats" },
+                { "es": "proferir insultos", "en": "utter-insults" },
+
+                { "es": "prófugo", "en": "fugitive" },
+
+                { "es": "prohibición", "en": "prohibition" },
+                { "es": "prohibición de entrada", "en": "entry-ban" },
+                { "es": "prohibición de residencia", "en": "residence-ban" },
+                { "es": "prohibición de salida del país", "en": "travel-ban" },
+
+                { "es": "prohibir", "en": "prohibit" },
+
+                { "es": "propiedad", "en": "property" },
+                { "es": "propiedad intelectual", "en": "intellectual-property" },
+                { "es": "delito contra la propiedad intelectual", "en": "intellectual-property-crime" },
+                { "es": "delito contra la propiedad industrial", "en": "industrial-property-crime" },
+                { "es": "escritura de propiedad", "en": "title-deed" },
+
+                { "es": "proscribir", "en": "outlaw" },
+
+                { "es": "proscrito", "en": "outlaw" },
+
+                { "es": "prostíbulo", "en": "brothel" },
+
+                { "es": "prostitución", "en": "prostitution" },
+                { "es": "prostitución infantil", "en": "child-prostitution" },
+
+                { "es": "prostituta", "en": "prostitute" },
+
+                { "es": "prostituto", "en": "male-prostitute" },
+
+                { "es": "providencia", "en": "order" },
+
+                { "es": "provocación", "en": "provocation" },
+
+                { "es": "proxeneta", "en": "pimp" },
+
+                { "es": "proxenetismo", "en": "pimping" },
+
+                { "es": "prueba", "en": "evidence" },
+                { "es": "prueba de cargo", "en": "prosecution-evidence" },
+                { "es": "prueba documental", "en": "documentary-evidence" },
+                { "es": "prueba indiciaria", "en": "circumstantial-evidence" },
+                { "es": "prueba oral", "en": "oral-evidence" },
+                { "es": "prueba testifical", "en": "testimonial-evidence" },
+                { "es": "prueba pericial", "en": "expert-evidence" },
+
+                { "es": "prueba de alcoholemia", "en": "breathalyzer-test" },
+
+                { "es": "a prueba de balas", "en": "bulletproof" },
+
+                { "es": "puente", "en": "hotwiring" },
+                { "es": "hacer el puente", "en": "hotwire" },
+
+                { "es": "punible", "en": "punishable" },
+
+                { "es": "puntería", "en": "marksmanship" },
+                { "es": "elementos de puntería", "en": "sights" },
+
+                { "es": "punto de mira", "en": "front-sight" },
+
+                { "es": "puñalada", "en": "stabbing" },
+
+                { "es": "puñetazo", "en": "punch" },
+                { "es": "dar un puñetazo", "en": "punch" },
+
+                { "es": "promulgar", "en": "enact" },
+
+                { "es": "quebrantamiento", "en": "breach" },
+                { "es": "quebrantamiento de condena", "en": "prison-break" },
+                { "es": "quebrantamiento de sellos", "en": "seal-breaking" },
+
+                { "es": "quemadura", "en": "burn" },
+
+                { "es": "querella", "en": "complaint" },
+                { "es": "querella por difamación", "en": "libel-action" },
+
+                { "es": "quiebra", "en": "bankruptcy" },
+                { "es": "quiebra fraudulenta", "en": "fraudulent-bankruptcy" },
+
+                { "es": "racismo", "en": "racism" },
+
+                { "es": "racista", "en": "racist" },
+
+                { "es": "radar", "en": "radar" },
+                { "es": "radar de velocidad", "en": "speed-radar" },
+                { "es": "coche radar", "en": "speed-enforcement-vehicle" },
+
+                { "es": "radiopatrulla", "en": "patrol-car" },
+
+                { "es": "raja", "en": "slash" },
+
+                { "es": "rajar", "en": "slash" },
+
+                { "es": "rapiña", "en": "plunder" },
+
+                { "es": "raptar", "en": "kidnap" },
+
+                { "es": "rapto", "en": "kidnapping" },
+                { "es": "rapto de menores", "en": "child-abduction" },
+
+                { "es": "rasguño", "en": "scratch" },
+                { "es": "hacerse un rasguño", "en": "scratch-oneself" },
+
+                { "es": "rastrear", "en": "track" },
+
+                { "es": "rastrillo", "en": "roadblock" },
+
+                { "es": "rastro", "en": "trail" },
+                { "es": "seguir el rastro", "en": "track" },
+
+                { "es": "ratero", "en": "thief" },
+
+                { "es": "raya", "en": "line" },
+                { "es": "hacerse una raya", "en": "snort-cocaine" },
+
+                { "es": "razonable", "en": "reasonable" },
+                { "es": "duda razonable", "en": "reasonable-doubt" },
+
+                { "es": "rebelión", "en": "rebellion" },
+
+                { "es": "recámara", "en": "chamber" },
+
+                { "es": "receptación", "en": "receiving" },
+
+                { "es": "receptador", "en": "fence" },
+
+                { "es": "recibir", "en": "receive" },
+
+                { "es": "reincidente", "en": "recidivist" },
+
+                { "es": "rechazo", "en": "refusal" },
+                { "es": "notificación de rechazo en frontera", "en": "refusal-notice" },
+
+                { "es": "reclamación", "en": "claim" },
+                { "es": "hojas de reclamación", "en": "claim-forms" },
+                { "es": "libro de reclamaciones", "en": "complaints-register" },
+                { "es": "poner una reclamación", "en": "file-a-claim" },
+
+                { "es": "reclamado", "en": "wanted" },
+                { "es": "personas reclamadas", "en": "wanted-persons" },
+
+                { "es": "reclamante", "en": "claimant" },
+
+                { "es": "reclamar", "en": "claim" },
+                { "es": "reclamar daños y perjuicios", "en": "claim-damages" },
+
+                { "es": "recluir", "en": "imprison" },
+
+                { "es": "reclusión", "en": "imprisonment" },
+                { "es": "reclusión mayor", "en": "major-imprisonment" },
+                { "es": "reclusión menor", "en": "minor-imprisonment" },
+
+                { "es": "recluso", "en": "inmate" },
+
+                { "es": "reconocer", "en": "identify" },
+
+                { "es": "reconocimiento", "en": "identification" },
+
+                { "es": "rueda de reconocimiento", "en": "lineup" },
+
+                { "es": "reconstrucción", "en": "reconstruction" },
+
+                { "es": "reconstrucción de los hechos", "en": "crime-scene-reconstruction" },
+
+                { "es": "recortada", "en": "sawn-off-shotgun" },
+
+                { "es": "recuperar", "en": "recover" },
+
+                { "es": "recurrir", "en": "appeal" },
+
+                { "es": "recurrir una multa", "en": "appeal-a-fine" },
+
+                { "es": "recurso", "en": "appeal" },
+
+                { "es": "recurso de apelación", "en": "appeal" },
+
+                { "es": "presentar un recurso", "en": "appeal" },
+
+                { "es": "red", "en": "network" },
+
+                { "es": "red de comunicaciones", "en": "communications-network" },
+
+                { "es": "red de prostitución", "en": "prostitution-ring" },
+
+                { "es": "redada", "en": "raid" },
+
+                { "es": "redada antidrogas", "en": "drug-raid" },
+
+                { "es": "reformatorio", "en": "reformatory" },
+
+                { "es": "refugiado", "en": "refugee" },
+
+                { "es": "estatus de refugiado", "en": "refugee-status" },
+
+                { "es": "refugio", "en": "refuge" },
+
+                { "es": "régimen", "en": "regime" },
+
+                { "es": "régimen abierto", "en": "open-regime" },
+
+                { "es": "régimen de visitas", "en": "visitation-rights" },
+
+                { "es": "registrar", "en": "search" },
+
+                { "es": "registrar una casa", "en": "search-a-house" },
+
+                { "es": "registrar en busca de drogas", "en": "search-for-drugs" },
+
+                { "es": "registrar un documento", "en": "register" },
+
+                { "es": "registro", "en": "search" },
+
+                { "es": "registro domiciliario", "en": "house-search" },
+
+                { "es": "registro civil", "en": "civil-registry" },
+
+                { "es": "registro e incautación", "en": "search-and-seizure" },
+
+                { "es": "registro policial", "en": "police-search" },
+
+                { "es": "orden de registro", "en": "search-warrant" },
+
+                { "es": "practicar un registro", "en": "conduct-a-search" },
+
+                { "es": "regla", "en": "rule" },
+
+                { "es": "reglamento", "en": "regulation" },
+
+                { "es": "reglamento de armas", "en": "firearms-regulation" },
+
+                { "es": "rehabilitación", "en": "rehabilitation" },
+
+                { "es": "rehén", "en": "hostage" },
+
+                { "es": "rescate de rehenes", "en": "hostage-rescue" },
+                { "es": "toma de rehenes", "en": "hostage-taking" },
+
+                { "es": "reincidencia", "en": "recidivism" },
+                { "es": "reincidir", "en": "reoffend" },
+
+                { "es": "relojería", "en": "clockwork" },
+                { "es": "bomba de relojería", "en": "time-bomb" },
+                { "es": "mecanismo de relojería", "en": "timer" },
+
+                { "es": "remoto", "en": "remote" },
+                { "es": "activado por control remoto", "en": "remote-controlled" },
+
+                { "es": "rendición", "en": "surrender" },
+                { "es": "rendir", "en": "surrender" },
+
+                { "es": "reñir", "en": "quarrel" },
+
+                { "es": "reo", "en": "convict" },
+
+                { "es": "represalia", "en": "reprisal" },
+                { "es": "tomar represalias", "en": "retaliate" },
+
+                { "es": "requerimiento", "en": "request" },
+                { "es": "requerimiento judicial", "en": "court-order" },
+
+                { "es": "rescatar", "en": "rescue" },
+
+                { "es": "rescate", "en": "ransom" },
+                { "es": "operación de rescate", "en": "rescue-operation" },
+                { "es": "pedir un rescate", "en": "ransom" },
+
+                { "es": "reseña", "en": "booking" },
+                { "es": "reseña fotográfica", "en": "mugshot" },
+                { "es": "reseña policial", "en": "booking" },
+                { "es": "libro de reseña fotográfica", "en": "mugbook" },
+
+                { "es": "reseñar", "en": "book" },
+
+                { "es": "residencia", "en": "residence" },
+                { "es": "residencia habitual", "en": "domicile" },
+                { "es": "residencia permanente", "en": "permanent-residence" },
+                { "es": "lugar de residencia", "en": "residence" },
+                { "es": "permiso de residencia", "en": "residence-permit" },
+
+                { "es": "residente", "en": "resident" },
+                { "es": "extranjero residente", "en": "resident-alien" },
+
+                { "es": "resistencia", "en": "resistance" },
+                { "es": "resistencia a la autoridad", "en": "resisting-arrest" },
+                { "es": "oponer resistencia", "en": "resist" },
+
+                { "es": "resolución", "en": "ruling" },
+                { "es": "resolución judicial", "en": "court-order" },
+
+                { "es": "responsabilidad", "en": "liability" },
+                { "es": "responsabilidad civil", "en": "civil-liability" },
+                { "es": "responsabilidad civil subsidiaria", "en": "vicarious-liability" },
+                { "es": "responsabilidad penal", "en": "criminal-liability" },
+                { "es": "responsabilidad reducida", "en": "diminished-responsibility" },
+
+                { "es": "responsable", "en": "liable" },
+
+                { "es": "retardo", "en": "delay" },
+                { "es": "mecanismo de retardo", "en": "delay-device" },
+
+                { "es": "retrato robot", "en": "identikit" },
+
+                { "es": "retroceso", "en": "recoil" },
+                { "es": "corto retroceso", "en": "short-recoil" },
+
+                { "es": "reunión", "en": "assembly" },
+                { "es": "reunión ilegal", "en": "unlawful-assembly" },
+                { "es": "derecho de reunión", "en": "freedom-of-assembly" },
+
+                { "es": "revender", "en": "resell" },
+
+                { "es": "reventa", "en": "scalping" },
+
+                { "es": "revólver", "en": "revolver" },
+
+                { "es": "reyerta", "en": "brawl" },
+
+                { "es": "riesgo", "en": "risk" },
+                { "es": "con riesgo de", "en": "risking" },
+                { "es": "correr riesgo de", "en": "risk" },
+
+                { "es": "rififí", "en": "burglary" },
+
+                { "es": "rifle", "en": "rifle" },
+
+                { "es": "riña", "en": "affray" },
+
+                { "es": "robar", "en": "steal" },
+
+                { "es": "robo", "en": "theft" },
+                { "es": "ola de robos", "en": "crimewave" },
+                { "es": "robo agravado", "en": "aggravated-theft" },
+                { "es": "robo a mano armada", "en": "armed-robbery" },
+                { "es": "robo con escalo", "en": "burglary" },
+                { "es": "robo con fractura", "en": "break-in" },
+                { "es": "robo con fuerza", "en": "burglary" },
+                { "es": "robo con intimidación", "en": "robbery" },
+                { "es": "robo con intimidación de arma de fuego", "en": "armed-robbery" },
+                { "es": "robo con intimidación de arma blanca", "en": "knifepoint-robbery" },
+                { "es": "robo con lesiones", "en": "aggravated-robbery" },
+                { "es": "robo a punta de cuchillo", "en": "knifepoint-robbery" },
+                { "es": "robo con violencia", "en": "robbery" },
+                { "es": "robo de vehículo", "en": "vehicle-theft" },
+                { "es": "robo en domicilio", "en": "burglary" },
+                { "es": "robo en la vía pública", "en": "mugging" },
+                { "es": "robo por el procedimiento del tirón", "en": "snatch-theft" },
+                { "es": "robo en vehículo", "en": "vehicle-burglary" },
+
+                { "es": "robot", "en": "robot" },
+                { "es": "robot desactivador", "en": "bomb-robot" },
+
+                { "es": "romper", "en": "break" },
+
+                { "es": "rompimiento", "en": "breach" },
+
+                { "es": "rueda", "en": "ring" },
+
+                { "es": "rueda de identificación", "en": "lineup" },
+
+                { "es": "rufián", "en": "pimp" },
+
+                { "es": "rufianismo", "en": "pimping" },
+
+                { "es": "sabotaje", "en": "sabotage" },
+                { "es": "saboteador", "en": "saboteur" },
+                { "es": "sabotear", "en": "sabotage" },
+
+                { "es": "sabueso", "en": "detective" },
+
+                { "es": "SAID (Sistema Automático de Identificación Dactilar)", "en": "AFIS" },
+
+                { "es": "Sala 091", "en": "dispatch-center" },
+                { "es": "operador de Sala 091", "en": "dispatcher" },
+
+                { "es": "salvamento", "en": "rescue" },
+                { "es": "equipo de salvamento", "en": "rescue-team" },
+                { "es": "operación de salvamento", "en": "rescue-operation" },
+
+                { "es": "salvar", "en": "rescue" },
+
+                { "es": "sancionable", "en": "punishable" },
+                { "es": "sancionado", "en": "sanctioned" },
+                { "es": "sancionar", "en": "sanction" },
+
+                { "es": "sangre", "en": "blood" },
+                { "es": "a sangre fría", "en": "cold-bloodedly" },
+                { "es": "sangre fría", "en": "composure" },
+                { "es": "de sangre fría", "en": "cold-blooded" },
+
+                { "es": "derramamiento de sangre", "en": "bloodshed" },
+
+
+
+                { "es": "test", "en": "test" },
+                { "es": "test de alcoholemia", "en": "breathalyzer" },
+
+                { "es": "testificar", "en": "testify" },
+
+                { "es": "testigo", "en": "witness" },
+                { "es": "testigo de cargo", "en": "prosecution-witness" },
+                { "es": "testigo de la defensa", "en": "defence-witness" },
+                { "es": "testigo ocular", "en": "eyewitness" },
+                { "es": "testigo presencial", "en": "eyewitness" },
+                { "es": "testigo pericial", "en": "expert-witness" },
+
+                { "es": "testimonio", "en": "testimony" },
+                { "es": "falso testimonio", "en": "perjury" },
+
+                { "es": "timador", "en": "swindler" },
+                { "es": "timar", "en": "swindle" },
+                { "es": "timo", "en": "swindle" },
+                { "es": "dar un timo", "en": "swindle" },
+
+                { "es": "tipificado", "en": "codified" },
+                { "es": "delito tipificado", "en": "offence" },
+                { "es": "tipificar", "en": "codify" },
+
+                { "es": "tirador", "en": "shooter" },
+                { "es": "tirador selecto", "en": "sharpshooter" },
+
+                { "es": "tirar", "en": "shoot" },
+
+                { "es": "tiro", "en": "shot" },
+                { "es": "tiro instintivo", "en": "point-shooting" },
+                { "es": "campo de tiro", "en": "range" },
+                { "es": "destrozar a tiros", "en": "strafe" },
+                { "es": "pegar un tiro", "en": "shoot" },
+                { "es": "prácticas de tiro", "en": "marksmanship" },
+
+                { "es": "tirón", "en": "snatching" },
+                { "es": "tirón de bolso", "en": "bag-snatching" },
+                { "es": "robo por el procedimiento del tirón", "en": "bag-snatching" },
+
+                { "es": "tironero", "en": "snatcher" },
+
+                { "es": "tirotear", "en": "shoot" },
+                { "es": "tiroteo", "en": "shootout" },
+
+                { "es": "tocamientos", "en": "molestation" },
+
+                { "es": "tocomocho", "en": "swindle" },
+
+                { "es": "tomar", "en": "take" },
+                { "es": "tomar declaración", "en": "interview" },
+                { "es": "tomar juramento", "en": "swear-in" },
+                { "es": "tomar medidas", "en": "act" },
+                { "es": "tomar posesión", "en": "possess" },
+
+                { "es": "tonfa", "en": "tonfa" },
+
+                { "es": "tortura", "en": "torture" },
+                { "es": "torturar", "en": "torture" },
+
+                { "es": "toxicomanía", "en": "addiction" },
+                { "es": "toxicómano", "en": "addict" },
+
+                { "es": "traficante", "en": "trafficker" },
+                { "es": "traficante de armas", "en": "arms-dealer" },
+                { "es": "traficante de drogas", "en": "drug-trafficker" },
+
+                { "es": "traficar", "en": "traffic" },
+
+                { "es": "tráfico", "en": "traffic" },
+                { "es": "atasco de tráfico", "en": "congestion" },
+                { "es": "delito contra la seguridad del tráfico", "en": "traffic-offence" },
+
+                { "es": "tráfico de drogas", "en": "drug-trafficking" },
+                { "es": "tráfico de influencias", "en": "influence-peddling" },
+                { "es": "tráfico de objetos robados", "en": "fencing" },
+                { "es": "tráfico de seres humanos", "en": "human-trafficking" },
+
+                { "es": "traición", "en": "treason" },
+                { "es": "traidor", "en": "traitor" },
+
+                { "es": "trama", "en": "plot" },
+                { "es": "trama delictiva", "en": "conspiracy" },
+
+                { "es": "trámite", "en": "procedure" },
+                { "es": "trámites legales", "en": "formalities" },
+
+                { "es": "trampa", "en": "trap" },
+                { "es": "trampa bomba", "en": "booby-trap" },
+                { "es": "hacer trampas", "en": "cheat" },
+
+                { "es": "tramposo", "en": "cheater" },
+
+                { "es": "transgredir", "en": "transgress" },
+
+                { "es": "transmisor", "en": "transmitter" },
+                { "es": "transmitir", "en": "transmit" },
+
+                { "es": "trapichear", "en": "deal" },
+                { "es": "trapicheo", "en": "dealing" },
+
+                { "es": "trata", "en": "trafficking" },
+                { "es": "trata de blancas", "en": "trafficking" },
+                { "es": "trata de seres humanos", "en": "trafficking" },
+                { "es": "trata de personas", "en": "trafficking" },
+
+                { "es": "trato", "en": "treatment" },
+                { "es": "malos tratos", "en": "abuse" },
+                { "es": "malos tratos en el ámbito familiar", "en": "domestic-violence" },
+
+                { "es": "travestí", "en": "transvestite" },
+                { "es": "travestido", "en": "transvestite" },
+
+                { "es": "traza", "en": "trace" },
+
+                { "es": "trazadora", "en": "tracer" },
+                { "es": "bala trazadora", "en": "tracer-round" },
+
+                { "es": "trena", "en": "prison" },
+
+                { "es": "tribunal", "en": "court" },
+                { "es": "Tribunal Constitucional", "en": "Constitutional-Court" },
+                { "es": "Tribunal de Apelación", "en": "Court-of-Appeal" },
+                { "es": "Tribunal de Justicia", "en": "Court-of-Justice" },
+                { "es": "Tribunal Supremo", "en": "Supreme-Court" },
+
+                { "es": "trile", "en": "three-card-monte" },
+
+                { "es": "trincar", "en": "arrest" },
+
+                { "es": "truco", "en": "trick" },
+
+
+                { "es": "trullo", "en": "prison" },
+
+                { "es": "tumulto", "en": "riot" },
+
+                { "es": "turno", "en": "shift" },
+                { "es": "turno de noche", "en": "night-shift" },
+                { "es": "turno rotativo", "en": "rotation" },
+
+                { "es": "tutela", "en": "guardianship" },
+                { "es": "tutor", "en": "guardian" },
+
+                { "es": "tratado", "en": "treaty" },
+
+                { "es": "unidad", "en": "unit" },
+                { "es": "unidad antidisturbios", "en": "riot-unit" },
+
+                { "es": "uniformado", "en": "uniformed" },
+                { "es": "policía uniformada", "en": "uniformed-officer" },
+
+                { "es": "uniforme", "en": "uniform" },
+                { "es": "uniforme de antidisturbios", "en": "riot-gear" },
+
+                { "es": "unión", "en": "union" },
+                { "es": "unión aduanera/arancelaria", "en": "customs-union" },
+
+                { "es": "untar", "en": "bribe" },
+
+                { "es": "urdir", "en": "plot" },
+
+                { "es": "urgencia", "en": "urgency" },
+
+                { "es": "uso", "en": "use" },
+                { "es": "uso de nombre supuesto", "en": "impersonation" },
+                { "es": "uso/utilización ilegítima de vehículo a motor", "en": "joyriding" },
+                { "es": "uso indebido", "en": "misuse" },
+
+                { "es": "usura", "en": "usury" },
+                { "es": "usurero", "en": "usurer" },
+
+                { "es": "usurpación", "en": "usurpation" },
+                { "es": "usurpación de funciones públicas", "en": "impersonation" },
+                { "es": "usurpación de propiedad", "en": "misappropriation" },
+
+                { "es": "usurpador", "en": "usurper" },
+
+                { "es": "usurpar", "en": "usurp" },
+
+                { "es": "vagabundo", "en": "vagrant" },
+
+                { "es": "vaina", "en": "cartridge-case" },
+
+                { "es": "valor", "en": "value" },
+
+                { "es": "valorar", "en": "assess" },
+                { "es": "valorar daños", "en": "assess" },
+
+                { "es": "vandalismo", "en": "vandalism" },
+
+                { "es": "vehículo", "en": "vehicle" },
+                { "es": "vehículo a motor", "en": "motor-vehicle" },
+                { "es": "vehículo apolo", "en": "surveillance-vehicle" },
+                { "es": "vehículo camuflado", "en": "unmarked-vehicle" },
+
+                { "es": "robo de vehículo", "en": "auto-theft" },
+                { "es": "robo en interior de vehículo", "en": "vehicle-burglary" },
+                { "es": "utilización ilegítima de vehículo", "en": "joyriding" },
+
+                { "es": "veneno", "en": "poison" },
+
+                { "es": "venganza", "en": "revenge" },
+
+                { "es": "vengar/se", "en": "avenge" },
+
+                { "es": "veredicto", "en": "verdict" },
+
+                { "es": "verificar", "en": "verify" },
+
+                { "es": "vía pública", "en": "highway" },
+                { "es": "robo en la vía pública", "en": "mugging" },
+
+                { "es": "víctima", "en": "victim" },
+
+                { "es": "vigencia", "en": "validity" },
+                { "es": "estar en vigencia", "en": "apply" },
+
+                { "es": "vigilancia", "en": "surveillance" },
+                { "es": "bajo vigilancia", "en": "surveillance" },
+
+                { "es": "Servicio de Vigilancia Aduanera", "en": "Customs-Surveillance-Service" },
+
+                { "es": "vigilante", "en": "guard" },
+                { "es": "vigilante de seguridad/jurado", "en": "security-guard" },
+
+                { "es": "vigilar", "en": "monitor" },
+
+                { "es": "violación", "en": "rape" },
+                { "es": "violación de domicilio", "en": "trespass" },
+                { "es": "violación de la intimidad", "en": "intrusion" },
+                { "es": "violación de libertad condicional", "en": "breach" },
+
+                { "es": "violación con agravantes", "en": "aggravated-rape" },
+                { "es": "violación en grupo", "en": "gang-rape" },
+
+                { "es": "violador", "en": "rapist" },
+
+                { "es": "violar", "en": "rape" },
+                { "es": "violar la ley", "en": "breach" },
+
+                { "es": "violencia", "en": "violence" },
+                { "es": "violencia doméstica", "en": "domestic-violence" },
+
+                { "es": "violento", "en": "violent" },
+
+                { "es": "visado", "en": "visa" },
+                { "es": "visado de tránsito", "en": "transit-visa" },
+
+                { "es": "vista", "en": "hearing" },
+                { "es": "vista preliminar", "en": "preliminary-hearing" },
+                { "es": "vista pública", "en": "public-hearing" },
+
+                { "es": "vulneración", "en": "breach" },
+
+                { "es": "vulnerar", "en": "breach" },
+
+                { "es": "yonqui", "en": "junkie" },
+
+                { "es": "zona", "en": "zone" },
+                { "es": "zona fronteriza", "en": "borderland" },
+
+                { "es": "zulo", "en": "hideout" },
+
+
+
+            ]))
+        ];
+
+        let current;
+        let marked = JSON.parse(localStorage.getItem("marked")) || [];
+        let selectionMode = false;
+
+        const spanish = document.getElementById("spanish");
+        const english = document.getElementById("english");
+        const card = document.getElementById("card");
+
+        function getPool() {
+            if (selectionMode && marked.length) return marked;
+            return cards;
+        }
+
+        function nextCard() {
+            const pool = getPool();
+            if (!pool.length) return alert("No hay tarjetas en este modo");
+            card.classList.remove("flipped");
+            setTimeout(() => {
+                current = pool[Math.floor(Math.random() * pool.length)];
+                spanish.textContent = current.es;
+                english.textContent = current.en;
+            }, 300);
+        }
+
+        card.onclick = () => card.classList.toggle("flipped");
+
+        function speak() {
+            if (!current) return;
+
+            const parts = current.en.split("/").map(p => p.trim());
+
+            speechSynthesis.cancel();
+
+            parts.forEach((part, i) => {
+                const utter = new SpeechSynthesisUtterance(part);
+                utter.lang = "en-US";
+
+                setTimeout(() => {
+                    speechSynthesis.speak(utter);
+                }, i * 5000); // 3 segundos de pausa entre partes
+            });
+        }
+
+        function markFail() {
+            if (!failed.find(f => f.es === current.es)) {
+                failed.push(current);
+                localStorage.setItem("failed", JSON.stringify(failed));
+            }
+        }
+
+        function toggleMark() {
+            const i = marked.findIndex(m => m.es === current.es);
+            if (i === -1) marked.push(current);
+            else marked.splice(i, 1);
+            localStorage.setItem("marked", JSON.stringify(marked));
+        }
+
+        function toggleMode() {
+            selectionMode = !selectionMode;
+            alert(selectionMode ? "Modo selección activado" : "Modo normal");
+        }
+
+        function clean(t) {
+            return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(16);
+            doc.text("Inglés técnico policial – Palabras falladas", 20, 20);
+            let y = 35;
+            failed.forEach(f => {
+                const es = clean(f.es);
+                const en = clean(f.en);
+                doc.setFontSize(12);
+                doc.text(`• ${es}`, 25, y);
+                y += 6;
+                doc.text(doc.splitTextToSize(`→ ${en}`, 150), 30, y);
+                y += 10;
+            });
+            doc.save("errores-ingles-policial.pdf");
+        }
+
+        function searchWord() {
+            const v = q.value.toLowerCase();
+            const f = cards.find(c => c.es.toLowerCase().includes(v) || c.en.toLowerCase().includes(v));
+            result.textContent = f ? `${f.es} → ${f.en}` : "No encontrada";
+        }
+
+        function showTab(id) {
+            document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+            document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+            event.target.classList.add("active");
+        }
+
+
+        function toggleMark() {
+
+            const i = marked.findIndex(t => t.es === current.es);
+
+            if (i === -1) {
+                marked.push(current);
+            } else {
+                marked.splice(i, 1);
+            }
+
+            localStorage.setItem("marked", JSON.stringify(marked));
+
+            updateCounter();
+        }
+
+
+
+        function updateCounter() {
+
+            document.getElementById("counter").textContent =
+                `Marcadas: ${marked.length}`;
+        }
+
+
+
+
+
+
+        function downloadPDF() {
+
+            const { jsPDF } = window.jspdf;
+
+            const doc = new jsPDF();
+
+            doc.setFontSize(18);
+
+            doc.text(
+                "VOCABULARIO MARCADO",
+                105,
+                15,
+                { align: "center" }
+            );
+
+            doc.setFontSize(12);
+
+            doc.text("Nº", 10, 30);
+            doc.text("INGLÉS", 30, 30);
+            doc.text("ESPAÑOL", 120, 30);
+
+            let y = 40;
+
+            marked.forEach((card, index) => {
+
+                if (y > 280) {
+                    doc.addPage();
+
+                    y = 20;
+
+                    doc.text("Nº", 10, y);
+                    doc.text("INGLÉS", 30, y);
+                    doc.text("ESPAÑOL", 120, y);
+
+                    y += 10;
+                }
+
+                doc.text(String(index + 1), 10, y);
+
+                doc.text(card.en, 30, y);
+
+                doc.text(card.es, 120, y);
+
+                y += 8;
+            });
+
+            doc.save("vocabulario-marcado.pdf");
+        }
+
+
+
+
+        function clearMarked() {
+
+            if (!confirm(`¿Eliminar las ${marked.length} palabras marcadas?`)) {
+                return;
+            }
+
+            marked = [];
+
+            localStorage.removeItem("marked");
+
+            updateCounter();
+
+            alert("Palabras marcadas eliminadas");
+        }
+
+
+
+
+        function cerrarPopup() {
+            document.getElementById("mensajeInicio").style.display = "none";
+        }
+
+
+
+
+
+        updateCounter();
+
+
+
+        nextCard();
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="mensajeInicio" class="overlay">
+    <div class="popup">
+        <h2> <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="icon icon-tabler icons-tabler-outline icon-tabler-calculator">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M4 5a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -14" />
+                <path d="M8 8a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1v1a1 1 0 0 1 -1 1h-6a1 1 0 0 1 -1 -1l0 -1" />
+                <path d="M8 14l0 .01" />
+                <path d="M12 14l0 .01" />
+                <path d="M16 14l0 .01" />
+                <path d="M8 17l0 .01" />
+                <path d="M12 17l0 .01" />
+                <path d="M16 17l0 .01" />
+            </svg> Ínglés</h2>
+
+        <p>
+
+            ➡️ Mediante el sistema de tarjetas y de forma aleatorias quedan guardadas cientos de palabras de inglés
+            técnico policial <br><br>
+            📝 Antes de clicar sobre la tarjeta para ver la solución o pulsar el play para escuchar su traducción
+            intenta recordarlo si has visto anteriormente.<br><br>
+
+            ✔️ Se recomienda su uso <b>constante</b> de 5-10 minutos al día.<br><br>
+            ⚠️ Para garantizar la buena pronunciación del audio al darle al play debes estar conectado a internet.
+    </p>
+
+
+
+        <button onclick="cerrarPopup()">Visto</button>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+</html>

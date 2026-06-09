@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ser y pensar como policía</title>
+    <meta name="description" content="Tienda online de productos">
+
+    <!-- Preload CSS -->
+    <link rel="preload" href="Normalize.css" as="style">
+    <link rel="stylesheet" href="Normalize.css">
+
+
+    <!-- Preload CSS -->
+    <link rel="preload" href="Normalize.css" as="style">
+    <link rel="stylesheet" href="Normalize.css">
+
+    <link rel="preload" href="ccss-index.css" as="style">
+    <link rel="stylesheet" href="css-index.css">
+
+    <link rel="preload" href="segunda-pag.css" as="style">
+    <link rel="stylesheet" href="segunda-pag.css">
+
+    <!-- Google Fonts optimizado -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech&display=swap" rel="stylesheet">
+
+
+
+
+
+    <style>
+        /*custon properties, no existen en el código lo de root, son pseudoselectores*/
+        :root {
+
+            --blanco: #ffffff;
+            --negro: #000000;
+            --azuldos: #00a6ff;
+            --azuloscuro: rgb(1, 42, 70);
+            --negro2: #0000008f;
+
+
+        }
+
+        html {
+            font-size: 62.5%;
+            box-sizing: border-box;
+            scroll-snap-type: y mandatory;
+        }
+
+        /*
+.card .navegacion-principal{
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+*/
+
+        *,
+        *:before,
+        *:after {
+            box-sizing: inherit;
+        }
+
+        body {
+            font-size: 16px;
+            font-family: "Nunito Sans", sans-serif !important;
+            margin: 0;
+            min-height: 100vh;
+            background-image: linear-gradient(to top, var(--azuloscuro) 0%, var(--blanco) 100%);
+        }
+
+
+        h1 {
+            font-size: 3.3rem;
+            color: #ffffff;
+
+        }
+
+        h2 {
+            font-size: 2.8rem
+        }
+
+        h3 {
+            font-size: 1.8rem
+        }
+
+        h6 {
+            font-weight: bold;
+            color: #000000;
+            font-size: 1.6rem;
+        }
+
+        h1,
+        h2,
+        h3,
+        h6 {
+            text-align: center;
+        }
+
+        /*
+h1 span {
+  font-size: 16px !important;
+
+}
+*/
+
+
+
+        .navegacion-principal {
+            background: linear-gradient(to right, var(--azuldos) 30%, var(--negro) 40%);
+        }
+
+
+
+
+
+
+        .barra-superior {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 120rem;
+            margin: 0 auto;
+            padding: 0.6rem;
+            border-radius: 2rem;
+        }
+
+
+
+        @media (min-width: 768px) {
+            .barra-superior {
+                flex-direction: row;
+                justify-content: space-around;
+            }
+        }
+
+
+
+        .barra-superior a {
+            text-decoration: none;
+            color: #ffffff;
+            font-weight: bold;
+            line-height: 1.5;
+
+        }
+
+        .barra-superior a:hover {
+            animation: fadepulse 1s infinite;
+        }
+
+        @keyframes fadepulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        }
+
+
+
+
+
+
+
+
+        .contenedor {
+            /*Hay dos de contenedor lo de los enlaces y donde los servicios*/
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 120rem;
+            margin: 0 auto;
+            padding: 0.5rem;
+            border-radius: 2rem;
+        }
+
+
+
+
+
+
+        .navegacion-secundaria {
+            background-color: #00000095;
+        }
+
+
+        .navegacion-secundaria__enlaces {
+            margin-top: 2rem;
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+
+        }
+
+
+        .navegacion-secundaria__enlaces--enlace {
+            color: #ffffff;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+
+
+
+        @media (min-width: 480px) {
+            .navegacion-secundaria__enlaces {
+                justify-content: space-around;
+            }
+
+        }
+
+
+
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+
+        @media (min-width: 480px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+        }
+
+        .entreno {
+            background-color: #000000c7;
+            padding: 1.5rem;
+            width: 30rem;
+            height: 45rem;
+            border-radius: 1rem;
+
+        }
+
+        .entreno__imagen {
+            width: 100%;
+            height: 70%;
+            /*ESTO HACE QUE OCUPE EL 100% DE DONDE ESTÉ Y SE HAGA RESPONSIVA AL DISPOSITIVO*/
+            border-radius: 1rem;
+        }
+
+        .entreno__nombre {
+            font-weight: bold;
+            color: var(--blanco);
+            text-align: center;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        .instagram {
+            font-weight: bold;
+            text-decoration: none;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+            margin-top: 3rem;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        .boton-jm {
+            background-color: #0064d5;
+            color: #ffffff;
+            width: max-content;
+            height: max-content;
+            border-radius: 2rem;
+            margin: 0 auto;
+            border-style: groove;
+
+
+        }
+
+
+
+
+
+
+        .marcado2 {
+            color: var(--azuldos) !important;
+            font-weight: bold;
+            animation: none !important;
+
+        }
+
+        .marcado3 {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .marcado3:hover {
+            animation: fadepulse 1s infinite;
+
+        }
+
+        @keyframes fadepulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        .reservados {
+            background: #000000bc;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+
+
+
+
+        /* ==========================================
+   GRID ENTRENOS
+========================================== */
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            justify-items: center;
+        }
+
+        .entreno {
+            background-color: #000000c7;
+            padding: 1.5rem;
+            width: 30rem;
+            height: 45rem;
+            border-radius: 1rem;
+        }
+
+        .entreno__imagen {
+            width: 100%;
+            height: 70%;
+            border-radius: 1rem;
+            object-fit: cover;
+        }
+
+        .entreno__nombre {
+            font-weight: bold;
+            color: var(--blanco);
+            text-align: center;
+        }
+
+        /* ==========================================
+   IMÁGENES DECORATIVAS
+========================================== */
+
+
+
+        /* ==========================================
+   TABLET
+========================================== */
+
+        @media (max-width: 768px) {
+
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        /* ==========================================
+   MÓVIL
+========================================== */
+
+        @media (max-width: 500px) {
+
+            body {
+                overflow-x: hidden;
+            }
+
+            .contenedor {
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                justify-items: center;
+            }
+
+            .entreno {
+                width: 95%;
+                max-width: 35rem;
+                height: auto;
+            }
+
+
+
+            .barra-superior {
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .barra-superior a {
+                font-size: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2.6rem;
+            }
+
+            .instagram {
+                text-align: center;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+
+
+</head>
+
+
+<body>
+
+
+    <header>
+
+
+
+        <div class="navegacion-principal">
+            <nav class="navegacion barra-superior">
+                <a class="marcado3" href="index.html">Herramientas</a>
+                <a class="marcado2" href="#">Material</a>
+
+            </nav>
+        </div>
+
+
+    </header>
+
+
+
+
+
+    <main class="contenedor">
+
+
+        <div class="grid">
+
+            <div class="entreno">
+                <a
+                    href="https://es.aliexpress.com/item/1005007805526624.html?spm=a2g0o.productlist.seoads.1.b87dyZYjyZYjJr&p4p_pvid=20260608013727611786128580090003767834_1&_gl=1*kd6zq6*_gcl_au*Mzg5NTgxOTYxLjE3ODA5MDc4MjE.*_ga*MjA3Njk5ODYwNC4xNzgwOTA3ODIx*_ga_VED1YSGNC7*czE3ODA5MDc4MjAkbzEkZzEkdDE3ODA5MDc4NTkkajIxJGwwJGgw&gatewayAdapt=glo2esp"><img
+                        class="entreno__imagen" alt="linterna"
+                        src="https://raw.githubusercontent.com/Domingo99vg/material/refs/heads/main/linterna.png"></a>
+                <p class="entreno__nombre">Linterna</p>
+
+            </div>
+
+            <div class="entreno">
+                <a
+                    href="https://es.aliexpress.com/item/32925496253.html?spm=a2g0o.productlist.main.15.75275a08ceT866&algo_pvid=d5f50d2b-0252-41cf-a648-9261328f38b8&algo_exp_id=d5f50d2b-0252-41cf-a648-9261328f38b8-14&pdp_ext_f=%7B%22order%22%3A%221311%22%2C%22spu_best_type%22%3A%22price%22%2C%22eval%22%3A%221%22%2C%22fromPage%22%3A%22search%22%7D&pdp_npi=6%40dis%21EUR%213.49%212.49%21%21%2126.69%2119.05%21%40210385db17809079293908089e6065%2166100014493%21sea%21ES%214725424799%21X%211%210%21n_tag%3A-29919%3Bd%3A96ff2a52%3Bm03_new_user%3A-29895%3BpisId%3A5000000203654026&curPageLogUid=Rk4BiUA8VsGx&utparam-url=scene%3Asearch%7Cquery_from%3A%7Cx_object_id%3A32925496253%7C_p_origin_prod%3A"><img
+                        class="entreno__imagen"
+                        src="https://raw.githubusercontent.com/Domingo99vg/material/refs/heads/main/hojasinserci%C3%B3n.png"></a>
+                <p class="entreno__nombre">Hojas inserción</p>
+
+            </div>
+
+            <div class="entreno">
+                <a
+                    href="https://es.aliexpress.com/item/1005010558392242.html?spm=a2g0o.productlist.main.3.767a1563FTKP4h&algo_pvid=4b8dcc71-fa79-4001-87a9-49e076030eb1&algo_exp_id=4b8dcc71-fa79-4001-87a9-49e076030eb1-2&pdp_ext_f=%7B%22order%22%3A%22-1%22%2C%22spu_best_type%22%3A%22price%22%2C%22eval%22%3A%221%22%2C%22fromPage%22%3A%22search%22%7D&pdp_npi=6%40dis%21EUR%2176.06%219.74%21%21%21581.04%2174.41%21%40210390c217809083752496418e9a45%2112000052808923362%21sea%21ES%214725424799%21X%211%210%21n_tag%3A-29919%3Bd%3A96ff2a52%3Bm03_new_user%3A-29895%3BpisId%3A5000000208100777&curPageLogUid=NjonNf9HRIAy&utparam-url=scene%3Asearch%7Cquery_from%3A%7Cx_object_id%3A1005010558392242%7C_p_origin_prod%3A"><img
+                        class="entreno__imagen"
+                        src="https://raw.githubusercontent.com/Domingo99vg/material/refs/heads/main/legstrap.png"></a>
+                <p class="entreno__nombre">Legstrap</p>
+            </div>
+
+
+
+            <div class="entreno">
+                <a
+                    href="https://es.aliexpress.com/item/1005010449266224.html?spm=a2g0o.productlist.main.7.6e56369cLfJESK&algo_pvid=d716a277-b367-413a-a983-04fbfeb7bb11&algo_exp_id=d716a277-b367-413a-a983-04fbfeb7bb11-6&pdp_ext_f=%7B%22order%22%3A%22532%22%2C%22eval%22%3A%221%22%2C%22fromPage%22%3A%22search%22%7D&pdp_npi=6%40dis%21EUR%212.91%211.99%21%21%2122.25%2115.22%21%402103856417809107756052014ecb72%2112000052447454356%21sea%21ES%214725424799%21X%211%210%21n_tag%3A-29919%3Bd%3A96ff2a52%3Bm03_new_user%3A-29895%3BpisId%3A5000000203654026&curPageLogUid=MQClLwHEQvDy&utparam-url=scene%3Asearch%7Cquery_from%3A%7Cx_object_id%3A1005010449266224%7C_p_origin_prod%3A"><img
+                        class="entreno__imagen"
+                        src="https://raw.githubusercontent.com/Domingo99vg/material/refs/heads/main/bloqueadorpuerta.png"></a>
+                <p class="entreno__nombre">Bloqueadores de puerta</p>
+            </div>
+            <div class="entreno">
+                <a href="https://airsoftyecla.es/equipamiento/bolsa-descarga-mk1-black-delta-tactics.html"><img
+                        class="entreno__imagen"
+                        src="https://raw.githubusercontent.com/Domingo99vg/material/refs/heads/main/Bolsadescarga.png"></a>
+                <p class="entreno__nombre">Bolsa de descarga Delta Tactics</p>
+            </div>
+            <div class="entreno">
+                <a
+                    href="https://sermilitar.store/products/botiquin-ifak-tasmanian-tiger-s?pr_prod_strat=pinned&pr_rec_id=7fdba4e19&pr_rec_pid=6745827541091&pr_ref_pid=8628560691537&pr_seq=uniform"><img
+                        class="entreno__imagen"
+                        src="https://raw.githubusercontent.com/Domingo99vg/material/refs/heads/main/botiquin.png"></a>
+                <p class="entreno__nombre">Botiquín Tasmanian Tiger</p>
+            </div>
+
+            <div class="entreno">
+                <a href="https://adaro.shop/es/fundas/257-tasmanian-tiger-funda-porta-torniquete-ii.html"><img
+                        class="entreno__imagen"
+                        src="https://raw.githubusercontent.com/Domingo99vg/material/refs/heads/main/portatq.png"></a>
+                <p class="entreno__nombre">Portatorniquete Tasmanian Tiger</p>
+            </div>
+            <div class="entreno">
+                <a href="https://cherubtactical.com/products/cargador-entrenamiento-arma-corta"><img
+                        class="entreno__imagen"
+                        src="https://raw.githubusercontent.com/Domingo99vg/material/refs/heads/main/cargadores.png"></a>
+                <p class="entreno__nombre">Cargadores dummy</p>
+            </div>
+            <div class="entreno">
+                <a
+                    href="https://www.amazon.es/Anti-corte-Revestimiento-Antideslizante-protecci%C3%B3n-Profesionales/dp/B0DHVZ1FCR/ref=sr_1_10?adgrpid=1308419276092412&dib=eyJ2IjoiMSJ9.xvhC20uquBlqvZYxqutU15PtqxqzfXnJBogmtD781ikikbKUwbxPTHKJVceQaqKYgDWIsyMkcbReiPQJ_G4IHAO9k6n2TOc6h5APuIeCTMfn7cYbDP2IotXUNFGKo1zyXzCuTAOHyiz6H7fOXHNhjhR_uPR-Eexx-IiQejQSYmt0L1qrT-t1uK4HPx7pkM7lZfAOFP30dDWs5Mrn2k2SYpsRdFPcoTizy-CmqmXf2eqmzksPUWGJHphr9uNZBnHoq7NY4fJzJEpbg9xDzudjQpvTwtzta8jErtaFvdJ0u5k.14rKw1-PjhhF9UY7b5IUS-3aGY3azvw6aGw2RHmL4Dc&dib_tag=se&hvadid=81776294374667&hvbmt=be&hvdev=c&hvlocphy=164612&hvnetw=o&hvqmt=e&hvtargid=kwd-81776447141742%3Aloc-170&hydadcr=22841_1850745&keywords=guantes%2Banticorte%2Bblacktactil%2Bamazon&mcid=6c37b1211d65357688fd0effda30a2bf&msclkid=08149275033e17cfbd63f853879f3380&qid=1780909221&sr=8-10&th=1"><img
+                        class="entreno__imagen"
+                        src="https://raw.githubusercontent.com/Domingo99vg/material/refs/heads/main/guantes.png"></a>
+                <p class="entreno__nombre">Guantes Blacktactil</p>
+            </div>
+            <div class="entreno">
+                <a
+                    href="https://www.zonatactica.es/portadocumentos/720-equipamiento-portadocumentos-despegable-molle-militar-policial-warrior.html#/14-color-negro"><img
+                        class="entreno__imagen"
+                        src="https://raw.githubusercontent.com/Domingo99vg/material/refs/heads/main/portadocumentos.png"></a>
+                <p class="entreno__nombre">Portadocumentos Warrior</p>
+            </div>
+            <div class="entreno">
+                <a href="https://adaro.shop/es/torniquetes/124-cat-gen-7-original-negro-torniquete-de-extremidad.html"><img
+                        class="entreno__imagen"
+                        src="https://raw.githubusercontent.com/Domingo99vg/material/refs/heads/main/tq.png"></a>
+                <p class="entreno__nombre">Torniquete CAT</p>
+            </div>
+            <div class="entreno">
+                <a href="https://www.zonatactica.es/grilletes/950-brida-reutilizable-tch.html#/color-negro"><img
+                        class="entreno__imagen"
+                        src="https://raw.githubusercontent.com/Domingo99vg/material/refs/heads/main/bridas.png"></a>
+                <p class="entreno__nombre">Bridas TCH reutilizables</p>
+            </div>
+
+            <div class="entreno">
+                <a
+                    href="https://www.amazon.es/GBO-RQMTWIN-YELLOWFLUO-Herramienta-Rompecristales-Amarillo-Fluorescente/dp/B01G6C18EC/ref=sr_1_1?__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=C9VLGUVKAOYY&dib=eyJ2IjoiMSJ9.03rlQkR_ojPoD7Nu3cKW5kcyneXhfPOf18Pjvb6_K6WtAYjQqDj2-6aHyv0Ud51_neD5KB_Qzue86vjoYnrGhQqOoX37u8j158dCCS_RVZfek4HCSC7SHyvN7qJDuC3Wtlj05n0XebjoZkBYxb9h0VhDRNaHKg2vyjeDfr8CDsDPWtZnED6KwciJ5J4dYN03i-qxfOQY9UbpzxRS9GwHcYNnDgGPnpe0ezQE2Nt8Ur6cr0kGwJKXKkleZ28zeOdIIMVwGvLXGcnek5z8zlA8_dY1ZRKc8A46UeyzdtjoqMw.zSn8l9NWXbD6EMTTwMymhoNxYtEr-FoP2qCvQttwVig&dib_tag=se&keywords=rescue%2Bme&qid=1780910493&sprefix=rescue%2Caps%2C352&sr=8-1&th=1"><img
+                        class="entreno__imagen"
+                        src="https://raw.githubusercontent.com/Domingo99vg/material/refs/heads/main/rescueme.png"></a>
+                <p class="entreno__nombre">Rompecristales Rescueme </p>
+            </div>
+
+
+
+
+
+
+        </div>
+
+
+
+    </main>
+
+
+
+
+    <footer class="reservados">
+
+        <a class="instagram"
+            href="https://www.instagram.com/fortis.sicut.leo?igsh=M2VnbXZub2JpNXk4">@fortis.sicut.leo</a>
+    </footer>
+
+
+
+    <script>
+
+        // Bloquear clic derecho
+        document.addEventListener("contextmenu", e => e.preventDefault());
+
+        // Bloquear selección de texto
+        document.addEventListener("selectstart", e => e.preventDefault());
+
+        // Bloquear arrastrar
+        document.addEventListener("dragstart", e => e.preventDefault());
+
+        // Bloquear copiar
+        document.addEventListener("copy", e => e.preventDefault());
+
+        // Bloquear cortar
+        document.addEventListener("cut", e => e.preventDefault());
+
+        // Bloquear pegar
+        document.addEventListener("paste", e => e.preventDefault());
+
+        // Bloquear algunos atajos habituales
+        document.addEventListener("keydown", function (e) {
+
+            const key = e.key.toLowerCase();
+
+            if (
+                e.key === "F12" ||
+                (e.ctrlKey && e.shiftKey && key === "i") ||
+                (e.ctrlKey && e.shiftKey && key === "j") ||
+                (e.ctrlKey && e.shiftKey && key === "c") ||
+                (e.ctrlKey && key === "u")
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Limpiar consola periódicamente
+        setInterval(() => {
+            console.clear();
+        }, 1000);
+
+
+
+        // Anti iframe
+        if (window.top !== window.self) {
+            document.body.innerHTML = "";
+        }
+
+    </script>
+
+</body>
+
+</html>

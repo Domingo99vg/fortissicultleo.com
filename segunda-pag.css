@@ -1,0 +1,429 @@
+/*custon properties, no existen en el código lo de root, son pseudoselectores*/
+:root {
+
+  --blanco: #ffffff;
+  --negro: #000000;
+  --azuldos: #00a6ff;
+  --azuloscuro: rgb(1, 42, 70);
+  --negro2: #0000008f;
+
+
+}
+
+html {
+  font-size: 62.5%;
+  box-sizing: border-box;
+  scroll-snap-type: y mandatory;
+}
+
+/*
+.card .navegacion-principal{
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+*/
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  font-size: 16px;
+  font-family: "Nunito Sans", sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  background-image: linear-gradient(to top, var(--azuloscuro) 0%, var(--blanco) 100%);
+}
+
+
+h1 {
+  font-size: 3.3rem;
+  font-family: "Share Tech", sans-serif;
+  color: #ffffff;
+
+}
+
+h2 {
+  font-size: 2.8rem
+}
+
+h3 {
+  font-size: 1.8rem
+}
+
+h6 {
+  font-weight: bold;
+  color: #000000;
+  font-size: 1.6rem;
+}
+
+h1,
+h2,
+h3,
+h6 {
+  text-align: center;
+}
+
+/*
+h1 span {
+  font-size: 16px !important;
+
+}
+*/
+
+
+
+.navegacion-principal {
+  background: linear-gradient(to right, var(--azuldos) 30%, var(--negro) 40%);
+}
+
+
+
+
+
+
+.barra-superior {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 120rem;
+  margin: 0 auto;
+  padding: 0.6rem;
+  border-radius: 2rem;
+}
+
+
+
+@media (min-width: 768px) {
+  .barra-superior {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+}
+
+
+
+.barra-superior a {
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: bold;
+  line-height: 1.5;
+
+}
+
+.barra-superior a:hover {
+  animation: fadepulse 1s infinite;
+}
+
+@keyframes fadepulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+
+
+
+
+
+
+
+.contenedor {
+  /*Hay dos de contenedor lo de los enlaces y donde los servicios*/
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 120rem;
+  margin: 0 auto;
+  padding: 0.5rem;
+  border-radius: 2rem;
+}
+
+
+
+
+
+
+.navegacion-secundaria {
+  background-color: #00000095;
+}
+
+
+.navegacion-secundaria__enlaces {
+  margin-top: 2rem;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+
+}
+
+
+.navegacion-secundaria__enlaces--enlace {
+  color: #ffffff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+
+
+
+@media (min-width: 480px) {
+  .navegacion-secundaria__enlaces {
+    justify-content: space-around;
+  }
+
+}
+
+
+
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+
+@media (min-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+}
+
+.entreno {
+  background-color: #000000c7;
+  padding: 1.5rem;
+  width: 30rem;
+  height: 45rem;
+  border-radius: 1rem;
+
+}
+
+.entreno__imagen {
+  width: 100%;
+  height: 70%;
+  /*ESTO HACE QUE OCUPE EL 100% DE DONDE ESTÉ Y SE HAGA RESPONSIVA AL DISPOSITIVO*/
+  border-radius: 1rem;
+}
+
+.entreno__nombre {
+  font-weight: bold;
+  color: var(--blanco);
+  text-align: center;
+}
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+.instagram {
+  font-weight: bold;
+  text-decoration: none;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  margin-top: 3rem;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.boton-jm {
+  background-color: #0064d5;
+  color: #ffffff;
+  width: max-content;
+  height: max-content;
+  border-radius: 2rem;
+  margin: 0 auto;
+  border-style: groove;
+
+
+}
+
+
+
+
+
+
+.marcado2 {
+  color: var(--azuldos) !important;
+  font-weight: bold;
+  animation: none !important;
+
+}
+
+.marcado3 {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.marcado3:hover {
+  animation: fadepulse 1s infinite;
+
+}
+
+@keyframes fadepulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.reservados {
+  background: #000000bc;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+
+
+
+
+ /* ==========================================
+   GRID ENTRENOS
+========================================== */
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    justify-items: center;
+}
+
+.entreno {
+    background-color: #000000c7;
+    padding: 1.5rem;
+    width: 30rem;
+    height: 45rem;
+    border-radius: 1rem;
+}
+
+.entreno__imagen {
+    width: 100%;
+    height: 70%;
+    border-radius: 1rem;
+    object-fit: cover;
+}
+
+.entreno__nombre {
+    font-weight: bold;
+    color: var(--blanco);
+    text-align: center;
+}
+
+/* ==========================================
+   IMÁGENES DECORATIVAS
+========================================== */
+
+
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 768px) {
+
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+/* ==========================================
+   MÓVIL
+========================================== */
+
+@media (max-width: 500px) {
+
+    body {
+        overflow-x: hidden;
+    }
+
+    .contenedor {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+
+    .entreno {
+        width: 95%;
+        max-width: 35rem;
+        height: auto;
+    }
+
+  
+
+    .barra-superior {
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .barra-superior a {
+        font-size: 1.5rem;
+    }
+
+    h1 {
+        font-size: 2.6rem;
+    }
+
+    .instagram {
+        text-align: center;
+        padding: 1.5rem;
+    }
+}

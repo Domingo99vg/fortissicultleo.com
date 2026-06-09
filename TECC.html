@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>MARCH</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Nunito Sans", sans-serif;
+            background-image: url(https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/TECC.png);
+            background-size: cover;
+            background-repeat: no-repeat;
+
+            color: white;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 18px;
+        }
+
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        button {
+            border: none;
+            border-radius: 16px;
+            padding: 14px 22px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .25s;
+        }
+
+        button:hover {
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        .btn-start {
+            background: #00b4d8;
+            color: white;
+        }
+
+        .btn-next {
+            background: #2dc653;
+            color: white;
+        }
+
+        .btn-reset {
+            background: #d62828;
+            color: white;
+        }
+
+        .btn-volver {
+            background: #111;
+            color: white;
+        }
+
+
+
+        .btn-pausar {
+            background: #aa0000;
+            color: white;
+        }
+
+
+        .top-info {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-direction: row;
+        }
+
+        .info-box {
+            min-width: 180px;
+            padding: 18px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, .08);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, .12);
+            text-align: center;
+
+        }
+
+        .info-box h3 {
+            font-size: .85rem;
+            opacity: .8;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .carousel-wrapper {
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .carousel {
+            height: 100%;
+            display: flex;
+            transition: transform .6s cubic-bezier(.77, 0, .18, 1);
+        }
+
+        .card {
+            min-width: 100%;
+            width: 100%;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-inner {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            color: #111;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, .35);
+            transform: scale(.92);
+            opacity: .4;
+            transition: .35s;
+
+
+        }
+
+        .card-inner {
+            width: 92%;
+            max-width: 1100px;
+            height: 100%;
+          
+            background: white;
+            color: #111;
+
+            border-radius: 40px;
+            overflow: hidden;
+
+            box-shadow: 0 20px 45px rgba(0, 0, 0, .35);
+
+            transform: scale(.92);
+            opacity: .4;
+            transition: .35s;
+        }
+
+        .card.active .card-inner {
+            opacity: 1;
+            transform: scale(1);
+
+        }
+
+        .card-header {
+            background: linear-gradient(90deg, #001d3d, #003566);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+        }
+
+        .letter {
+            font-size: 4rem;
+            font-weight: 700;
+        }
+
+        .phase {
+            text-align: right;
+        }
+
+        .phase h2 {
+            font-size: 1.3rem;
+        }
+
+        .phase span {
+            opacity: .8;
+        }
+
+        .card-body {
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .hidden-text {
+            max-width: 700px;
+            font-size: 1.45rem;
+            line-height: 1.8;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: .4s;
+        }
+
+        .hidden-text.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tap {
+            margin-top: 20px;
+            color: #666;
+            font-size: .95rem;
+        }
+
+        .timer-phase {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            color: #003566;
+            font-weight: 700;
+        }
+
+        .progress {
+            margin-top: 15px;
+            width: 100%;
+            height: 14px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, .15);
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            transition: .4s;
+            background: linear-gradient(90deg, #00b4d8, #2dc653);
+        }
+
+        .final-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 20px;
+        }
+
+        .final-box {
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            color: #111;
+            border-radius: 28px;
+            padding: 30px;
+            max-height: 90vh;
+            overflow: auto;
+        }
+
+        .final-box h2 {
+            margin-bottom: 20px;
+        }
+
+        .summary {
+            background: #f2f2f2;
+            border-radius: 18px;
+            padding: 20px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            border-radius: 16px;
+            border: 1px solid #ccc;
+            padding: 16px;
+            resize: vertical;
+            margin-bottom: 20px;
+            font-family: "Nunito Sans", sans-serif;
+
+        }
+
+        .final-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        @media(max-width:768px) {
+
+            body {
+                overflow: auto;
+            }
+
+            .container {
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .card-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .phase {
+                text-align: center;
+            }
+
+            .letter {
+                font-size: 3rem;
+            }
+
+            .card-body {
+                padding: 24px;
+                min-height: 300px;
+            }
+
+            .hidden-text {
+                font-size: 1.08rem;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .controls {
+                width: 100%;
+            }
+
+            .final-buttons {
+                flex-direction: column;
+            }
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /* ===========================
+   OVERLAY
+=========================== */
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        /* ===========================
+   POPUP
+=========================== */
+
+        .popup {
+            position: relative;
+
+            width: 95%;
+            max-width: 950px;
+            max-height: 90vh;
+
+            display: flex;
+            flex-direction: column;
+
+            background: linear-gradient(135deg,
+                    #164C96,
+                    #090535);
+
+            color: #ffffff;
+
+            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.25);
+
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.6),
+                0 0 25px rgba(0, 0, 0, 0.08);
+
+            overflow: hidden;
+
+            animation: popupEntrada .25s ease;
+        }
+
+        @keyframes popupEntrada {
+            from {
+                opacity: 0;
+                transform: translateY(15px) scale(.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ===========================
+   TÍTULO
+=========================== */
+
+        .popup h2 {
+            margin: 0;
+            padding: 20px 80px 20px 25px;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            font-size: 1.5rem;
+            font-weight: 700;
+
+            color: #ffffff;
+
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+
+            background: rgba(0, 0, 0, .25);
+
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .popup h2 svg {
+            flex-shrink: 0;
+        }
+
+        /* ===========================
+   BOTÓN FIJO
+=========================== */
+
+        .popup button {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+
+            padding: 10px 18px;
+
+            border: none;
+            border-radius: 10px;
+
+            background: #ffffff;
+            color: #000;
+
+            font-weight: 700;
+            font-size: 0.9rem;
+
+            cursor: pointer;
+
+            transition: all .25s ease;
+
+            z-index: 20;
+        }
+
+        .popup button:hover {
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 0 12px rgba(0, 0, 0, 0.45),
+                0 0 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .popup button:active {
+            transform: scale(.97);
+        }
+
+        /* ===========================
+   CONTENIDO CON SCROLL
+=========================== */
+
+        .contenido-scroll {
+            flex: 1;
+
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            padding: 25px;
+
+            line-height: 1.65;
+            font-size: 0.97rem;
+
+            text-align: justify;
+
+            scrollbar-width: thin;
+            scrollbar-color: #00a2ff rgba(255, 255, 255, .05);
+        }
+
+        /* ===========================
+   SCROLL PROFESIONAL
+=========================== */
+
+        .contenido-scroll::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .contenido-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, .04);
+            border-radius: 20px;
+        }
+
+        .contenido-scroll::-webkit-scrollbar-thumb {
+            border-radius: 20px;
+
+            background: linear-gradient(180deg,
+                    #0a2e2a,
+                    #000000);
+
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .contenido-scroll::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg,
+                    #000000,
+                    #4dd5ff);
+
+            background-clip: padding-box;
+        }
+
+        .contenido-scroll::-webkit-scrollbar-thumb:active {
+            background: #ffffff;
+        }
+
+        .contenido-scroll::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+
+        /* ===========================
+   TEXTO
+=========================== */
+
+        .contenido-scroll b {
+            color: #00ff48;
+        }
+
+        .contenido-scroll small {
+            color: #bdbdbd;
+            font-style: italic;
+        }
+
+        /* ===========================
+   MÓVIL
+=========================== */
+
+        @media (max-width: 768px) {
+
+            .popup {
+                width: 100%;
+                max-height: 95vh;
+            }
+
+            .popup h2 {
+                font-size: 1.15rem;
+                padding-right: 90px;
+            }
+
+            .popup button {
+                padding: 8px 14px;
+                font-size: .85rem;
+                max-width: 20%;
+            }
+
+            .contenido-scroll {
+                padding: 18px;
+                font-size: .92rem;
+            }
+        }
+
+
+
+
+
+        @media (max-width: 768px) {
+
+            .top-info {
+                display: flex;
+                flex-direction: row !important;
+                justify-content: center;
+                align-items: stretch;
+                gap: .8rem;
+                flex-wrap: nowrap;
+            }
+
+            .info-box {
+                flex: 1;
+                min-width: 0;
+                padding: 1rem;
+            }
+
+            .info-box h3 {
+                font-size: 0.8rem;
+            }
+
+            .info-box p {
+                font-size: 2rem;
+            }
+
+        }
+
+
+        .info-box {
+            width: 50%;
+        }
+
+
+
+
+        #nextBtn {
+            width: min-content;
+        }
+
+        #startBtn {
+            width: min-content;
+
+        }
+
+        #pauseBtn {
+            width: min-content;
+
+        }
+
+        #restartBtn {
+            width: min-content;
+
+        }
+
+        .btn-volver {
+            width: min-content;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+
+            <h1>PROTOCOLO MARCH</h1>
+
+            <div class="controls">
+
+                <button id="startBtn" class="btn-start">
+                    ▶ Iniciar
+                </button>
+
+                <button id="nextBtn" class="btn-next" style="display:none;">
+                    ⏭ Siguiente tarjeta
+                </button>
+
+                <button id="pauseBtn" class="btn-pausar" style="display:none;">
+                    ⏸ Pausar
+                </button>
+
+                <button id="restartBtn" class="btn-reset" style="display:none;">
+                    ↺ Reiniciar MARCH
+                </button>
+
+                <button class="btn-volver" onclick="window.location.href='index.html'">
+                    Volver al menú
+                </button>
+
+            </div>
+
+            <div class="top-info">
+
+                <div class="info-box">
+                    <h3>Tiempo total</h3>
+                    <p id="globalTimer">00:00</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Tiempo fase</h3>
+                    <p id="phaseTimer">01:00</p>
+                </div>
+
+            </div>
+
+        </header>
+
+        <div class="carousel-wrapper">
+
+            <div class="carousel" id="carousel"></div>
+
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+    </div>
+
+    <div class="final-screen" id="finalScreen">
+
+        <div class="final-box">
+
+            <h2>Informe final</h2>
+
+            <div class="summary" id="summaryBox"></div>
+
+            <h3>Errores / aspectos a mejorar</h3>
+
+            <textarea id="failInput"
+                placeholder="Escribe aquí los fallos detectados durante la intervención..."></textarea>
+
+            <div class="final-buttons">
+
+
+
+                <button class="btn-next" onclick="printReport()">
+                    🖨 Generar informe PDF
+                </button>
+
+                <button class="btn-reset" onclick="closeFinal()">
+                    ✖ Cerrar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        const phrases = {
+
+            M: [
+                "Tiene una hemorragia masiva en el tercio medio del muslo izquierdo",
+                "Tiene una hemorragia masiva en el tercio medio del muslo derecho",
+                "Presenta amputación traumática de la pierna derecha a la altura de la rodilla",
+                "Presenta amputación traumática de la pierna izquierda a la altura de la rodilla",
+                "Presenta amputación traumática del pie izquierdo",
+                "Presenta amputación traumática del pie derecho",
+                "Presenta amputación traumática de la mano derecha",
+                "Presenta amputación traumática de la mano izquierda",
+                "Tiene una hemorragia masiva en el cuello, en la región yugular izquierda",
+                "Tiene una hemorragia masiva en el cuello, en la región yugular derecha",
+                "Tiene una hemorragia masiva en el brazo derecho",
+                "Tiene una hemorragia masiva en el brazo izquierdo",
+                "Tiene una hemorragia masiva en la pierna derecha",
+                "Tiene una hemorragia masiva en la pierna izquierda",
+                "Tiene una hemorragia masiva abdominal",
+                "Tiene una hemorragia masiva en la axila izquierda",
+                "Tiene una hemorragia masiva en la axila derecha",
+                "No presenta hemorragias masivas",
+                "Tiene una hemorragia masiva en la ingle de la pierna izquierda, y además el torniquete que colocaste en 1º cobertura en el brazo derecho alto y apretado no está siendo efectivo.",
+                "Tiene una hemorragia masiva en la ingle de la pierna derecha, y además el torniquete que colocaste en 1º cobertura en el brazo izquierdo alto y apretado no está siendo efectivo.",
+
+            ],
+
+            A: [
+                "Responde con normalidad a las preguntas que se le realiza",
+                "Balbucea y no responde coherentemente",
+                "Obedece órdenes simples",
+                "Me aprieta la mano",
+                "Responde únicamente a estímulos dolorosos",
+                "No responde a estímulos verbales ni dolorosos"
+            ],
+
+            R: [
+                "Presenta una herida respirante en región dorsal torácica",
+                "Presenta una herida respirante en el hemitórax izquierdo",
+                "Presenta una herida respirante en el hemitórax derecho",
+                "No presenta heridas respirantes"
+            ],
+
+            C: [
+                "Tiene pulso débil y hemorragia moderada en el gemelo izquierdo",
+                "Tiene pulso débil y hemorragia moderada en el gemelo derecho",
+                "Tiene pulso débil y hemorragia moderada en el antebrazo izquierdo",
+                "Tiene pulso débil y hemorragia moderada en el antebrazo derecho",
+                "Presenta una hemorragia moderada en la muñeca izquierda",
+                "Presenta una hemorragia moderada en la muñeca derecha"
+            ],
+
+            H: [
+                "Presenta una herida leve en la cabeza",
+                "No presenta signos de hipotermia",
+                "Presenta signos de hipotermia",
+                "Presenta dificultad visual en el ojo derecho",
+                "Presenta dificultad visual en el ojo izquierdo"
+            ]
+
+        };
+
+        const names = {
+            M: "Massive Hemorrhage",
+            A: "Airway",
+            R: "Respiration",
+            C: "Circulation",
+            H: "Hypothermia / Head"
+        };
+
+        const order = ["M", "A", "R", "C", "H"];
+
+        let currentIndex = -1;
+        let globalSeconds = 0;
+        let phaseSeconds = 60;
+
+        let globalInterval = null;
+        let phaseInterval = null;
+
+        let started = false;
+        let paused = false;
+
+        let results = {};
+
+        // CONTROL DE APERTURA
+        let cardRevealed = false;
+
+        function randomPhrase(letter) {
+
+            const arr = phrases[letter];
+
+            return arr[Math.floor(Math.random() * arr.length)];
+
+        }
+
+        function renderCards() {
+
+            const carousel = document.getElementById("carousel");
+
+            carousel.innerHTML = "";
+
+            results = {};
+
+            order.forEach((letter, index) => {
+
+                const phrase = randomPhrase(letter);
+
+                results[letter] = phrase;
+
+                const card = document.createElement("div");
+
+                card.className = "card";
+
+                card.id = "card-" + index;
+
+                card.innerHTML = `
+
+<div class="card-inner">
+
+<div class="card-header">
+
+<div class="letter">${letter}</div>
+
+<div class="phase">
+<h2>${names[letter]}</h2>
+<span>Fase ${index + 1}/5</span>
+</div>
+
+</div>
+
+<div class="card-body">
+
+<div class="hidden-text" id="text-${index}">
+${phrase}
+</div>
+
+<div class="tap">
+ESPACIO o CLICK → revelar / avanzar
+</div>
+
+<div class="timer-phase" id="countdown-${index}">
+Tiempo restante: 01:00
+</div>
+
+</div>
+
+</div>
+`;
+
+                // CLICK
+                card.addEventListener("click", () => {
+
+                    if (index !== currentIndex) return;
+
+                    const text =
+                        document.getElementById("text-" + index);
+
+                    // REVELAR
+                    if (!cardRevealed) {
+
+                        text.classList.add("show");
+
+                        cardRevealed = true;
+
+                    } else {
+
+                        // AVANZAR
+                        cardRevealed = false;
+
+                        nextCard();
+
+                    }
+
+                });
+
+                carousel.appendChild(card);
+
+            });
+
+        }
+
+        renderCards();
+
+        function formatTime(sec) {
+
+            const m = String(Math.floor(sec / 60)).padStart(2, "0");
+            const s = String(sec % 60).padStart(2, "0");
+
+            return `${m}:${s}`;
+
+        }
+
+        function startSimulation() {
+
+            if (started) return;
+
+            started = true;
+
+            document.getElementById("startBtn").style.display = "none";
+
+            document.getElementById("nextBtn").style.display =
+                "inline-flex";
+
+            document.getElementById("pauseBtn").style.display =
+                "inline-flex";
+
+            globalInterval = setInterval(() => {
+
+                globalSeconds++;
+
+                document.getElementById("globalTimer").innerText =
+                    formatTime(globalSeconds);
+
+            }, 1000);
+
+            nextCard();
+
+        }
+
+        function togglePause() {
+
+            if (!started) return;
+
+            if (!paused) {
+
+                clearInterval(globalInterval);
+                clearInterval(phaseInterval);
+
+                paused = true;
+
+                document.getElementById("pauseBtn").innerText =
+                    "▶ Reanudar";
+
+            } else {
+
+                paused = false;
+
+                document.getElementById("pauseBtn").innerText =
+                    "⏸ Pausar";
+
+                globalInterval = setInterval(() => {
+
+                    globalSeconds++;
+
+                    document.getElementById("globalTimer").innerText =
+                        formatTime(globalSeconds);
+
+                }, 1000);
+
+                phaseInterval = setInterval(() => {
+
+                    phaseSeconds--;
+
+                    document.getElementById("phaseTimer").innerText =
+                        formatTime(phaseSeconds);
+
+                    document.getElementById(
+                        "countdown-" + currentIndex
+                    ).innerText =
+                        "Tiempo restante: " +
+                        formatTime(phaseSeconds);
+
+                    if (phaseSeconds <= 0) {
+
+                        cardRevealed = false;
+
+                        nextCard();
+
+                    }
+
+                }, 1000);
+
+            }
+
+        }
+
+        function nextCard() {
+
+            // RESET APERTURA
+            cardRevealed = false;
+
+            clearInterval(phaseInterval);
+
+            if (currentIndex >= 0) {
+
+                document.getElementById("card-" + currentIndex)
+                    .classList.remove("active");
+
+            }
+
+            currentIndex++;
+
+            if (currentIndex >= order.length) {
+
+                finishSimulation();
+
+                return;
+
+            }
+
+            document.getElementById("carousel").style.transform =
+                `translateX(-${currentIndex * 100}%)`;
+
+            document.getElementById("card-" + currentIndex)
+                .classList.add("active");
+
+            phaseSeconds = 60;
+
+            document.getElementById("phaseTimer").innerText =
+                formatTime(phaseSeconds);
+
+            phaseInterval = setInterval(() => {
+
+                phaseSeconds--;
+
+                document.getElementById("phaseTimer").innerText =
+                    formatTime(phaseSeconds);
+
+                document.getElementById("countdown-" + currentIndex)
+                    .innerText =
+                    "Tiempo restante: " +
+                    formatTime(phaseSeconds);
+
+                // AUTOAVANCE
+                if (phaseSeconds <= 0) {
+
+                    cardRevealed = false;
+
+                    nextCard();
+
+                }
+
+            }, 1000);
+
+            const progress =
+                ((currentIndex + 1) / order.length) * 100;
+
+            document.getElementById("progressBar").style.width =
+                progress + "%";
+
+        }
+
+        function finishSimulation() {
+
+            clearInterval(globalInterval);
+
+            clearInterval(phaseInterval);
+
+            document.getElementById("nextBtn").style.display =
+                "none";
+
+            document.getElementById("restartBtn").style.display =
+                "inline-flex";
+
+            document.getElementById("finalScreen").style.display =
+                "flex";
+            document.getElementById("pauseBtn").style.display =
+
+                "none";
+
+            let html = `
+<h3>Tiempo total: ${formatTime(globalSeconds)}</h3>
+<br>
+`;
+
+            order.forEach(letter => {
+
+                html += `
+<p style="margin-bottom:14px;">
+<strong>${letter}:</strong>
+${results[letter]}
+</p>
+`;
+
+            });
+
+            document.getElementById("summaryBox").innerHTML =
+                html;
+
+        }
+
+        function saveFails() {
+
+            const text =
+                document.getElementById("failInput").value.trim();
+
+            if (!text) return;
+
+            const data = {
+
+                fecha: new Date().toLocaleString(),
+
+                tiempo: formatTime(globalSeconds),
+
+                resultados: results,
+
+                fallos: text
+
+            };
+
+            let saved =
+                JSON.parse(localStorage.getItem("marchFails")) || [];
+
+            saved.push(data);
+
+            localStorage.setItem(
+                "marchFails",
+                JSON.stringify(saved)
+            );
+
+            alert("Errores guardados correctamente");
+
+        }
+
+        async function printReport() {
+
+            const { jsPDF } = window.jspdf;
+
+            const doc = new jsPDF();
+
+            const margin = 20;
+
+            let y = 20;
+
+            doc.setFont("helvetica", "bold");
+
+            doc.setFontSize(18);
+
+            doc.text("INFORME MARCH", margin, y);
+
+            y += 15;
+
+            doc.setFont("helvetica", "normal");
+
+            doc.setFontSize(12);
+
+            doc.text(
+                `Tiempo total: ${formatTime(globalSeconds)}`,
+                margin,
+                y
+            );
+
+            y += 15;
+
+            order.forEach((letter, index) => {
+
+                doc.setFont("helvetica", "bold");
+
+                doc.text(
+                    `Pregunta ${index + 1} - ${letter}`,
+                    margin,
+                    y
+                );
+
+                y += 8;
+
+                doc.setFont("helvetica", "normal");
+
+                const split =
+                    doc.splitTextToSize(results[letter], 170);
+
+                doc.text(split, margin + 5, y);
+
+                y += split.length * 7 + 10;
+
+            });
+
+            const fails =
+                document.getElementById("failInput").value;
+
+            doc.setFont("helvetica", "bold");
+
+            doc.text("Errores detectados:", margin, y);
+
+            y += 8;
+
+            doc.setFont("helvetica", "normal");
+
+            const splitFails =
+                doc.splitTextToSize(
+                    fails || "Sin errores anotados",
+                    170
+                );
+
+            doc.text(splitFails, margin + 5, y);
+
+            doc.save("Informe_MARCH.pdf");
+
+        }
+
+        function closeFinal() {
+
+            document.getElementById("finalScreen").style.display =
+                "none";
+
+        }
+
+        function resetSimulation() {
+
+            clearInterval(globalInterval);
+
+            clearInterval(phaseInterval);
+
+            currentIndex = -1;
+
+            globalSeconds = 0;
+
+            phaseSeconds = 60;
+
+            started = false;
+
+            cardRevealed = false;
+
+            document.getElementById("globalTimer").innerText =
+                "00:00";
+
+            document.getElementById("phaseTimer").innerText =
+                "01:00";
+
+            document.getElementById("progressBar").style.width =
+                "0%";
+
+            document.getElementById("carousel").style.transform =
+                "translateX(0%)";
+
+            document.getElementById("finalScreen").style.display =
+                "none";
+
+            document.getElementById("failInput").value = "";
+
+            document.getElementById("startBtn").style.display =
+                "inline-flex";
+
+            document.getElementById("nextBtn").style.display =
+                "none";
+
+            document.getElementById("restartBtn").style.display =
+                "none";
+
+
+
+            paused = false;
+
+            document.getElementById("pauseBtn").innerText =
+                "⏸ Pausar";
+
+            document.getElementById("pauseBtn").style.display =
+                "none";
+
+            renderCards();
+
+        }
+
+        // BOTONES
+        document.getElementById("startBtn")
+            .addEventListener("click", startSimulation);
+
+        document.getElementById("nextBtn")
+            .addEventListener("click", nextCard);
+
+        document.getElementById("restartBtn")
+            .addEventListener("click", resetSimulation);
+
+        document.getElementById("pauseBtn")
+            .addEventListener("click", togglePause);
+
+        // TECLADO
+        document.addEventListener("keydown", (e) => {
+
+            if (e.code !== "Space") return;
+
+            e.preventDefault();
+
+            // INICIAR
+            if (!started) {
+
+                startSimulation();
+
+                return;
+
+            }
+
+            // SEGURIDAD
+            if (
+                currentIndex < 0 ||
+                currentIndex >= order.length
+            ) return;
+
+            const text =
+                document.getElementById("text-" + currentIndex);
+
+            // PRIMER SPACE -> REVELAR
+            if (!cardRevealed) {
+
+                text.classList.add("show");
+
+                cardRevealed = true;
+
+                return;
+
+            }
+
+            // SEGUNDO SPACE -> AVANZAR
+            cardRevealed = false;
+
+            nextCard();
+
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // Bloquear clic derecho
+        document.addEventListener("contextmenu", e => e.preventDefault());
+
+        // Bloquear selección de texto
+        document.addEventListener("selectstart", e => e.preventDefault());
+
+        // Bloquear arrastrar
+        document.addEventListener("dragstart", e => e.preventDefault());
+
+        // Bloquear copiar
+        document.addEventListener("copy", e => e.preventDefault());
+
+        // Bloquear cortar
+        document.addEventListener("cut", e => e.preventDefault());
+
+        // Bloquear pegar
+        document.addEventListener("paste", e => e.preventDefault());
+
+        // Bloquear algunos atajos habituales
+        document.addEventListener("keydown", function (e) {
+
+            const key = e.key.toLowerCase();
+
+            if (
+                e.key === "F12" ||
+                (e.ctrlKey && e.shiftKey && key === "i") ||
+                (e.ctrlKey && e.shiftKey && key === "j") ||
+                (e.ctrlKey && e.shiftKey && key === "c") ||
+                (e.ctrlKey && key === "u")
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Limpiar consola periódicamente
+        setInterval(() => {
+            console.clear();
+        }, 1000);
+
+
+        // Anti iframe
+        if (window.top !== window.self) {
+            document.body.innerHTML = "";
+        }
+
+
+
+
+
+
+
+
+
+
+
+        function cerrarPopup() {
+
+            const popup = document.getElementById("mensajeInicio");
+
+            popup.style.opacity = "0";
+            popup.style.transition = "opacity .3s ease";
+
+            setTimeout(() => {
+                popup.style.display = "none";
+            }, 300);
+        }
+
+    </script>
+
+</body>
+
+
+
+
+
+
+
+<div id="mensajeInicio" class="overlay">
+    <div class="popup">
+        <h2> <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="icon icon-tabler icons-tabler-outline icon-tabler-medical-cross">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path
+                    d="M13 3a1 1 0 0 1 1 1v4.535l3.928 -2.267a1 1 0 0 1 1.366 .366l1 1.732a1 1 0 0 1 -.366 1.366l-3.927 2.268l3.927 2.269a1 1 0 0 1 .366 1.366l-1 1.732a1 1 0 0 1 -1.366 .366l-3.928 -2.269v4.536a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-4.536l-3.928 2.268a1 1 0 0 1 -1.366 -.366l-1 -1.732a1 1 0 0 1 .366 -1.366l3.927 -2.268l-3.927 -2.268a1 1 0 0 1 -.366 -1.366l1 -1.732a1 1 0 0 1 1.366 -.366l3.928 2.267v-4.535a1 1 0 0 1 1 -1h2" />
+
+            </svg>Protocolo MARCH <button onclick="cerrarPopup()">Visto</button>
+        </h2>
+
+        <div class="contenido-scroll">
+
+            <strong>PROTOCOLO MARCH EN SEGUNDA COBERTURA</strong><br><br>
+
+            · <b>¿Qué es el protocolo MARCH?</b><br>
+            MARCH es un protocolo de actuación en sanidad táctica que es realizado inicialmente en segunda
+            cobertura.<br><br>
+
+
+            · <b>¿Existen requisitos previos para trabajar con este software?</b><br>
+            Sí. Este recurso está orientado a personal con formación básica en sanidad táctica y conocimientos básicos
+            sobre las actuaciones de cada fase del MARCH.<br>
+
+            <small>
+                * Se recomienda la lectura del PROTOCOLO ÍBERO y, para una formación más detallada al ámbito militar,
+                PHTLS Edición Militar.
+                También son fundamentales las formaciones TCCC o TECC para sacarle partido.
+            </small><br><br>
+
+            · <b>¿Cómo trabajar con este recurso?</b><br>
+
+            1. Estás en segunda cobertura, trabaja por orden el MARCH<br>
+            2. Antes de revelar una tarjeta, realiza la valoración correspondiente, por ejemplo en M (Hemorragias
+            masivas) antes de revelar la tarjeta procederíamos a ver si hay charco de sangre o ropa empapada general,
+            tras ello revelamos la tarjeta y nos dice si existe hemorragia masiva y dónde.<br>
+            3. Al mostrar la tarjeta aparecerá aleatoriamente un MARCH a resolver.<br>
+            4. Al finalizar podrás consultar el tiempo empleado, registrar errores e imprimirlos.<br><br>
+
+            ✔️ Se recomienda previamente realizar un curso de TCCC o TECC<br>
+
+            ⚠️ Este sistema trabaja exclusivamente la <b>segunda cobertura</b>; no incluye zona de muerte ni primera
+            cobertura.<br>
+
+            👀 Desde PC puedes avanzar entre tarjetas pulsando la <b>barra espaciadora</b>.
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+</html>

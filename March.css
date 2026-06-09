@@ -1,0 +1,796 @@
+:root {
+    --azul: #001f5b;
+    --azul2: #003b8e;
+    --azuldos: #00a6ff;
+    --azuloscuro: #012a46;
+    --blanco: #ffffff;
+    --negro: #000000;
+    --verde: #2dc653;
+    --rojo: #d62828;
+}
+
+/* =========================
+   RESET
+========================= */
+
+html {
+    font-size: 62.5%;
+    box-sizing: border-box;
+    scroll-snap-type: y mandatory;
+    margin: 0 auto;
+
+}
+
+/*
+.card .navegacion-principal{
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+*/
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    font-size: 16px;
+    font-family: "Nunito Sans", sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    background-image: linear-gradient(to top, var(--blanco) 0%, var(--azuloscuro) 100%);
+}
+
+
+h1 {
+    font-size: 3.2rem;
+    color: #ffffff;
+
+}
+
+h2 {
+    font-size: 2.8rem
+}
+
+h3 {
+    font-size: 1.8rem
+}
+
+h6 {
+    font-weight: bold;
+    color: #000000;
+    font-size: 1.6rem;
+}
+
+h1,
+h2,
+h3,
+h6 {
+    text-align: center;
+}
+
+ 
+.contenedor {
+
+    width: 100%;
+
+    max-width: 1500px;
+
+    margin: 0 auto;
+
+    min-height: calc(100vh - 70px);
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    padding: 30px 20px;
+}
+
+/* =========================
+   TITULO
+========================= */
+
+ 
+/* =========================
+   PANEL SUPERIOR
+========================= */
+
+.top-info {
+
+    width: 100%;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 20px;
+
+    flex-wrap: wrap;
+
+    margin-bottom: 35px;
+
+    position: relative;
+
+    z-index: 50;
+}
+
+/* =========================
+   INFO BOX
+========================= */
+
+.info-box {
+
+    min-width: 190px;
+
+    padding: 20px;
+
+    border-radius: 22px;
+
+    background:
+        rgba(255, 255, 255, .08);
+
+    border:
+        1px solid rgba(255, 255, 255, .12);
+
+    backdrop-filter: blur(10px);
+
+    text-align: center;
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, .2);
+}
+
+.info-box h3 {
+
+    font-size: 1.4rem;
+
+    margin-bottom: 10px;
+
+    opacity: .85;
+}
+
+.info-box p {
+
+    font-size: 3rem;
+
+    font-weight: 700;
+}
+
+/* =========================
+   BOTONES
+========================= */
+
+.controls {
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+}
+
+button {
+
+    border: none;
+
+    padding: 16px 24px;
+
+    border-radius: 16px;
+
+    font-size: 1.5rem;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: .25s;
+
+    color: white;
+
+    min-width: 170px;
+
+    box-shadow:
+        0 10px 20px rgba(0, 0, 0, .2);
+}
+
+button:hover {
+
+    transform:
+        translateY(-2px) scale(1.02);
+}
+
+.btn-start {
+    background: #00b4d8;
+}
+
+.btn-next {
+    background: #2dc653;
+}
+
+.btn-reset {
+    background: #d62828;
+}
+
+/* =========================
+   CARRUSEL
+========================= */
+
+.carousel-wrapper {
+
+    width: 100%;
+
+    flex: 1;
+
+    position: relative;
+
+    overflow: hidden;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    z-index: 1;
+}
+
+.carousel {
+
+    display: flex;
+
+    transition:
+        transform .6s ease;
+}
+
+/* =========================
+   TARJETAS
+========================= */
+
+.card {
+
+    min-width: 100%;
+
+    padding: 20px;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.card-inner {
+
+    width: 100%;
+
+    max-width: 950px;
+    height: min-content;
+    background: white;
+
+    color: #111827;
+
+    border-radius: 30px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, .35);
+
+    opacity: .45;
+
+    transform: scale(.93);
+
+    transition: .4s;
+}
+
+.card.active .card-inner {
+
+    opacity: 1;
+
+    transform: scale(1);
+}
+
+/* =========================
+   HEADER CARD
+========================= */
+
+.card-header {
+
+    background:
+        linear-gradient(90deg,
+            #001d3d,
+            #003566);
+
+    color: white;
+
+    padding: 30px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+}
+
+.letter {
+
+    font-size: 6rem;
+
+    font-weight: 700;
+}
+
+.phase {
+
+    text-align: right;
+}
+
+.phase h2 {
+
+    font-size: 2.4rem;
+
+    margin-bottom: 6px;
+}
+
+.phase span {
+
+    font-size: 1.5rem;
+
+    opacity: .8;
+}
+
+/* =========================
+   BODY CARD
+========================= */
+
+.card-body {
+
+    padding: 50px 35px;
+
+    min-height: 360px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+}
+
+.hidden-text {
+
+    max-width: 720px;
+
+    font-size: 2.1rem;
+
+    line-height: 1.8;
+
+    font-weight: 600;
+
+    opacity: 0;
+
+    transform: translateY(15px);
+
+    transition: .5s;
+}
+
+.hidden-text.show {
+
+    opacity: 1;
+
+    transform: translateY(0);
+}
+
+.tap {
+
+    margin-top: 2rem;
+
+    font-size: 1.5rem;
+
+    color: #6b7280;
+}
+
+.timer-phase {
+
+    margin-top: 1rem;
+
+    font-size: 1.8rem;
+
+    font-weight: 700;
+
+    color: #003566;
+}
+
+
+/* =========================
+   FINAL SCREEN
+========================= */
+
+.final-screen {
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        rgba(0, 0, 0, .82);
+
+    display: none;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+
+    z-index: 999;
+}
+
+.final-box {
+
+    width: 100%;
+
+    max-width: 950px;
+
+    background: white;
+
+    color: #111827;
+
+    border-radius: 28px;
+
+    padding: 35px;
+
+    max-height: 90vh;
+
+    overflow: auto;
+}
+
+.final-box h2 {
+
+    text-align: center;
+
+    margin-bottom: 1rem;
+
+    font-size: 3rem;
+}
+
+.summary {
+
+    background: #f3f4f6;
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    line-height: 1.8;
+
+    margin-bottom: 0;
+
+    font-size: 1.5rem;
+}
+
+textarea {
+
+    width: 8%;
+
+    min-height: 100px;
+
+    border-radius: 18px;
+
+    border: 1px solid #d1d5db;
+
+    padding: 18px;
+
+    resize: vertical;
+
+    font-size: 1.5rem;
+
+    margin-bottom: 1rem;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:900px) {
+
+    .card-header {
+
+        flex-direction: column;
+
+        gap: 18px;
+
+        text-align: center;
+    }
+
+    .phase {
+        text-align: center;
+    }
+
+    .letter {
+        font-size: 5rem;
+    }
+
+    .hidden-text {
+        font-size: 1.8rem;
+    }
+}
+
+@media(max-width:768px) {
+
+    body {
+        overflow: auto;
+    }
+
+    .contenedor {
+
+        justify-content: flex-start;
+
+        padding-top: 35px;
+    }
+
+    .top-info {
+
+        flex-direction: column;
+    }
+
+    .info-box {
+
+        width: 100%;
+    }
+
+    .controls {
+
+        width: 100%;
+
+        flex-direction: column;
+    }
+
+    button {
+
+        width: 100%;
+    }
+
+    .card-body {
+
+        padding: 35px 25px;
+    }
+
+    .hidden-text {
+
+        font-size: 1.6rem;
+    }
+
+    .phase h2 {
+
+        font-size: 2rem;
+    }
+
+    .letter {
+
+        font-size: 4.5rem;
+    }
+}
+
+@media(max-width:480px) {
+
+    h1 {
+
+        font-size: 3.2rem;
+    }
+
+    .letter {
+
+        font-size: 4rem;
+    }
+
+    .hidden-text {
+
+        font-size: 1.45rem;
+
+        line-height: 1.7;
+    }
+
+    .info-box p {
+
+        font-size: 2.5rem;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ==========================================
+   MEJORAS EXTRA PARA MÓVIL
+========================================== */
+
+@media (max-width: 768px) {
+
+    html {
+        font-size: 56.25%;
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+
+    .contenedor {
+        padding: 15px;
+    }
+
+    /* PANEL SUPERIOR */
+
+    .top-info {
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .info-box {
+        width: 100%;
+        min-width: unset;
+        padding: 15px;
+    }
+
+    .info-box h3 {
+        font-size: 1.3rem;
+    }
+
+    .info-box p {
+        font-size: 2.4rem;
+    }
+
+    /* BOTONES */
+
+    .controls {
+        width: 100%;
+        gap: 10px;
+    }
+
+    button {
+        width: 100%;
+        min-width: unset;
+        padding: 14px;
+        font-size: 1.4rem;
+    }
+
+    /* TARJETAS */
+
+    .card {
+        padding: 10px;
+    }
+
+    .card-inner {
+        border-radius: 20px;
+    }
+
+    .card-header {
+        padding: 20px;
+    }
+
+    .letter {
+        font-size: 4rem;
+    }
+
+    .phase h2 {
+        font-size: 1.8rem;
+    }
+
+    .phase span {
+        font-size: 1.3rem;
+    }
+
+    .card-body {
+        padding: 25px 18px;
+        min-height: 280px;
+    }
+
+    .hidden-text {
+        font-size: 1.5rem;
+        line-height: 1.7;
+    }
+
+    .tap {
+        font-size: 1.3rem;
+    }
+
+    .timer-phase {
+        font-size: 1.6rem;
+    }
+
+    /* PANTALLA FINAL */
+
+    .final-box {
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .final-box h2 {
+        font-size: 2.4rem;
+    }
+
+    .summary {
+        font-size: 1.4rem;
+        padding: 15px;
+    }
+
+    textarea {
+        width: 100%;
+        min-height: 140px;
+        font-size: 1.4rem;
+    }
+}
+
+/* MÓVILES PEQUEÑOS */
+
+@media (max-width: 480px) {
+
+    h1 {
+        font-size: 2.6rem;
+        padding: 0 10px;
+    }
+
+    .letter {
+        font-size: 3.5rem;
+    }
+
+    .phase h2 {
+        font-size: 1.6rem;
+    }
+
+    .hidden-text {
+        font-size: 1.4rem;
+        line-height: 1.6;
+    }
+
+    .card-body {
+        min-height: 240px;
+        padding: 20px 15px;
+    }
+
+    .info-box p {
+        font-size: 2rem;
+    }
+
+    .timer-phase {
+        font-size: 1.5rem;
+    }
+}
