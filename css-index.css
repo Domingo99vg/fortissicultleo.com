@@ -40,7 +40,7 @@ body {
 
 h1 {
   font-size: 3.3rem;
-  font-family:"Nunito Sans", sans-serif;
+  font-family: "Nunito Sans", sans-serif;
   color: #ffffff;
 
 }
@@ -137,7 +137,7 @@ h1 span {
   background-size: cover;
   background-position: center 50%;
   /*background-position: [horizontal] [vertical];*/
-  height: 250px;
+  height: 210px;
   position: relative;
 }
 
@@ -338,13 +338,18 @@ incluyendo los bordes laterales.
   color: #000000;
   display: flex;
   justify-content: center;
-  padding: 1rem;
-  margin-top: 2rem;
+  padding: 0.5rem;
+  margin-top: 1rem;
 }
 
 
 
-
+.texto {
+  font-style: oblique;
+  font-size: 1.3rem;
+  width: 40%;
+  text-align: center;
+}
 
 
 
@@ -401,21 +406,21 @@ incluyendo los bordes laterales.
 
 
 
-.noFinalizado{
-  display: flex;   
+.noFinalizado {
+  display: flex;
   max-width: 30%;
   height: min-content;
-  align-items: center; 
-  margin: 0 auto; 
-  background-color: rgb(255, 255, 255); 
-  justify-content: center; 
+  align-items: center;
+  margin: 0 auto;
+  background-color: rgb(255, 255, 255);
+  justify-content: center;
   border-radius: 1rem;
   padding: 1rem;
 
 }
 
 
-.proximamente{
+.proximamente {
   text-transform: uppercase;
   font-weight: bold;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -484,22 +489,8 @@ incluyendo los bordes laterales.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
+footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

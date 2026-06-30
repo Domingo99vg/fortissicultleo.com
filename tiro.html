@@ -8,7 +8,7 @@
 
     <style>
         body {
-            background: rgb(255, 255, 255);
+            background: rgb(144, 144, 144);
             color: black;
             overflow: hidden;
             display: flex;
@@ -17,17 +17,31 @@
             height: 100vh;
             flex-direction: column;
             font-family: "Nunito Sans" !important;
-
+            position: relative;
 
         }
 
-        /* CENTRADO PERFECTO */
+
+
+
+
+        .sombra {
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.549);
+            position: absolute;
+        }
+
+
+
+
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-
+            height: 70vh;
+            padding-top: 6rem;
         }
 
         /* SCENE MÁS CENTRADA */
@@ -349,40 +363,243 @@
         .btn-secondary:hover {
             background: #5c636a;
         }
-    </style>
 
+
+
+
+
+
+
+
+
+
+
+        :root {
+            --azuldos: #164C96;
+            --negro: #090535;
+        }
+
+        .navegacion-principal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 9999;
+            background: linear-gradient(to right, var(--azuldos) 30%, var(--negro) 40%);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, .35);
+
+            height: 60px;
+        }
+
+        .barra-superior {
+            max-width: 1200px;
+            margin: auto;
+            height: 60px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 80px;
+        }
+
+        @media(min-width:768px) {
+            .barra-superior {
+                flex-direction: row;
+                justify-content: space-around;
+            }
+        }
+
+        .barra-superior a,
+        .barra-superior button {
+
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            background: none;
+            border: none;
+            padding: .8rem 1.5rem;
+            cursor: pointer;
+            transition: .25s;
+            font-size: 1rem;
+        }
+
+        .barra-superior a:hover,
+        .barra-superior button:hover {
+            animation: fadepulse 1s infinite;
+        }
+
+        @keyframes fadepulse {
+
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+ 
+
+
+
+
+
+
+
+
+
+        #bloqueoMovil {
+            display: none;
+
+            position: fixed;
+            inset: 0;
+
+            background: #1f1f1f;
+
+            z-index: 999999;
+
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+
+            padding: 30px;
+        }
+
+        #bloqueoMovil .mensaje {
+
+            max-width: 500px;
+
+            background: white;
+
+            padding: 40px;
+
+            border-radius: 20px;
+
+            box-shadow: 0 20px 40px rgba(0, 0, 0, .4);
+
+        }
+
+        #bloqueoMovil h1 {
+            margin-bottom: 20px;
+        }
+
+        #bloqueoMovil p {
+            margin-bottom: 25px;
+        }
+
+        #bloqueoMovil button {
+
+            padding: 12px 30px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            background: #164C96;
+
+            color: white;
+
+            font-weight: bold;
+        }
+
+        @media (max-width:799px) {
+
+            #bloqueoMovil {
+                display: flex;
+            }
+
+            body>*:not(#bloqueoMovil) {
+                display: none !important;
+            }
+
+        }
+    </style>
 </head>
 
 <body>
 
-    <div class="container text-center">
 
-        <div id="label" class="label">ESTA ERA LA SILUETA</div>
 
-        <div class="scene" id="scene">
 
-            <div id="card" class="card front-show">
-                <div class="face front">
-                    <img id="base">
+    <div id="bloqueoMovil">
+
+        <div class="mensaje">
+
+            <h1>Ojo</h1>
+
+            <p>
+                Este simulador solo está disponible para pantallas de al menos <strong>una tablet horizontalmente, o un
+                ordenador(éste recomendado).</strong>.
+            </p>
+
+            <button onclick="https://fortissicutleo.com/index.html">
+                Volver atrás
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+    <nav class="navegacion-principal">
+
+        <div class="barra-superior">
+
+            <button id="btn" onclick="toggle()">
+                Comenzar entrenamiento
+            </button>
+
+            <a href="https://fortissicutleo.com/index.html">
+                Volver al inicio
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <span class="sombra">
+
+        <div class="container text-center">
+
+            <div id="label" class="label">ESTA ERA LA SILUETA</div>
+
+            <div class="scene" id="scene">
+
+                <div id="card" class="card front-show">
+                    <div class="face front">
+                        <img id="base">
+                    </div>
+                    <div class="face back">
+                        <img id="target">
+                    </div>
                 </div>
-                <div class="face back">
-                    <img id="target">
-                </div>
+
+            </div>
+
+            <div id="reviewRow"
+                style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);justify-content:center;align-items:center;gap:20px;z-index:50;">
             </div>
 
         </div>
 
-        <button id="btn" class="btn btn-success btn-lg" onclick="toggle()">
-            Comenzar entrenamiento
-        </button>
-        <a href="index.html" class="btn btn-secondary btn-lg mt-3">
-            Volver al inicio
-        </a>
-
-    </div>
+    </span>
 
     <script>
-        const baseImg = "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/siluetaprincipal.png";
+        const baseImg = "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/Siluetaprincipal.png";
 
         const images = [
             "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/1-removebg-preview.png",
@@ -430,6 +647,7 @@
         let shuffledMain = [];
         let lastMain = null;
 
+
         function nextMainImage() {
             if (shuffledMain.length === 0) {
                 shuffledMain = [...images].sort(() => Math.random() - 0.5);
@@ -467,6 +685,7 @@
         /* 🔥 CONTROL DE LADOS (NO DUPLICAR) */
         let leftActive = false;
         let rightActive = false;
+        let currentScene = [];
 
         function spawnGhost() {
 
@@ -483,8 +702,16 @@
             }
 
             const g = document.createElement("img");
-            g.src = randomImageDifferent();
+            const img = randomImageDifferent();
+
+            g.src = img;
             g.className = "ghost " + (Math.random() < 0.5 ? "front-layer" : "back-layer");
+
+            // Guardamos esta silueta
+            currentScene.push({
+                src: img,
+                className: g.className
+            });
 
             if (side === "left") {
                 g.classList.add("ghost-move-left");
@@ -503,18 +730,49 @@
             }, 3500);
         }
 
+
+        function renderReview() {
+            card.style.display = "none";
+            const row = document.getElementById("reviewRow");
+            row.innerHTML = "";
+            currentScene.forEach(item => {
+                const im = document.createElement("img");
+                im.src = item.src;
+                im.style.width = "200px";
+                im.style.height = "300px";
+                im.style.objectFit = "contain";
+                row.appendChild(im);
+            });
+            row.style.display = "flex";
+        }
+        function hideReview() {
+            card.style.display = "";
+            const row = document.getElementById("reviewRow");
+            row.innerHTML = "";
+            row.style.display = "none";
+        }
+
         async function cycle() {
             while (running) {
 
                 card.className = "card front-show";
                 await wait(3000);
 
-                target.src = nextMainImage();
+                currentScene = [];
 
+                const main = nextMainImage();
+                target.src = main;
+
+                // Guardamos la principal
+                currentScene.push({
+                    src: main,
+                    className: ""
+                });
                 card.className = "card back-show";
                 target.className = "";
-                target.style.transform = "none";
-                label.classList.remove("show");
+                target.style.transform = "scale(1.2)";
+
+
 
                 /* GHOSTS */
                 if (Math.random() < 0.8) {
@@ -544,10 +802,16 @@
 
                 target.className = "";
                 target.style.transform = "scale(1.2)";
+
+                renderReview();
+                label.textContent = "⬇️ ESTAS ERAN LAS SILUETAS ⬇️";
+                label.style.color = "white";
                 label.classList.add("show");
 
                 await wait(2500);
+
                 label.classList.remove("show");
+                hideReview();
             }
         }
 
