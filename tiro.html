@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: rgb(144, 144, 144);
+            color: black;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            flex-direction: column;
+            font-family: "Nunito Sans" !important;
+            position: relative;
+
+        }
+
+
+
+
+
+        .sombra {
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.549);
+            position: absolute;
+        }
+
+
+
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 70vh;
+            padding-top: 6rem;
+        }
+
+        /* SCENE MÁS CENTRADA */
+        .scene {
+            perspective: 1200px;
+            width: 300px;
+            height: 450px;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: transform .8s ease-in-out;
+            z-index: 2;
+            border: none;
+
+        }
+
+        .card.front-show {
+            transform: rotateY(0deg);
+        }
+
+        .card.back-show {
+            transform: rotateY(180deg);
+        }
+
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: rgba(255, 255, 255, 0);
+        }
+
+        .back {
+            transform: rotateY(180deg);
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+
+        }
+
+        /* AVANCE */
+        @keyframes rush {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(2) translateX(-15px);
+            }
+
+            100% {
+                transform: scale(3);
+            }
+        }
+
+        .advance {
+            animation: rush 1.6s linear forwards;
+        }
+
+        /* COMBO */
+        @keyframes comboLeft {
+            0% {
+                transform: translateX(0) scale(1);
+            }
+
+            50% {
+                transform: translateX(-30vw) scale(1.5);
+            }
+
+            100% {
+                transform: scale(2.5);
+            }
+        }
+
+        @keyframes comboRight {
+            0% {
+                transform: translateX(0) scale(1);
+            }
+
+            50% {
+                transform: translateX(30vw) scale(1.5);
+            }
+
+            100% {
+                transform: scale(2.5);
+            }
+        }
+
+        .combo-left {
+            animation: comboLeft 1.6s linear forwards;
+        }
+
+        .combo-right {
+            animation: comboRight 1.6s linear forwards;
+        }
+
+        /* LATERAL */
+        .move-left {
+            animation: moveLeft 1.2s linear forwards;
+        }
+
+        .move-right {
+            animation: moveRight 1.2s linear forwards;
+        }
+
+        @keyframes moveLeft {
+            to {
+                transform: translateX(-60vw);
+            }
+        }
+
+        @keyframes moveRight {
+            to {
+                transform: translateX(60vw);
+            }
+        }
+
+        /* GHOST */
+        .ghost {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .front-layer {
+            z-index: 3;
+        }
+
+        .back-layer {
+            z-index: 1;
+        }
+
+        @keyframes ghostLeft {
+            from {
+                transform: translateX(60vw);
+            }
+
+            to {
+                transform: translateX(-60vw);
+            }
+        }
+
+        @keyframes ghostRight {
+            from {
+                transform: translateX(-60vw);
+            }
+
+            to {
+                transform: translateX(60vw);
+            }
+        }
+
+        .ghost-move-left {
+            animation: ghostLeft 3.5s linear forwards;
+        }
+
+        .ghost-move-right {
+            animation: ghostRight 3.5s linear forwards;
+        }
+
+        .label {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            opacity: 0;
+        }
+
+        .label.show {
+            opacity: 1;
+        }
+
+
+
+
+
+
+
+
+
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, .75);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            z-index: 999999;
+            font-family: "Nunito Sans", sans-serif !important;
+
+        }
+
+        .popup {
+            width: 90%;
+            max-width: 500px;
+
+            background: linear-gradient(135deg,
+                    #164C96,
+                    #090535);
+
+            color: white;
+
+            padding: 2rem;
+
+            border-radius: 1.5rem;
+
+            text-align: left;
+
+            box-shadow: 0 0 40px rgba(0, 0, 0, .6);
+
+            animation: entrada .4s ease;
+            font-family: "Nunito Sans", sans-serif !important;
+
+        }
+
+        .popup h2 {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            font-family: "Nunito Sans", sans-serif !important;
+
+        }
+
+
+
+
+        .popup button {
+            display: flex;
+            margin: 2rem auto;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            padding: .8rem 1.5rem;
+            border-radius: .8rem;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: "Nunito Sans", sans-serif !important;
+
+
+        }
+
+        @keyframes entrada {
+            from {
+                opacity: 0;
+                transform: scale(.7);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Botón principal */
+        .btn-success {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #0b5ed7;
+        }
+
+        /* Botón volver */
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5c636a;
+        }
+
+
+
+
+
+
+
+
+
+
+
+        :root {
+            --azuldos: #164C96;
+            --negro: #090535;
+        }
+
+        .navegacion-principal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 9999;
+            background: linear-gradient(to right, var(--azuldos) 30%, var(--negro) 40%);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, .35);
+
+            height: 60px;
+        }
+
+        .barra-superior {
+            max-width: 1200px;
+            margin: auto;
+            height: 60px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 80px;
+        }
+
+        @media(min-width:768px) {
+            .barra-superior {
+                flex-direction: row;
+                justify-content: space-around;
+            }
+        }
+
+        .barra-superior a,
+        .barra-superior button {
+
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            background: none;
+            border: none;
+            padding: .8rem 1.5rem;
+            cursor: pointer;
+            transition: .25s;
+            font-size: 1rem;
+        }
+
+        .barra-superior a:hover,
+        .barra-superior button:hover {
+            animation: fadepulse 1s infinite;
+        }
+
+        @keyframes fadepulse {
+
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+ 
+
+
+
+
+
+
+
+
+
+        #bloqueoMovil {
+            display: none;
+
+            position: fixed;
+            inset: 0;
+
+            background: #1f1f1f;
+
+            z-index: 999999;
+
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+
+            padding: 30px;
+        }
+
+        #bloqueoMovil .mensaje {
+
+            max-width: 500px;
+
+            background: white;
+
+            padding: 40px;
+
+            border-radius: 20px;
+
+            box-shadow: 0 20px 40px rgba(0, 0, 0, .4);
+
+        }
+
+        #bloqueoMovil h1 {
+            margin-bottom: 20px;
+        }
+
+        #bloqueoMovil p {
+            margin-bottom: 25px;
+        }
+
+        #bloqueoMovil button {
+
+            padding: 12px 30px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            background: #164C96;
+
+            color: white;
+
+            font-weight: bold;
+        }
+
+        @media (max-width:799px) {
+
+            #bloqueoMovil {
+                display: flex;
+            }
+
+            body>*:not(#bloqueoMovil) {
+                display: none !important;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+
+    <div id="bloqueoMovil">
+
+        <div class="mensaje">
+
+            <h1>Ojo</h1>
+
+            <p>
+                Este simulador solo está disponible para pantallas de al menos <strong>una tablet horizontalmente, o un
+                ordenador(éste recomendado).</strong>.
+            </p>
+
+            <button onclick="https://fortissicutleo.com/index.html">
+                Volver atrás
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+    <nav class="navegacion-principal">
+
+        <div class="barra-superior">
+
+            <button id="btn" onclick="toggle()">
+                Comenzar entrenamiento
+            </button>
+
+            <a href="https://fortissicutleo.com/index.html">
+                Volver al inicio
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <span class="sombra">
+
+        <div class="container text-center">
+
+            <div id="label" class="label">ESTA ERA LA SILUETA</div>
+
+            <div class="scene" id="scene">
+
+                <div id="card" class="card front-show">
+                    <div class="face front">
+                        <img id="base">
+                    </div>
+                    <div class="face back">
+                        <img id="target">
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="reviewRow"
+                style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);justify-content:center;align-items:center;gap:20px;z-index:50;">
+            </div>
+
+        </div>
+
+    </span>
+
+    <script>
+        const baseImg = "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/Siluetaprincipal.png";
+
+        const images = [
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/1-removebg-preview.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/10-removebg-preview.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/10.1-removebg-preview.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/11-removebg-preview.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/12-removebg-preview.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/12.1-removebg-preview.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/2-removebg-preview.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/3-removebg-preview.png",
+            "https://github.com/Domingo99vg/simuladordetiro/blob/main/3.1-removebg-preview.png?raw=true",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/4.1-removebg-preview.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/5-removebg-preview.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/6-removebg-preview.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/7-removebg-preview.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/8-removebg-preview.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/8.1-removebg-preview.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/100.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/101.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/102.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/103.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/104.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/105.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/106.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/107.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/108.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/111.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/112.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/113.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/114.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/115.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/116.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/117.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/118.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/119.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/120.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/121.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/122.png",
+
+
+
+
+        ];
+
+        let shuffledMain = [];
+        let lastMain = null;
+
+
+        function nextMainImage() {
+            if (shuffledMain.length === 0) {
+                shuffledMain = [...images].sort(() => Math.random() - 0.5);
+            }
+
+            let img;
+            do {
+                img = shuffledMain.pop();
+            } while (img === lastMain && shuffledMain.length > 0);
+
+            lastMain = img;
+            return img;
+        }
+
+        function randomImageDifferent() {
+            let img;
+            do {
+                img = images[Math.floor(Math.random() * images.length)];
+            } while (img === lastMain);
+            return img;
+        }
+
+        const card = document.getElementById("card");
+        const target = document.getElementById("target");
+        const base = document.getElementById("base");
+        const label = document.getElementById("label");
+        const btn = document.getElementById("btn");
+        const scene = document.getElementById("scene");
+
+        base.src = baseImg;
+
+        let running = false;
+        const wait = ms => new Promise(r => setTimeout(r, ms));
+
+        /* 🔥 CONTROL DE LADOS (NO DUPLICAR) */
+        let leftActive = false;
+        let rightActive = false;
+        let currentScene = [];
+
+        function spawnGhost() {
+
+            if (leftActive && rightActive) return;
+
+            let side;
+
+            if (!leftActive && !rightActive) {
+                side = Math.random() < 0.5 ? "left" : "right";
+            } else if (!leftActive) {
+                side = "left";
+            } else {
+                side = "right";
+            }
+
+            const g = document.createElement("img");
+            const img = randomImageDifferent();
+
+            g.src = img;
+            g.className = "ghost " + (Math.random() < 0.5 ? "front-layer" : "back-layer");
+
+            // Guardamos esta silueta
+            currentScene.push({
+                src: img,
+                className: g.className
+            });
+
+            if (side === "left") {
+                g.classList.add("ghost-move-left");
+                leftActive = true;
+            } else {
+                g.classList.add("ghost-move-right");
+                rightActive = true;
+            }
+
+            scene.appendChild(g);
+
+            setTimeout(() => {
+                g.remove();
+                if (side === "left") leftActive = false;
+                else rightActive = false;
+            }, 3500);
+        }
+
+
+        function renderReview() {
+            card.style.display = "none";
+            const row = document.getElementById("reviewRow");
+            row.innerHTML = "";
+            currentScene.forEach(item => {
+                const im = document.createElement("img");
+                im.src = item.src;
+                im.style.width = "200px";
+                im.style.height = "300px";
+                im.style.objectFit = "contain";
+                row.appendChild(im);
+            });
+            row.style.display = "flex";
+        }
+        function hideReview() {
+            card.style.display = "";
+            const row = document.getElementById("reviewRow");
+            row.innerHTML = "";
+            row.style.display = "none";
+        }
+
+        async function cycle() {
+            while (running) {
+
+                card.className = "card front-show";
+                await wait(3000);
+
+                currentScene = [];
+
+                const main = nextMainImage();
+                target.src = main;
+
+                // Guardamos la principal
+                currentScene.push({
+                    src: main,
+                    className: ""
+                });
+                card.className = "card back-show";
+                target.className = "";
+                target.style.transform = "scale(1.2)";
+
+
+
+                /* GHOSTS */
+                if (Math.random() < 0.8) {
+                    spawnGhost();
+                    if (Math.random() < 0.4) spawnGhost();
+                }
+
+                await wait(1200);
+
+                /* MOVIMIENTO CENTRAL + QUIETO A VECES */
+                const r = Math.random();
+
+                if (r < 0.35) {
+                    target.classList.add("advance");
+                }
+                else if (r < 0.6) {
+                    target.classList.add(Math.random() < 0.5 ? "combo-left" : "combo-right");
+                }
+                else if (r < 0.8) {
+                    target.classList.add(Math.random() < 0.5 ? "move-left" : "move-right");
+                }
+                else {
+                    // 🟢 SE QUEDA QUIETA
+                }
+
+                await wait(2000);
+
+                target.className = "";
+                target.style.transform = "scale(1.2)";
+
+                renderReview();
+                label.textContent = "⬇️ ESTAS ERAN LAS SILUETAS ⬇️";
+                label.style.color = "white";
+                label.classList.add("show");
+
+                await wait(2500);
+
+                label.classList.remove("show");
+                hideReview();
+            }
+        }
+
+        function toggle() {
+            running = !running;
+
+            if (running) {
+                btn.textContent = "Parar entreno";
+                btn.className = "btn btn-danger btn-lg";
+                cycle();
+            } else {
+                btn.textContent = "Comenzar entrenamiento";
+                btn.className = "btn btn-success btn-lg";
+                card.className = "card front-show";
+            }
+        }
+
+
+
+
+
+
+
+
+
+        function cerrarPopup() {
+            document.getElementById("mensajeInicio").style.display = "none";
+        }
+
+
+
+
+        /*
+        window.addEventListener("load", () => {
+
+            if (localStorage.getItem("bienvenidaVista")) {
+                document.getElementById("mensajeInicio").style.display = "none";
+                return;
+            }
+
+            localStorage.setItem("bienvenidaVista", "si");
+        });
+
+        function cerrarPopup() {
+            document.getElementById("mensajeInicio").style.display = "none";
+        } 
+        */
+
+
+
+
+
+
+
+
+
+
+
+        // Bloquear clic derecho
+        document.addEventListener("contextmenu", e => e.preventDefault());
+
+        // Bloquear selección de texto
+        document.addEventListener("selectstart", e => e.preventDefault());
+
+        // Bloquear arrastrar
+        document.addEventListener("dragstart", e => e.preventDefault());
+
+        // Bloquear copiar
+        document.addEventListener("copy", e => e.preventDefault());
+
+        // Bloquear cortar
+        document.addEventListener("cut", e => e.preventDefault());
+
+        // Bloquear pegar
+        document.addEventListener("paste", e => e.preventDefault());
+
+        // Bloquear algunos atajos habituales
+        document.addEventListener("keydown", function (e) {
+
+            const key = e.key.toLowerCase();
+
+            if (
+                e.key === "F12" ||
+                (e.ctrlKey && e.shiftKey && key === "i") ||
+                (e.ctrlKey && e.shiftKey && key === "j") ||
+                (e.ctrlKey && e.shiftKey && key === "c") ||
+                (e.ctrlKey && key === "u")
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Limpiar consola periódicamente
+        setInterval(() => {
+            console.clear();
+        }, 1000);
+
+
+
+        // Anti iframe
+        if (window.top !== window.self) {
+            document.body.innerHTML = "";
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+
+</body>
+
+<div id="mensajeInicio" class="overlay">
+    <div class="popup">
+        <h2><svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="icon icon-tabler icons-tabler-outline icon-tabler-viewfinder">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                <path d="M12 3l0 4" />
+                <path d="M12 21l0 -3" />
+                <path d="M3 12l4 0" />
+                <path d="M21 12l-3 0" />
+                <path d="M12 12l0 .01" />
+            </svg> Simulador de tiro</h2>
+
+        <p>
+            En este simulador aparecerán diferentes siluetas que de forma aleatoria :<br><br>
+            ➡️ Se quedan en el sitio, acometen, persiguen a otra silueta, van a hacia un lado y/o se entrecruzan.<br>
+            ➡️ Tienen armas blancas, armas de fuego, o por el contrario...no tienen ningún objeto peligroso.<br>
+            ➡️ Tú decides dar órdenes verbales, tomar distancias, apuntar y en su caso, disparar.<br>
+            ✔️ La finalidad del simulador es entrenar decisiones valorando el escenario y el riesgo.<br><br>
+            ⚠️ Se aconseja cartucho láser para marcar.
+        </p>
+
+        <button onclick="cerrarPopup()">Visto</button>
+    </div>
+</div>
+
+</html>
