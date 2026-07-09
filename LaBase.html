@@ -112,6 +112,18 @@
             color: #fff
         }
 
+
+        .bad2 {
+            display: flex;
+            background: #64748b;
+            color: #fff;
+            width: 60%;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+
+        }
+
         .aux {
             background: #64748b;
             color: #fff
@@ -188,7 +200,7 @@
 
         .photo img {
             width: 100%;
-            height: 100%;
+            height: 25rem;
             object-fit: cover;
             position: relative;
 
@@ -210,7 +222,7 @@
 
         #list {
 
-            max-height: 26rem;
+            max-height: 23rem;
 
             overflow-y: auto;
 
@@ -350,6 +362,11 @@
             }
 
         }
+
+        .btn-volver {
+            background: #64748b;
+            color: #fff
+        }
     </style>
 </head>
 
@@ -382,18 +399,33 @@
                 <button class="aux" onclick="undo()">🗑 Quitar último día</button>
                 <button class="aux" onclick="resetAll()">♻ Empezar desde cero</button>
             </div>
-            <div class="card"><input id="txt" placeholder="Nuevo objetivo" autocomplete="off"><button class="aux"
-                    onclick="newTask()">Añadir
-                    objetivo</button>
+            <div class="card"><input id="txt" placeholder="Escribe aquí el nuevo objetivo diario"
+                    autocomplete="off"><button class="aux" onclick="newTask()">Añadir
+                    objetivo diario</button>
                 <ul id="list"></ul>
 
                 <button id="reiniciarObjetivos" class="aux">Reiniciar Objetivos</button>
             </div>
 
 
-            <div class="card"><label class="photo" for="img"><img id="preview" style="display:none"><span
-                        id="labelTxt">📷
-                        Añadir foto</span></label><input hidden id="img" type="file" accept="image/*"></div>
+            <div class="card">
+
+                <label class="photo" for="img">
+                    <img id="preview" style="display:none">
+                    <span id="labelTxt">📷 Añadir foto</span>
+                </label>
+
+                <input hidden id="img" type="file" accept="image/*">
+
+                <button id="eliminarFoto" class="bad2">
+                    🗑 Eliminar fotografía
+                </button>
+
+            </div>
+            <button class="btn-volver" onclick="window.location.href='index.html'">
+                Volver al menú de herramientas
+            </button>
+
         </div>
 
     </div>
@@ -449,6 +481,24 @@
         });
         chart.render();
         const reiniciarObjetivos = document.getElementById("reiniciarObjetivos")
+        const eliminarFoto = document.getElementById("eliminarFoto");
+
+
+        eliminarFoto.addEventListener("click", () => {
+
+            abrirModal(
+
+                "Eliminar fotografía",
+
+                "¿Seguro que deseas eliminar la fotografía?",
+
+                borrarFoto
+
+            );
+
+        });
+
+
 
         function save() { localStorage.ev = JSON.stringify(ev); localStorage.tasks = JSON.stringify(tasks); }
         function animateGraph() {
@@ -560,7 +610,21 @@
 
 
 
+        function borrarFoto() {
 
+            localStorage.removeItem("photo");
+
+            preview.removeAttribute("src");
+
+            preview.style.display = "none";
+
+            labelTxt.style.display = "block";
+
+            img.value = "";
+
+            cerrarModal();
+
+        }
 
 
 
