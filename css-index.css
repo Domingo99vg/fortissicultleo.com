@@ -340,8 +340,24 @@ incluyendo los bordes laterales.
   justify-content: center;
   padding: 0.5rem;
   margin-top: 1rem;
+  display: inline-block;
+  animation: salto 0.8s ease-in-out 2;
+  animation-delay: 1s;
+  animation-fill-mode: both;
 }
 
+
+@keyframes salto{
+
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-12px);
+    }
+
+}
 
 
 .texto {
