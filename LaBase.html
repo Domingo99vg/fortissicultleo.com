@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geist+Pixel&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+    <title>Planificador de objetivos</title>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        body {
+            margin: 0;
+            background: #eef8ff;
+            font-family: Segoe UI, Arial;
+            position: relative;
+            z-index: -0;
+
+
+        }
+
+        .imagen {
+            position: absolute;
+            background-image: url("https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/Z10.png");
+            background-size: cover;
+            width: 100%;
+            background-repeat: no-repeat;
+            z-index: -10;
+
+        }
+
+
+
+
+        h1 {
+            font-weight: bold;
+            text-align: center;
+            color: #fff;
+            font-family: "Geist Pixel", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings: "ELSH" 0;
+        }
+
+        /* Cursor */
+        #titulo::after {
+            content: "|";
+            animation: parpadeo .8s infinite;
+        }
+
+        #titulo.fin::after {
+            content: "";
+        }
+
+        @keyframes parpadeo {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .wrap {
+            max-width: 700px;
+            margin: auto;
+            padding: 16px
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, .08);
+            margin-bottom: 14px
+        }
+
+        .n {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #229ED9;
+            text-align: center
+        }
+
+        .small {
+            text-align: center;
+            color: #667
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: 0;
+            border-radius: 12px;
+            margin-top: 8px;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        .ok {
+            background: #25D366;
+            color: #fff
+        }
+
+        .bad {
+            background: #ef4444;
+            color: #fff
+        }
+
+        .aux {
+            background: #64748b;
+            color: #fff
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+            box-sizing: border-box
+        }
+
+        ul {
+            padding: 0
+        }
+
+        li {
+            list-style: none;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: #f7fbff;
+            border-left: 5px solid #229ED9;
+            border-radius: 12px;
+            padding: 10px;
+            margin: 8px 0
+        }
+
+        li span {
+            flex: 1;
+            min-width: 0;
+            overflow-wrap: anywhere;
+            word-break: break-word
+        }
+
+        .done {
+            border-left-color: #25D366
+        }
+
+        .done span {
+            text-decoration: line-through;
+            opacity: .6
+        }
+
+        .actions {
+            width: 90px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            flex-shrink: 0
+        }
+
+        .actions button {
+            width: 40px;
+            height: 40px;
+            margin: 0;
+            padding: 0
+        }
+
+        .photo {
+            width: 100%;
+            height: 100%;
+            border: 3px dashed #bcd;
+            border-radius: 18px;
+            margin: 14px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: relative;
+
+        }
+
+
+
+
+
+        .botonesGrafica {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+        }
+
+
+
+
+
+        #list {
+
+            max-height: 26rem;
+
+            overflow-y: auto;
+
+            padding-right: 1rem;
+
+        }
+
+
+
+
+        #list::-webkit-scrollbar {
+
+            width: 1rem;
+
+        }
+
+        #list::-webkit-scrollbar-track {
+
+            background: #dbeafe;
+
+            border-radius: 20px;
+
+        }
+
+        #list::-webkit-scrollbar-thumb {
+
+            background: linear-gradient(#229ED9, #1976d2);
+
+            border-radius: 20px;
+
+            border: 2px solid #dbeafe;
+
+        }
+
+        #list::-webkit-scrollbar-thumb:hover {
+
+            background: linear-gradient(#38bdf8, #2563eb);
+
+        }
+
+
+
+        .modal {
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0, 0, 0, .45);
+
+            backdrop-filter: blur(6px);
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            opacity: 0;
+
+            visibility: hidden;
+
+            transition: .25s;
+
+            z-index: 9999;
+
+        }
+
+        .modal.show {
+
+            opacity: 1;
+
+            visibility: visible;
+
+        }
+
+        .modalBox {
+
+            width: 360px;
+
+            max-width: 90%;
+
+            background: white;
+
+            border-radius: 22px;
+
+            padding: 25px;
+
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+
+            text-align: center;
+
+            animation: modalIn .25s;
+
+        }
+
+        .modalBox h2 {
+
+            margin-top: 0;
+
+            color: #229ED9;
+
+        }
+
+        .modalButtons {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 20px;
+
+        }
+
+        .modalButtons button {
+
+            margin: 0;
+
+        }
+
+        @keyframes modalIn {
+
+            from {
+
+                transform: scale(.8);
+
+                opacity: 0;
+
+            }
+
+            to {
+
+                transform: scale(1);
+
+                opacity: 1;
+
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="imagen">
+        <h1 id="titulo" data-text="Fortis Sicut Leo"></h1>
+        <div class="wrap">
+            <div class="stats">
+                <div class="card">
+                    <div id="ok" class="n">0</div>
+                    <div class="small">Cumplidos</div>
+                </div>
+                <div class="card">
+                    <div id="ko" class="n">0</div>
+                    <div class="small">Fallados</div>
+                </div>
+                <div class="card">
+                    <div id="ex" class="n">0%</div>
+                    <div class="small">Éxito</div>
+                </div>
+            </div>
+            <div class="card">
+                <div id="chart"></div>
+
+                <span class="botonesGrafica">
+                    <button class="ok" onclick="add(1)">✔ He cumplido</button>
+                    <button class="bad" onclick="add(-1)">✖ He fallado</button>
+                </span>
+
+                <button class="aux" onclick="undo()">🗑 Quitar último día</button>
+                <button class="aux" onclick="resetAll()">♻ Empezar desde cero</button>
+            </div>
+            <div class="card"><input id="txt" placeholder="Nuevo objetivo" autocomplete="off"><button class="aux"
+                    onclick="newTask()">Añadir
+                    objetivo</button>
+                <ul id="list"></ul>
+
+                <button id="reiniciarObjetivos" class="aux">Reiniciar Objetivos</button>
+            </div>
+
+
+            <div class="card"><label class="photo" for="img"><img id="preview" style="display:none"><span
+                        id="labelTxt">📷
+                        Añadir foto</span></label><input hidden id="img" type="file" accept="image/*"></div>
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+
+
+    <div id="modal" class="modal">
+
+        <div class="modalBox">
+
+            <h2 id="modalTitulo">Título</h2>
+
+            <p id="modalTexto">Texto</p>
+
+            <div class="modalButtons">
+
+                <button id="cancelarModal" class="aux">
+                    Cancelar
+                </button>
+
+                <button id="aceptarModal" class="bad">
+                    Aceptar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+    <script>
+        let ev = JSON.parse(localStorage.ev || "[]");
+        if (ev.length && !localStorage.start) localStorage.start = new Date().toISOString();
+        let tasks = JSON.parse(localStorage.tasks || "[]");
+        const serie = () => { let v = 0; return ev.map(x => v += x) };
+        const chart = new ApexCharts(document.querySelector("#chart"), {
+            chart: { type: "line", height: 320, toolbar: { show: false }, animations: { enabled: true, speed: 1800, animateGradually: { enabled: true, delay: 80 }, dynamicAnimation: { enabled: true, speed: 1800 } }, dropShadow: { enabled: true, color: "#15803D", blur: 12, opacity: .4 } },
+            colors: ["#15803D"], series: [{ data: [] }],
+            stroke: { curve: "straight", width: 6 },
+            markers: { size: 0 },
+            xaxis: { labels: { show: false }, axisTicks: { show: false }, axisBorder: { show: false }, categories: [] },
+            yaxis: { decimalsInFloat: 0 },
+            grid: { borderColor: "#e5e7eb" }
+        });
+        chart.render();
+        const reiniciarObjetivos = document.getElementById("reiniciarObjetivos")
+
+        function save() { localStorage.ev = JSON.stringify(ev); localStorage.tasks = JSON.stringify(tasks); }
+        function animateGraph() {
+            const s = serie();
+            chart.updateOptions({ xaxis: { categories: s.map((_, i) => i + 1) } }, false, false);
+            chart.updateSeries([{ data: [] }], false);
+            setTimeout(() => chart.updateSeries([{ data: s }], true), 120);
+        }
+        function refresh() {
+            animateGraph();
+            const a = ev.filter(x => x > 0).length, b = ev.filter(x => x < 0).length;
+            ok.textContent = a; ko.textContent = b; ex.textContent = (a + b ? Math.round(a * 100 / (a + b)) : 0) + "%";
+            paint(); save();
+        }
+        function add(v) { if (!ev.length && !localStorage.start) localStorage.start = new Date().toISOString(); ev.push(v); refresh(); }
+        function undo() { if (ev.length) ev.pop(); if (!ev.length) localStorage.removeItem("start"); refresh(); }
+        function resetAll() {
+
+            abrirModal(
+
+                "Modo fábrica",
+
+                "Se borrarán todos los datos (gráfica y objetivos) excepto la fotografía. ¿Deseas continuar? ",
+
+                borrarTodo
+
+            );
+
+        }
+
+
+        function borrarTodo() {
+
+            const foto = localStorage.photo || null;
+
+            localStorage.clear();
+
+            if (foto) {
+
+                localStorage.photo = foto;
+
+            }
+
+            cerrarModal();
+
+            location.reload();
+
+        }
+
+        function paint() { list.innerHTML = ""; tasks.forEach((t, i) => { const li = document.createElement("li"); li.className = t.d ? "done" : ""; li.innerHTML = `<span>${t.t}</span><div class='actions'><button onclick='toggle(${i})'>✔</button><button onclick='delTask(${i})'>🗑</button></div>`; list.appendChild(li); }); }
+        function newTask() { if (!txt.value.trim()) return; tasks.push({ t: txt.value, d: false }); txt.value = ""; refresh(); }
+        function toggle(i) { tasks[i].d = !tasks[i].d; refresh(); }
+        function delTask(i) { tasks.splice(i, 1); refresh(); }
+        const p = localStorage.photo; if (p) { preview.src = p; preview.style.display = "block"; labelTxt.style.display = "none"; }
+        img.onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { localStorage.photo = r.result; preview.src = r.result; preview.style.display = "block"; labelTxt.style.display = "none"; }; r.readAsDataURL(f); }
+        refresh();
+
+
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const titulo = document.getElementById("titulo");
+            const texto = titulo.dataset.text;
+
+            let i = 0;
+
+            function escribir() {
+                if (i < texto.length) {
+                    titulo.textContent += texto.charAt(i);
+                    i++;
+                    setTimeout(escribir, 90); // Velocidad de escritura
+                } else {
+                    titulo.classList.add("fin"); // Quita el cursor al terminar
+                }
+            }
+
+            escribir();
+        });
+
+
+
+        reiniciarObjetivos.addEventListener("click", () => {
+
+            abrirModal(
+
+                "Reiniciar objetivos",
+
+                "¿Quieres desmarcar todos los objetivos para empezar un día nuevo?",
+
+                desmarcar
+
+            );
+
+        });
+
+        function desmarcar() {
+
+            tasks.forEach(t => {
+
+                t.d = false;
+
+            });
+
+            cerrarModal();
+
+            refresh();
+
+        }
+
+
+
+
+
+
+
+
+
+
+        const modal = document.getElementById("modal");
+
+        const modalTitulo = document.getElementById("modalTitulo");
+
+        const modalTexto = document.getElementById("modalTexto");
+
+        const aceptarModal = document.getElementById("aceptarModal");
+
+        const cancelarModal = document.getElementById("cancelarModal");
+
+        let accionModal = null;
+
+        function abrirModal(titulo, texto, accion) {
+
+            modalTitulo.textContent = titulo;
+
+            modalTexto.textContent = texto;
+
+            accionModal = accion;
+
+            modal.classList.add("show");
+
+        }
+
+        function cerrarModal() {
+
+            modal.classList.remove("show");
+
+        }
+
+        aceptarModal.onclick = () => {
+
+            if (accionModal) {
+
+                accionModal();
+
+            }
+
+        }
+
+        cancelarModal.onclick = cerrarModal;
+
+        modal.onclick = e => {
+
+            if (e.target === modal) {
+
+                cerrarModal();
+
+            }
+
+        }
+
+        document.addEventListener("keydown", e => {
+
+            if (e.key === "Escape") {
+
+                cerrarModal();
+
+            }
+
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // Bloquear clic derecho
+        document.addEventListener("contextmenu", e => e.preventDefault());
+
+        // Bloquear selección de texto
+        document.addEventListener("selectstart", e => e.preventDefault());
+
+        // Bloquear arrastrar
+        document.addEventListener("dragstart", e => e.preventDefault());
+
+        // Bloquear copiar
+        document.addEventListener("copy", e => e.preventDefault());
+
+        // Bloquear cortar
+        document.addEventListener("cut", e => e.preventDefault());
+
+        // Bloquear pegar
+        document.addEventListener("paste", e => e.preventDefault());
+
+        // Bloquear algunos atajos habituales
+        document.addEventListener("keydown", function (e) {
+
+            const key = e.key.toLowerCase();
+
+            if (
+                e.key === "F12" ||
+                (e.ctrlKey && e.shiftKey && key === "i") ||
+                (e.ctrlKey && e.shiftKey && key === "j") ||
+                (e.ctrlKey && e.shiftKey && key === "c") ||
+                (e.ctrlKey && key === "u")
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Limpiar consola periódicamente
+        setInterval(() => {
+            console.clear();
+        }, 1000);
+
+
+
+        // Anti iframe
+        if (window.top !== window.self) {
+            document.body.innerHTML = "";
+        }
+
+    </script>
+
+</body>
+
+</html>
