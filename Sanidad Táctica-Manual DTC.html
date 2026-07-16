@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+
+
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>TCCC</title>
+
+  <meta name="viewport" content="width=1024">
+  <link rel="stylesheet" href="./TCCC_files/katex.min.css">
+
+
+
+
+
+  <style>
+    /* =========================================================
+   RESET CONTROLADO + BASE
+   ========================================================= */
+    /* =========================================================
+   RESET + BASE (FIX MÓVIL)
+   ========================================================= */
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    /* =========================================================
+   CONFIG GLOBAL (ANTI DARK MODE + BASE)
+   ========================================================= */
+
+    :root {
+      color-scheme: light;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, sans-serif;
+      font-size: clamp(15px, 1.6vw, 18px);
+      line-height: 1.6;
+      color: #1e293b;
+      background: #f5f7fb;
+      /* gris suave profesional */
+      margin: 0;
+      padding: 0;
+      word-wrap: break-word;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* =========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================= */
+
+    .main {
+      background: #ffffff;
+      color: #1e293b;
+      margin: auto;
+      padding: clamp(16px, 3vw, 28px);
+      border-radius: 18px;
+      max-width: 900px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .main * {
+      color: inherit;
+    }
+
+    @media (max-width: 700px) {
+      .main {
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+    /* =========================================================
+   TIPOGRAFÍA
+   ========================================================= */
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-weight: 700;
+      line-height: 1.25;
+      color: #0f172a;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+    }
+
+    h2 {
+      font-size: clamp(1.4rem, 3vw, 1.8rem);
+    }
+
+    h3 {
+      font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+    }
+
+    p {
+      margin-bottom: 14px;
+    }
+
+    /* =========================================================
+   UTILIDADES
+   ========================================================= */
+
+    .usoflex {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    /* =========================================================
+   LINKS
+   ========================================================= */
+
+    a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #1e40af;
+    }
+
+    /* =========================================================
+   TARJETAS / BLOQUES
+   ========================================================= */
+
+    .card {
+      background: #ffffff;
+      padding: 14px;
+      margin: 14px 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    /* ALERTAS */
+    .box-danger {
+      border-left: 5px solid #dc2626;
+      background: #fee2e2;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .box-info {
+      border-left: 5px solid #2563eb;
+      background: #e0ecff;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .box-warn {
+      border-left: 5px solid #f59e0b;
+      background: #fff7ed;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .box-ok {
+      border-left: 5px solid #16a34a;
+      background: #dcfce7;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .panel {
+      border: 2px dashed #2563eb;
+      padding: 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+    }
+
+    /* =========================================================
+   LISTAS
+   ========================================================= */
+
+    ul,
+    ol {
+      padding-left: 1.6em;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    /* =========================================================
+   TABLAS
+   ========================================================= */
+
+    .main table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .main table th {
+      background: #2563eb;
+      color: white;
+      padding: 10px;
+    }
+
+    .main table td {
+      padding: 10px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .main table tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    /* =========================================================
+   CODE
+   ========================================================= */
+
+    pre {
+      background: #f1f5f9;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      overflow-x: auto;
+    }
+
+    code {
+      background: #e2e8f0;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    /* =========================================================
+   IMÁGENES
+   ========================================================= */
+
+    img {
+      max-width: 100%;
+    }
+
+    .img_accesorio {
+      width: clamp(1.5rem, 4vw, 2.5rem);
+    }
+
+    /* =========================================================
+   GALERÍA
+   ========================================================= */
+
+    .gallery {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .gallery img {
+      border-radius: 10px;
+    }
+
+    /* =========================================================
+   MULTIMEDIA
+   ========================================================= */
+
+    audio,
+    iframe {
+      width: 100%;
+      margin: 10px 0;
+      border-radius: 10px;
+    }
+
+    /* =========================================================
+   DETAILS
+   ========================================================= */
+
+    details {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    /* =========================================================
+   BADGES
+   ========================================================= */
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .badge-critical {
+      background: #fecaca;
+    }
+
+    .badge-important {
+      background: #fef08a;
+    }
+
+    .badge-info {
+      background: #bfdbfe;
+    }
+
+    /* =========================================================
+   HR
+   ========================================================= */
+
+    hr {
+      height: 3px;
+      background: #e5e7eb;
+      border: none;
+      margin: 30px 0;
+    }
+
+    /* =========================================================
+   BOTÓN BACK
+   ========================================================= */
+
+    .back-top {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      background: #2563eb;
+      color: white;
+      padding: 10px;
+      border-radius: 50%;
+    }
+
+    /* =========================================================
+   MOBILE
+   ========================================================= */
+
+    @media (max-width: 600px) {
+      body {
+        line-height: 1.7;
+      }
+
+      ul,
+      ol {
+        padding-left: 1.3em;
+      }
+    }
+
+    /* =========================================================
+   PRINT
+   ========================================================= */
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .back-top {
+        display: none;
+      }
+    }
+
+    .card-container {
+      background-color: #f1f5f9;
+    }
+
+    .boton {
+      display: flex;
+      width: max-content;
+      height: 2rem;
+      background-color: #0e89db;
+      font-weight: bold;
+      color: rgb(255, 255, 255);
+      border-radius: 3rem;
+      align-items: center;
+      margin: 0 auto;
+      flex-direction: row;
+      justify-content: center;
+      padding: 0.5rem;
+
+      /* Animación */
+      animation: fadePulse 2s infinite;
+    }
+
+    @keyframes fadePulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.05);
+        opacity: 0.7;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .boton:hover {
+      background-color: #05671d;
+      font-weight: bold;
+      color: rgb(255, 255, 255);
+    }
+  </style>
+
+
+
+
+
+  <div class="main card-container">
+
+    <class="">
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/tccc.png" alt="TCCC" width="50">
+        <h1 style="margin:0;">Sanidad táctica</h1>
+      </div>
+      <br><br>
+      <h3 id="-manual-interactivo--mobile-pro-catálogo-total" class="center"> Fase Care Under Fire (TCCC) / Direct
+        Treath
+        Care (TECC)
+      </h3>
+      <br>
+      <p style="color:gray; text-align: center;">
+        En un enfrentamiento armado donde resulta herido un compañero, <strong> ésta es la primera fase </strong> a
+        realizar antes del protocolo MARCH.
+      </p>
+
+      <hr>
+      <h2 class="usoflex" id="-índice"><img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/indice.png"> Índice </h2><br>
+
+
+      <ul>
+        <br>
+        <li><b>Punto 1.</b><a href="#primerospasos" class="usoflex"> ➡️ Primeras actuaciones en la zona de muerte</a>
+        </li><br>
+        <li><b>Punto 2.</b><a href="#primeracobertura" class="usoflex"> ➡️ En la primera cobertura </a></li><br>
+        <li><b>Punto 3.</b><a href="#ibero" class="usoflex"> ➡️ Protocolo Íbero</a></li><br>
+        <li><b>Punto 4.</b><a href="#externos" class="usoflex"> ➡️ Enlace a DTC desde el protocolo</a></li><br>
+        <li><b>Punto 5.</b><a href="#esquemas" class="usoflex"> ➡️ Esquema de fases</strong></a></li><br>
+        <li><b>Punto 6.</b><a href="#audio" class="usoflex"> ➡️ </strong>Procedimiento en audio</strong></a></li><br>
+        <li><b>Punto 7.</b><a href="#auto" class="usoflex"> ➡️ Autoevaluación</a></li><br>
+      </ul>
+
+
+
+
+      <hr>
+      <h2 class="usoflex" id="primerospasos"> <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/flechaprincipal.png">
+        Primeras actuaciones en la zona de muerte <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/zonamuerte.png"></h2>
+      <br><br>
+
+      <details>
+
+        <summary><strong>Si resultas herido por la amenaza:</strong></summary>
+        <div class="card">
+          <div class="box-danger">
+            <span><span class="usoflex"> ⚠️ PRIORIDAD ABSOLUTA <img class="img_accesorio"
+                  src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/terrorista.png"></span></strong>
+              <span class="mark">Neutralizar la amenaza </span> <span class="badge badge-critical">IMPORTANTE 🏴</span>
+          </div>
+          <div>
+            <br>
+            -> <u>Neutralizar la amenaza.</u><br><br>
+            -> Salir de la zona de muerte y buscar cobertura.<br><br>
+            -> Autoaplicarse el torniquete en caso de ser necesario.<br>
+
+            <blockquote>
+              <p> ⚠️ Debe colocarse <mark><strong>alto y apretado</strong></mark>, al desconocer exactamente el punto
+                de sangrado y no poder evaluarse detalladamente en esta situación.<br></p>
+            </blockquote>
+
+            -> Solicitar apoyo por transmisiones.<br><br>
+            -> No descuidar el entorno (Puede existir la posibilidad de más amenazas).<br><br>
+          </div>
+      </details>
+      <details>
+
+        <summary><strong>Si resulta un compañero herido por la amenaza:</strong></summary>
+        <br>
+        -> <u>Neutralizar la amenaza</u>, darle indicaciones de que siga combatiendo si es posible <span
+          class="badge badge-critical">IMPORTANTE 🏴</span><br><br>
+        -> Darle indicaciones de que se ponga a cubierto y se autoaplique torniquete.<br><br>
+        -> En caso de no poder él mismo aplicarse el torniquete, cuando sea posible llegar a su punto y colocarle el
+        torniquete alto y apretado.<br><br>
+        -> Solicitar apoyo por transmisiones.<br>
+
+        <blockquote>
+          <p class="usoflex"> ⚠️ Si se encuentra en la zona X sin cobertura, debe realizarse un arrastre
+            hasta una primera cobertura sin perder de vista la zona de muerte, y aplicarle el torniquete si fuere
+            necesario. <img class="img_accesorio"
+              src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/acarreo.png"><br></p>
+        </blockquote>
+
+      </details>
+
+
+      <hr>
+      <h2 id="primeracobertura" class="usoflex"> <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/flechaprincipal.png"> En la
+        primera
+        cobertura <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/primeracobertura.png"></h2>
+      <br><br>
+      <div class="box-info">
+        Es en una primera cobertura donde se realizará una atención de urgencia comprobando si existen hemorragias
+        masivas, no haciéndose ésta en la zona de muerte.<br>
+      </div>
+      <br>
+      <ul>
+        <li><strong> ➡️ Para llegar a esta primera cobertura, usaremos el personal mínimo imprescindible para la
+            evacuación
+            del compañero herido en su caso, el rescate será rápido a través de una técnica de arrastre.
+          </strong></li><br>
+
+        <li> ➡️ Una vez en la primera cobertura, podremos valorar si tiene una hemorragia masiva pero...
+          <br><br>
+          <details>
+            <summary><strong>¿Cómo lo sabremos?</strong><br></summary>
+
+            ✅ Con un <mark>barrido VISUAL</mark> <span class="badge badge-critical">IMPORTANTE 🏴</span> donde si vemos
+            <mark>charco de sangre o ropa empapada</mark>, la
+            trataremos como tal.<br>
+          </details>
+
+          <br>
+
+          <details>
+            <summary><strong>En esta actuación ¿qué material sanitario usaremos?</strong></summary>
+            <span class="usoflex">✅ En esta primera cobertura solo usaremos como material sanitario el
+              <mark>TORNIQUETE</mark> <img class="img_accesorio"
+                src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/cattq.png"></span> <br>
+            ❌ No usaremos agentes hemostáticos en zonas de unión. <span class="badge badge-critical">IMPORTANTE
+              🏴</span><br>
+            <small><i>(Respecto las hemorragias masivas en zonas de unión serán tratadas de urgencia en la segunda fase,
+                donde se procederá con el MARCH).</i></small> <br><br>
+
+            <span class="badge badge-info">INFO</span> También, en caso de demorarse el traslado a
+            la segunda cobertura, podemos colocarlo en posición lateral de
+            seguridad, con el fin de asegurar tener permeabilizada su vía aérea.
+          </details>
+
+
+
+        </li>
+        <br>
+        <li> ➡️ Vigilancia constante a la zona de muerte.</li>
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Herramienta</th>
+                <th>Uso en 1º cobertura</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Torniquete</td>
+                <td>Sí ✔️ alto y apretado.</td>
+              </tr>
+              <tr>
+                <td>Agentes hemostáticos</td>
+                <td>No ❌ hasta segunda cobertura.</td>
+              </tr>
+              <tr>
+                <td>PLS</td>
+                <td>Sí ✔️ para permeabilizar la vía aérea.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ul>
+      <hr>
+
+
+
+
+      <h2 id="ibero" class="usoflex"> <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/flechaprincipal.png"> Protocolo
+        IBERO <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/listado.png">
+      </h2><br><br>
+      <h4>Por SEMES <small>(Sociedad Española de Medicina de Urgencias y Emergencias)</h4> </small>
+      <details>
+        <summary>📑 ¿Qué es?</summary>
+        <div class="panel">
+          <p>Es el protocolo que está dedicado a todas las víctimas del terrorismo y,
+            especialmente, a las Fuerzas y Cuerpos de Seguridad del Estado, militares y
+            sanitarios caídos en acto de servicio haciendo de este país un lugar más seguro.<br><br>
+
+            El objeto de este proyecto es dar una respuesta completa y coordinada ante
+            incidentes armados tales como actos terroristas y/o de tirador activo, con la
+            finalidad de incrementar la tasa de supervivencia en este tipo de contextos donde
+            las víctimas son múltiples.
+          </p>
+          </ul>
+        </div>
+      </details>
+
+      <a href="https://www.semes.org/wp-content/uploads/2021/06/protocolo-ibero.pdf#page=95">
+        <h4 id="externos" class="usoflex"> <img class="img_accesorio"
+            src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/flecha.png"> Enlace a DTC a
+          detalle
+          (Página 95 Fase DTC)</h4>
+      </a>
+      <hr>
+
+
+
+      <h2 id="esquemas" class="usoflex"> <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/flechaprincipal.png"> Esquema de
+        actuación
+        <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/esquema.png">
+      </h2><br>
+      <pre>
+  <mark><i><strong>TECC Direct Threat Care (DTC), Zona roja o caliente</strong></i></mark> 
+  ├─ Zona de muerte (La prioridad es abatir la amenaza y salir de ahí)
+  ├─ Primera cobertura → Realizamos hasta ésta un arrastre. (Aquí solo cabe torniquete)
+  <mark><i><strong>TECC Indirect Threat Care (ITC), Zona amarilla o templada</strong></i></mark> 
+  ├─ Segunda cobertura → Realizamos hasta ésta un acarreo (Aquí hacemos el MARCH)
+  <mark><i><strong>TECC Indirect Threat Care (ITC), Zona verde o segura</strong></i></mark>  
+  └─── TACEVAC → Evacuación del herido + revaluar, revaluar y revaluar!
+
+</pre>
+      <hr>
+      <h2 id="audio" class="usoflex"> <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/flechaprincipal.png">
+        Procedimiento en audio
+        <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/audio.png">
+      </h2><br>
+      <audio controls>
+        <source
+          src="https://github.com/Domingo99vg/P-ginaFSL/blob/main/Zona%20X%20y%20DTC%201%C2%BAFase%20TECC.mp3?raw=true"
+          type="audio/mpeg">
+      </audio>
+      <p style="font-size:14px;color:gray;">
+      </p>
+      <hr>
+
+
+      <h2 id="auto" class="usoflex"> <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/flecha.png"> Autoevaluación❓</h2>
+      <br><br>
+      <h3><u>SUPUESTO 1</u></h3>
+      <br>
+      <details>
+        <summary><b>1.1 En una entrada a un domicilio tu compañero de inmediato en el pasillo principal es herido por
+            un arma de fuego, ¿qué haces?</b></summary>
+        <br>➡️ Devuelvo el fuego hasta abatir la amenaza y busco cobertura, asimismo doy instrucciones al compañero de
+        seguir combatiendo.
+        <br> ➡️ Una vez eliminada la amenaza, le doy instrucciones para que se autoaplique su
+        torniquete mientras le doy seguridad, en caso de no poder autoasistirse, le indico que se acerque a mi
+        posición. <br> ➡️ En caso de no poder llegar a mi posición, realizaré una vez neutralizada la amenaza un
+        arrastre
+        rápido a la zona X y llevarlo a una primera cobertura, un lugar previamente reconocido.
+      </details>
+      <details>
+        <summary><b>1.2 El compañero del supuesto no puede autoasistirse, por lo que tras poder venir a mi posición
+            procedo a...¿Qué hago?</b></summary>
+        <br>➡️ Valoro, lo primero de todo realizo un BARRIDO VISUAL y posteriormente:<br><br>
+        ➡️➡️ Si veo charco de sangre o rompa empapada me encuentro ante una hemorragia masiva, por lo que si es en
+        extremidad coloco el torniquete alto y apretado, si es en zonas de unión donde se requiere un hemostático
+        procedo a llevarlo a una segunda cobertura, hasta que sea posible trasladarlo puedo realizarle presión directa,
+        y empiezo el MARCH tratándole esa hemorragia masiva primero.<br>
+        ➡️➡️ Si no veo charco de sangre o ropa empapada no coloco nada, sigo controlando el entorno y procedo a segunda
+        cobertura para comenzar el protocolo MARCH.
+      </details>
+
+      <details>
+        <summary><b>1.3 El compañero resulta que tenía una hemorragia masiva en el brazo izquierdo, ¿le coloco el
+            torniquete y la hora en la primera cobertura?</b><br> </summary>
+        <br>➡️ NO, la hora se coloca en la C del protocolo MARCH.
+      </details>
+
+
+
+
+
+
+
+
+
+
+      <hr>
+      <h2 id="️-galería-de-imágenes-con-descripción" class="usoflex"> <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/flechaprincipal.png"> Torniquetes
+        recomendados</h2><br><br>
+      <div class="gallery">
+        <figure>
+          <img class="tqs"
+            src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/torniquetes.jpeg">
+
+        </figure>
+
+      </div>
+      <hr>
+      <h2 id="-vídeo-incrustado" class="usoflex"> <img class="img_accesorio"
+          src="https://raw.githubusercontent.com/Domingo99vg/P-ginaFSL/refs/heads/main/flechaprincipal.png"> Fase
+        CUF/DTC
+        demostrada por los instructores y compañeros de Copscave </h2><br><br>
+
+
+      <iframe width="80%" height="400" src="https://www.youtube.com/embed/kJTf3kzl7eo" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+
+      <br>
+      <p class="center"><em>En este video se ve por cómo se realiza correctamente esta fase.<br>Es de gran interés
+          formarse con Copscave, entre otros grandes equipos existentes, por
+          la asimilación de los conceptos y hermandad de las formaciones.</em></p>
+      <hr>
+      <h2 id="-caso-práctico">📘 Entrenamiento y simulación </h2><br>
+      <div class="card">
+        <p><strong>Escenario 1:</strong><br>
+          Autoaplicación del torniquete tras abatir una amenaza, buscar cobertura y solicitar apoyo por transmisiones.
+          <br>
+        </p>
+        <p><strong>Escenario 2:</strong><br>
+          Cae un compañero a la entrada de una vivienda, trabajar abatir la amenaza, buscar cobertura y dar
+          instrucciones al compañero.</p>
+        <p><strong>Escenario 3:</strong><br> Trabajar con airsoft 1 vs 1 y a poder ser por equipos binomios solamente
+          con gafas de protección balística, primera línea y ropa corta o de poco grosor, donde se simule esta primera
+          fase.<br><br> * El objetivo del escenario 3 no es acribillar a bolas, sino percibir algo más de estrés y
+          respeto a ser alcanzado, realizándose el mismo procedimiento de visto en este artículo desde el momento que es
+          alcanzado (para poder trabajar la aplicación de torniquete si le da a una extremidad será esa donde colocar el
+          torniquete, si le han dado en otra zona como el torso el equipo rival dice una extremidad aleatoria), el que
+          ha sido alcanzado NO simula caerse al suelo, sigue combatiendo y busca cobertura.<br> </strong><br>
+        </p>
+      </div>
+      <hr>
+      <h2 id="-glosario">📚 Consideraciones para el entrenamiento </h2><br>
+      <p><strong>Respecto el torniquete:</strong><br>
+      <p><strong>1. </strong>En el entreno de la colocación del TQ es interesante trabajarlo con el equipo que
+        frecuentamos portar, o dónde guardamos el torniquete (tanto uniformado como de paisano) para
+        saber si es necesario modificar este al dificultarnos su extracción o colocación (bolígrafos en bolsillos a la
+        altura de los hombros, portagorras, perneras...siendo conscientes de nuestro equipo.). </p>
+
+      <p><strong>2.</strong>También es interesante trabajar sin saber dónde nos vamos a colocar el torniquete, podemos
+        apoyarnos en un compañero para ello, un familiar que nos lo diga o un simulador con temporizador que aleatoriamente te dice dónde debes
+        colocártelo. 
+      <p><strong>3.</strong>La visualización es clave y mentalizarse que has sido herido por una amenaza que aun puede
+        seguir activa es parte también del entrenamiento, es interesante visualizar la amenaza y trabajar sobre esa
+        situación.</a> </p>
+      <p><strong>4.</strong>En los entrenamientos, aprieta tanto el torniquete como cuando toque usarlo, garantizando
+        que
+        harás lo que has entrenado y esa percepción de dolor al colocártelo estará también trabajada, puedes comprar un
+        pulsioxímetro (aunque hay mejores opciones pero más costosas) para comprobar si lo has apretado lo suficiente o
+        es
+        necesario hacerlo más, teniéndolo solamente como orientación.</a> </p>
+
+
+      <hr>
+
+      <details>
+        <summary><strong>📋 Checklist de aprendizajes</strong></summary>
+        <div class="card">
+          <ul>
+            <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" checked=""> Sé qué debo
+              de hacer en la zona de muerte.</li>
+            <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" checked=""> Sé que debe
+              hacer mi compañero en la zona de muerte.</li>
+            <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" checked=""> Sé que debo
+              de hacer en primera cobertura y en caso de ser necesario, qué material sanitario debo usar y cuál no.
+            </li>
+            <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" checked=""> Sé como
+              valorar una hemorragia masiva.
+            </li>
+          </ul>
+        </div>
+      </details>
+
+      <hr>
+
+
+
+
+
+
+  
+
+  </div>
+  </div>
+  </div>
+
+
+  </div>
+
+  </body>
+
+</html>
