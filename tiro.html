@@ -449,7 +449,90 @@
 
 
 
- 
+
+
+
+        #bloqueoMovil {
+            display: none;
+
+            position: fixed;
+            inset: 0;
+
+            background: #1f1f1f;
+
+            z-index: 999999;
+
+            justify-content: center;
+            align-items: center;
+
+            text-align: center;
+
+            padding: 30px;
+        }
+
+        #bloqueoMovil .mensaje {
+
+            max-width: 500px;
+
+            background: white;
+
+            padding: 40px;
+
+            border-radius: 20px;
+
+            box-shadow: 0 20px 40px rgba(0, 0, 0, .4);
+
+        }
+
+        #bloqueoMovil h1 {
+            margin-bottom: 20px;
+        }
+
+        #bloqueoMovil p {
+            margin-bottom: 25px;
+        }
+
+        #bloqueoMovil button {
+
+            padding: 12px 30px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+
+            background: #164C96;
+
+            color: white;
+
+            font-weight: bold;
+        }
+
+        @media (max-width:799px) {
+
+            #bloqueoMovil {
+                display: flex;
+            }
+
+            body>*:not(#bloqueoMovil) {
+                display: none !important;
+            }
+
+        }
+
+
+        @media (max-width:799px) {
+
+            #bloqueoMovil {
+                display: flex;
+            }
+
+            body>*:not(#bloqueoMovil) {
+                display: none !important;
+            }
+
+        }
 
 
 
@@ -480,25 +563,34 @@
             pointer-events: none;
 
         }
-
-
-
-
-
-
-
-
-
-
-
-        
     </style>
 </head>
 
 <body>
 
- 
- 
+
+    <img id="eventoAleatorio">
+
+    <div id="bloqueoMovil">
+
+        <div class="mensaje">
+
+            <h1>Ojo</h1>
+
+            <p>
+                Este simulador solo está disponible para pantallas de al menos <strong>una tablet horizontalmente, o un
+                    ordenador(éste recomendado).</strong>.
+            </p>
+
+            <button onclick="https://fortissicutleo.com/index.html">
+                Volver atrás
+            </button>
+
+        </div>
+
+    </div>
+
+
 
 
 
@@ -929,7 +1021,7 @@
 
             if (!interrupciones) return;
 
-            let tiempo = (5 + Math.random() * 1) * 1000;
+            let tiempo = (20 + Math.random() * 20) * 1000;
 
             temporizadorInterrupciones = setTimeout(mostrarEvento, tiempo);
 
@@ -973,6 +1065,18 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+        
 
 function bloquearMovil() {
 
@@ -1049,6 +1153,7 @@ document.body.innerHTML = `
 }
 
 bloquearMovil();
+
 
 
 
