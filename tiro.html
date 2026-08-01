@@ -442,6 +442,13 @@
                 transform: scale(1);
             }
         }
+
+
+
+
+
+
+
  
 
 
@@ -452,115 +459,46 @@
 
 
 
-        #bloqueoMovil {
-            display: none;
+        #eventoAleatorio {
 
             position: fixed;
-            inset: 0;
 
-            background: #1f1f1f;
+            top: 50%;
+            left: 50%;
 
-            z-index: 999999;
+            transform: translate(-50%, -50%);
 
-            justify-content: center;
-            align-items: center;
+            width: 300px;
+            height: 300px;
 
-            text-align: center;
+            object-fit: contain;
 
-            padding: 30px;
-        }
+            z-index: 999999999;
 
-        #bloqueoMovil .mensaje {
+            display: none;
 
-            max-width: 500px;
-
-            background: white;
-
-            padding: 40px;
-
-            border-radius: 20px;
-
-            box-shadow: 0 20px 40px rgba(0, 0, 0, .4);
-
-        }
-
-        #bloqueoMovil h1 {
-            margin-bottom: 20px;
-        }
-
-        #bloqueoMovil p {
-            margin-bottom: 25px;
-        }
-
-        #bloqueoMovil button {
-
-            padding: 12px 30px;
-
-            border: none;
-
-            border-radius: 10px;
-
-            cursor: pointer;
-
-            background: #164C96;
-
-            color: white;
-
-            font-weight: bold;
-        }
-
-        @media (max-width:799px) {
-
-            #bloqueoMovil {
-                display: flex;
-            }
-
-            body>*:not(#bloqueoMovil) {
-                display: none !important;
-            }
+            pointer-events: none;
 
         }
 
 
-@media (max-width:799px) {
 
-    #bloqueoMovil {
-        display:flex;
-    }
 
-    body>*:not(#bloqueoMovil){
-        display:none !important;
-    }
 
-}
+
+
+
+
+
+
+        
     </style>
 </head>
 
 <body>
 
-
-
-
-    <div id="bloqueoMovil">
-
-        <div class="mensaje">
-
-            <h1>Ojo</h1>
-
-            <p>
-                Este simulador solo está disponible para pantallas de al menos <strong>una tablet horizontalmente, o un
-                ordenador(éste recomendado).</strong>.
-            </p>
-
-            <button onclick="https://fortissicutleo.com/index.html">
-                Volver atrás
-            </button>
-
-        </div>
-
-    </div>
-
-
+ 
+ 
 
 
 
@@ -571,7 +509,14 @@
         <div class="barra-superior">
 
             <button id="btn" onclick="toggle()">
-                Comenzar entrenamiento
+                Iniciar siluetas
+            </button>
+
+
+            <button id="btnInterrupciones" class="btn btn-success btn-lg" onclick="toggleInterrupciones()">
+
+                Iniciar interrupciones
+
             </button>
 
             <a href="https://fortissicutleo.com/index.html">
@@ -937,6 +882,173 @@
 
 
 
+
+
+
+
+        let interrupciones = false;
+        let temporizadorInterrupciones;
+
+        const extras = [
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/x.2.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/x.3.png",
+            "https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/x.1.png"
+
+        ];
+
+        const evento = document.getElementById("eventoAleatorio");
+
+
+
+
+
+
+
+        function mostrarEvento() {
+
+            if (!interrupciones) return;
+
+            let imagen = extras[Math.floor(Math.random() * extras.length)];
+
+            evento.src = imagen;
+
+            evento.style.display = "block";
+
+            setTimeout(() => {
+
+                evento.style.display = "none";
+
+                programarEvento();
+
+            }, 3000);
+
+        }
+
+
+        function programarEvento() {
+
+            if (!interrupciones) return;
+
+            let tiempo = (5 + Math.random() * 1) * 1000;
+
+            temporizadorInterrupciones = setTimeout(mostrarEvento, tiempo);
+
+        }
+
+
+        function toggleInterrupciones() {
+
+            interrupciones = !interrupciones;
+
+            if (interrupciones) {
+
+                btnInterrupciones.textContent = "Parar interrupciones";
+
+                btnInterrupciones.className = "btn btn-danger btn-lg";
+
+                programarEvento();
+
+            } else {
+
+                clearTimeout(temporizadorInterrupciones);
+
+                evento.style.display = "none";
+
+                btnInterrupciones.textContent = "Comenzar interrupciones";
+
+                btnInterrupciones.className = "btn btn-success btn-lg";
+
+            }
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+function bloquearMovil() {
+
+    const esMovil =
+        /Android|iPhone|iPad|iPod|Mobile|Opera Mini|IEMobile/i.test(navigator.userAgent)
+        || window.matchMedia("(pointer: coarse)").matches;
+
+    if (esMovil) {
+
+document.body.innerHTML = `
+<div style="
+    width:100vw;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#222;
+    padding:20px;
+    box-sizing:border-box;
+">
+
+    <div style="
+        width:100%;
+        max-width:600px;
+        background:white;
+        color:#222;
+        border-radius:20px;
+        padding:70px 50px;
+        text-align:center;
+
+        box-shadow:0 15px 40px rgba(0,0,0,.45);
+    ">
+
+        <h1 style="
+            font-size:30px;
+            margin-bottom:20px;
+        ">
+            ⚠️ Simulador no compatible
+        </h1>
+
+        <p style="
+            font-size:23px;
+            line-height:1.6;
+            margin-bottom:30px;
+        ">
+            Este simulador únicamente está disponible para <strong>ordenador</strong>.
+            <br><br>
+            Accede desde un PC para poder utilizar todas las funciones correctamente.
+        </p>
+
+        <button
+            onclick="location.href='https://fortissicutleo.com/index.html'"
+            style="
+                width:100%;
+                padding:16px;
+                border:none;
+                border-radius:12px;
+                background:#164C96;
+                color:white;
+                font-size:18px;
+                font-weight:bold;
+                cursor:pointer;
+            ">
+            ⬅ Volver al inicio
+        </button>
+
+    </div>
+
+</div>
+`;
+
+        throw new Error("Versión móvil bloqueada");
+    }
+}
+
+bloquearMovil();
 
 
 
