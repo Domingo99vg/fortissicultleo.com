@@ -1,0 +1,2450 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FESP · Gestión financiera</title>
+
+    <!-- Librerías para generar el PDF directamente, sin abrir la ventana de impresión -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+
+    <!-- Google Fonts optimizado -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --fesp: #000e5f;
+            --fesp-dark: #244650;
+            --fesp-light: #edf5f7;
+            --blue: #1565ff;
+            --green: #198754;
+            --red: #dc3545;
+            --border: #dce6ea;
+            --text: #1d2939;
+            --muted: #667085;
+            --bg: #f4f7f8;
+            --white: #fff;
+            --shadow: 0 8px 24px rgba(20, 45, 55, .10);
+            --blanco: #ffffff;
+            --negro: #000000;
+            --azuldos: #00a6ff;
+            --azuloscuro: rgb(1, 42, 70);
+            --negro2: #0000008f;
+
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Nunito Sans", sans-serif;
+        }
+
+        /* CABECERA CON LA MISMA ALTURA APROXIMADA DE LA APP DE REFERENCIA */
+        .app-header {
+
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+
+            background: linear-gradient(to right, var(--azuldos) 30%, var(--negro) 40%);
+            color: white;
+            padding: 0.3rem;
+            box-shadow: 0 3px 10px rgba(42, 42, 42, 0.16);
+
+        }
+
+        .app-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            line-height: 34px;
+            font-weight: 700;
+        }
+
+        .app-header span {
+            margin: 3px 0 0;
+            font-size: 16px;
+            line-height: 23px;
+        }
+
+        /* NAVEGACIÓN */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: #fff;
+            border-bottom: 1px solid #d8e0e3;
+            box-shadow: 0 2px 7px rgba(0, 0, 0, .05);
+        }
+
+        .nav-inner {
+            max-width: 1180px;
+            margin: auto;
+            display: flex;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 0 0 auto;
+            border: 0;
+            background: transparent;
+            color: #52606d;
+            padding: 15px 22px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            text-decoration: none;
+        }
+
+        .tab-btn:hover {
+            background: #f4f7f8;
+            color: var(--fesp);
+        }
+
+        .tab-btn.active {
+            color: var(--fesp);
+            border-bottom-color: var(--fesp);
+        }
+
+        /* CONTENIDO */
+        .main {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 25px 18px 50px;
+        }
+
+        .tab-content {
+            display: none
+        }
+
+        .tab-content.active {
+            display: block
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e1e7ea;
+            border-radius: 14px;
+            padding: 23px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h2 {
+            margin: 0 0 18px;
+            font-size: 21px;
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .field label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        input[type="number"],
+        input[type="month"],
+        input[type="text"] {
+            width: 100%;
+            border: 1px solid #ccd7dc;
+            border-radius: 9px;
+            padding: 12px 13px;
+            font-size: 15px;
+            outline: none;
+            background: white;
+        }
+
+        input:focus {
+            border-color: var(--fesp);
+            box-shadow: 0 0 0 3px rgba(47, 89, 100, .12);
+        }
+
+        /* BOTONES */
+        .btn {
+            border: 0;
+            border-radius: 9px;
+            padding: 12px 17px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .15s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px)
+        }
+
+        .btn-primary {
+            background: var(--fesp);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--fesp-dark)
+        }
+
+        .btn-green {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-light {
+            background: #edf2f4;
+            color: #334e58;
+        }
+
+        .btn-danger {
+            background: #fff0f1;
+            color: #b42318;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        /* INDICADORES */
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 14px;
+        }
+
+        .kpi {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 17px;
+            background: #fff;
+        }
+
+        .kpi small {
+            display: block;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .kpi strong {
+            font-size: 23px;
+        }
+
+        .positive {
+            color: var(--green)
+        }
+
+        .negative {
+            color: var(--red)
+        }
+
+        /* PRESUPUESTO */
+        .budget-item {
+            border: 1px solid #e2e8eb;
+            border-radius: 12px;
+            padding: 17px;
+            margin-bottom: 12px;
+            background: #fcfdfd;
+        }
+
+        .budget-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .budget-name {
+            font-weight: 700;
+        }
+
+        .budget-value {
+            text-align: right;
+        }
+
+        .budget-value span {
+            display: block;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .budget-value strong {
+            font-size: 19px;
+        }
+
+        .budget-controls {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 180px;
+            gap: 12px;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .budget-mode {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            border: 1px solid #ccd7dc;
+            background: #fff;
+            color: #52606d;
+            border-radius: 8px;
+            padding: 8px 11px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .mode-btn.active {
+            background: var(--fesp);
+            border-color: var(--fesp);
+            color: #fff;
+        }
+
+        .amount-control input {
+            margin: 0;
+        }
+
+        .amount-control {
+            display: flex;
+            gap: 7px;
+            align-items: stretch;
+        }
+
+        .amount-control input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .amount-apply {
+            border: 0;
+            border-radius: 8px;
+            padding: 0 12px;
+            background: var(--fesp);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .amount-apply:hover {
+            background: var(--fesp-dark);
+        }
+
+        @media(max-width:700px) {
+            .budget-controls {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--fesp);
+            cursor: pointer;
+        }
+
+        .liquidity {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 17px;
+            border-radius: 12px;
+            background: var(--fesp-light);
+            color: var(--fesp-dark);
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .limit-message {
+            margin-top: 10px;
+            padding: 11px 14px;
+            border-radius: 9px;
+            background: #f2f4f5;
+            color: #59636e;
+            font-size: 14px;
+        }
+
+        .limit-message.complete {
+            background: #d1e7dd;
+            color: #0f5132;
+            font-weight: 700;
+        }
+
+        .liquidity-negative {
+            background: #fff0f1 !important;
+            color: #7f1d1d !important;
+        }
+
+        .liquidity-negative #restante {
+            color: #8b1e2d !important;
+            animation: fadePulse 1.25s ease-in-out infinite;
+        }
+
+        @keyframes fadePulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .35;
+            }
+        }
+
+        /* BARRAS */
+        .bar-wrap {
+            margin: 15px 0;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .bar {
+            height: 12px;
+            background: #e8eef0;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: var(--fesp);
+            border-radius: 999px;
+        }
+
+        /* TABLA */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid #e5eaed;
+            padding: 12px 10px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f4f7f8;
+            color: #344054;
+        }
+
+        .empty {
+            padding: 30px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        /* INFORME */
+        .report-header {
+            border-bottom: 2px solid var(--fesp);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .report-header h2 {
+            margin: 0 0 5px;
+        }
+
+        .report-header p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .report-section {
+            margin-top: 24px;
+        }
+
+        .report-section h3 {
+            color: var(--fesp-dark);
+            border-bottom: 1px solid #dce4e7;
+            padding-bottom: 8px;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .report-table th,
+        .report-table td {
+            border: 1px solid #d9e1e4;
+        }
+
+        .total-row {
+            font-weight: 700;
+            background: #edf5f7;
+        }
+
+        .print-note {
+            padding: 12px 15px;
+            border-radius: 9px;
+            background: #fff8e6;
+            color: #7a5b00;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        /* HISTORIAL */
+        .history-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        /* PIE */
+        .footer {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            text-align: center;
+            color: #7a858c;
+            font-size: 13px;
+            padding: 5px 0 25px;
+        }
+
+
+        /* ============================================================
+   MODAL DE CONFIRMACIÓN
+============================================================ */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, .62);
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            animation: modalFade .18s ease-out;
+        }
+
+        .modal-box {
+            width: min(100%, 560px);
+            background: white;
+            border-radius: 24px;
+            padding: 34px 36px 30px;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
+            text-align: center;
+            animation: modalUp .2s ease-out;
+        }
+
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff0f1;
+            color: #dc3545;
+            font-size: 30px;
+        }
+
+        .modal-box h2 {
+            margin: 0 0 12px;
+            color: #2296d2;
+            font-size: 28px;
+        }
+
+        .modal-box p {
+            margin: 0 auto 25px;
+            max-width: 470px;
+            color: #1d2939;
+            font-size: 18px;
+            line-height: 1.45;
+        }
+
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-btn {
+            border: 0;
+            border-radius: 14px;
+            padding: 16px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .modal-cancel {
+            background: #687b95;
+            color: white;
+        }
+
+        .modal-confirm {
+            background: #f04444;
+            color: white;
+        }
+
+        .modal-cancel:hover {
+            background: #0065e9
+        }
+
+        .modal-confirm:hover {
+            background: #d93636
+        }
+
+        @keyframes modalFade {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes modalUp {
+            from {
+                transform: translateY(12px) scale(.98);
+                opacity: .8
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1
+            }
+        }
+
+        /* ============================================================
+   NOTIFICACIÓN "GUARDADO!"
+============================================================ */
+
+        .save-toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 20px;
+            border-radius: 12px;
+            background: #198754;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            box-shadow: 0 10px 28px rgba(25, 135, 84, .30);
+            opacity: 0;
+            transform: translateY(-12px);
+            pointer-events: none;
+        }
+
+        .save-toast.show {
+            animation: toastInOut 2s ease forwards;
+        }
+
+        @keyframes toastInOut {
+            0% {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+
+            12% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            82% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+        }
+
+        /* IMPRESIÓN */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .app-header,
+            .navbar,
+            .no-print,
+            .footer {
+                display: none !important;
+            }
+
+            .main {
+                max-width: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .tab-content {
+                display: none !important;
+            }
+
+            #tab-informe {
+                display: block !important;
+            }
+
+            .card {
+                border: 0;
+                box-shadow: none;
+                padding: 0;
+                margin: 0 0 18px;
+            }
+
+            .report-header {
+                margin-top: 0;
+            }
+
+            @page {
+                size: A4;
+                margin: 14mm;
+            }
+        }
+
+        @media(max-width:700px) {
+
+
+            .app-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .app-header p {
+                font-size: 1rem;
+            }
+
+            .main {
+                padding: 18px 12px 35px;
+            }
+
+            .card {
+                padding: 17px;
+            }
+
+            .budget-top,
+            .liquidity {
+                align-items: flex-start;
+            }
+
+            .liquidity {
+                flex-direction: column;
+                text-align: left;
+            }
+        }
+
+
+
+
+
+
+
+        .btn-volver {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: #022976;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: 0.2s ease;
+            width: max-content;
+            margin: 0 auto;
+        }
+
+        .btn-volver:hover {
+            background: #022976;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="app-header">
+        <h1>FESP <span>Gestiona tus finanzas</span></h1>
+
+    </header>
+
+    <nav class="navbar">
+        <div class="nav-inner">
+
+            <button class="tab-btn active" data-tab="inicio">Resumen</button>
+            <button class="tab-btn" data-tab="informe">Informe</button>
+            <button class="tab-btn" data-tab="historial">Historial</button>
+        </div>
+    </nav>
+
+    <main class="main">
+
+        <!-- ================= RESUMEN / PRESUPUESTO ================= -->
+        <section id="tab-inicio" class="tab-content active">
+
+            <!-- PASO 1 -->
+            <div class="card" id="pasoSituacion">
+                <h2>1. Situación económica</h2>
+
+                <div class="grid">
+
+                    <div class="field">
+                        <label>📅 Mes</label>
+                        <input id="mes" type="month">
+                    </div>
+
+                    <div class="field">
+                        <label>💼 Trabajo</label>
+                        <input id="trabajo" type="number" min="0" step="0.01" placeholder="0,00">
+                    </div>
+
+                    <div class="field">
+                        <label>📈 Extras</label>
+                        <input id="extras" type="number" min="0" step="0.01" placeholder="0,00">
+                    </div>
+
+                    <div class="field">
+                        <label>🏠 Gastos fijos</label>
+                        <input id="gastos" type="number" min="0" step="0.01" placeholder="0,00">
+                    </div>
+
+                    <div class="field">
+                        <label>📉 Deudas</label>
+                        <input id="deudas" type="number" min="0" step="0.01" placeholder="0,00">
+                    </div>
+
+                </div>
+                <br>
+
+
+
+                <div class="print-note no-print" style="background:#edf5f7;color:#244650;">
+                    · <strong>Gastos fijos:</strong> alquiler/hipoteca, comida, móvil, gimnasio y otros gastos
+                    recurrentes. <strong>Gasto habitual estimado de un mes.</strong>
+                </div>
+
+                <div class="print-note no-print" style="background:#edf5f7;color:#244650;">
+                    · <strong>Deuda:</strong> pagos pendientes o prorrateados de corta duración. <strong>Ej.: factura de
+                        luz del mes anterior o compra en 3 pagos.</strong>
+                </div>
+
+
+
+
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="calcularYGuardar()">
+                        Calcular
+                    </button>
+
+                    <button class="btn btn-light" onclick="limpiarMes()">
+                        Nuevo mes
+                    </button>
+                </div>
+            </div>
+
+            <!-- PASO 2: aparece después de guardar y calcular -->
+            <div id="pasoResumen" style="display:none;">
+
+                <div class="card">
+                    <h2>2. Resumen del mes</h2>
+
+                    <div class="kpis">
+
+                        <div class="kpi">
+                            <small>💰 Ingresos totales</small>
+                            <strong id="kpiIngresos">0,00 €</strong>
+                        </div>
+
+                        <div class="kpi">
+                            <small>🏠 Gastos fijos</small>
+                            <strong id="kpiGastos">0,00 €</strong>
+                        </div>
+
+                        <div class="kpi">
+                            <small>📉 Deudas</small>
+                            <strong id="kpiDeudas">0,00 €</strong>
+                        </div>
+
+                        <div class="kpi">
+                            <small>💵 Saldo disponible</small>
+                            <strong id="kpiSaldo">0,00 €</strong>
+                        </div>
+
+                    </div>
+
+                    <div id="estadoSaldo" style="margin-top:16px;"></div>
+                </div>
+
+                <!-- PASO 3: presupuesto integrado en Resumen -->
+                <div class="card" id="pasoPresupuesto">
+                    <h2>3. Presupuesto</h2>
+
+                    <p style="color:var(--muted);margin-bottom:18px;">
+                        Reparte el saldo disponible entre las diferentes categorías.
+                        Puedes asignar cada categoría por <strong>porcentaje</strong> o por
+                        <strong>cantidad exacta en euros</strong>. Los cambios se guardan automáticamente.
+                    </p>
+
+                    <div id="categorias"></div>
+
+                    <div class="liquidity">
+                        <span> 🙏🏻 Liquidez restante</span>
+                        <span id="restante">0,00 € (0%)</span>
+                    </div>
+
+                    <div id="mensajeLimite" class="limit-message">
+                        Puedes repartir hasta el 100 % del saldo disponible.
+                    </div>
+
+                    <div class="actions no-print">
+                        <button class="btn btn-green" onclick="abrirTab('informe')">
+                            📄 Ver informe
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ================= INFORME ================= -->
+        <section id="tab-informe" class="tab-content">
+
+            <div class="print-note no-print" style="background:#edf5f7;color:#244650;">
+                El informe se genera y se <strong>descarga directamente como PDF</strong>.
+
+            </div>
+
+            <div class="card">
+
+                <div class="report-header">
+                    <h2>· Informe financiero mensual</h2>
+                    <p id="reportPeriodo">Periodo: —</p>
+                </div>
+
+                <div class="report-section">
+
+                    <h3>1. Resumen financiero</h3>
+
+                    <div class="table-wrap">
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Concepto</th>
+                                    <th>Importe</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaResumen"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="report-section">
+
+                    <h3>2. Distribución del dinero</h3>
+
+                    <div class="table-wrap">
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Destino</th>
+                                    <th>Porcentaje</th>
+                                    <th>Importe</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaDistribucion"></tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="report-section">
+
+                    <h3>3. Conclusión</h3>
+
+                    <p id="conclusionInforme" style="line-height:1.6;"></p>
+
+                </div>
+
+                <div class="actions no-print">
+
+                    <button class="btn btn-primary" onclick="descargarPDF()">
+                        📄 Descargar PDF
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= HISTORIAL ================= -->
+        <section id="tab-historial" class="tab-content">
+
+            <div class="card">
+
+                <h2>Historial mensual</h2>
+
+                <p style="color:var(--muted);margin-bottom:18px;">
+                    FESP guarda los meses en el almacenamiento local de este navegador.
+                    Puedes recuperar cualquier mes desde aquí.
+                </p>
+
+                <div class="history-actions no-print">
+
+                    <button class="btn btn-danger" onclick="borrarHistorial()">
+                        🗑️ Borrar historial
+                    </button>
+
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mes</th>
+                                <th>Ingresos</th>
+                                <th>Gastos</th>
+                                <th>Deudas</th>
+                                <th>Saldo</th>
+                                <th class="no-print">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaHistorial"></tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <div class="footer">
+        FESP · Tu hogar también se defiende.
+        <a href="index.html" class="btn-volver">
+            ← Volver
+        </a>
+    </div>
+
+
+    <!-- MODAL REUTILIZABLE -->
+    <div id="confirmModal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-box">
+            <div class="modal-icon">!</div>
+            <h2 id="modalTitle">Eliminar registro</h2>
+            <p id="modalMessage">¿Seguro que quieres realizar esta acción?</p>
+
+            <div class="modal-actions">
+                <button type="button" class="modal-btn modal-cancel" onclick="cerrarModal()">
+                    Cancelar
+                </button>
+
+                <button type="button" class="modal-btn modal-confirm" onclick="confirmarModal()">
+                    Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICACIÓN -->
+    <div id="saveToast" class="save-toast">
+        <span>✓</span>
+        <span>Guardado!</span>
+    </div>
+
+    <script>
+        /* ============================================================
+           CONFIGURACIÓN
+        ============================================================ */
+
+        const STORAGE_KEY = "fesp_meses_v1";
+
+        const categoriasBase = [
+            { nombre: "📊 Inversión", porcentaje: 20 },
+            { nombre: "🏖️ Ocio", porcentaje: 15 },
+            { nombre: "💻 Equipo / Mobiliario", porcentaje: 10 },
+            { nombre: "💰 Ahorro / Fondo de emergencia", porcentaje: 10 },
+            { nombre: "📚 Formación", porcentaje: 5 }
+        ];
+
+        let saldo = 0;
+
+        // Estado GUARDADO: es el único que alimenta Informe e Historial.
+        let datosGuardados = null;
+        let categorias = categoriasBase.map(x => ({ ...x }));
+
+        // Los cambios de la interfaz se mantienen como BORRADOR hasta pulsar Guardar.
+        let presupuestoModificado = false;
+        let datosFinancierosModificados = false;
+
+
+        /* ============================================================
+           UTILIDADES
+        ============================================================ */
+
+        function euros(valor) {
+            return Number(valor || 0).toLocaleString("es-ES", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }) + " €";
+        }
+
+        function mesActual() {
+            const ahora = new Date();
+            return ahora.getFullYear() + "-" +
+                String(ahora.getMonth() + 1).padStart(2, "0");
+        }
+
+        function nombreMes(mes) {
+            if (!mes) return "—";
+
+            const [year, month] = mes.split("-");
+
+            const fecha = new Date(Number(year), Number(month) - 1, 1);
+
+            return fecha.toLocaleDateString("es-ES", {
+                month: "long",
+                year: "numeric"
+            }).replace(/^./, x => x.toUpperCase());
+        }
+
+        function numero(id) {
+            return Number(document.getElementById(id).value) || 0;
+        }
+
+        function obtenerDatosFinancierosFormulario() {
+            const trabajo = numero("trabajo");
+            const extras = numero("extras");
+            const gastos = numero("gastos");
+            const deudas = numero("deudas");
+
+            const ingresos = trabajo + extras;
+            const saldoCalculado = ingresos - gastos - deudas;
+
+            return {
+                mes: document.getElementById("mes").value || mesActual(),
+                trabajo,
+                extras,
+                gastos,
+                deudas,
+                ingresos,
+                saldo: saldoCalculado
+            };
+        }
+
+        function normalizarCategorias(lista) {
+            return (lista || categoriasBase).map(x => {
+                const porcentaje = Number(x.porcentaje) || 0;
+                const cantidad = Number.isFinite(Number(x.cantidad))
+                    ? Number(x.cantidad)
+                    : porcentaje;
+                return {
+                    nombre: x.nombre,
+                    modo: x.modo === "cantidad" ? "cantidad" : "porcentaje",
+                    porcentaje,
+                    cantidad
+                };
+            });
+        }
+
+        function construirDatosGuardables() {
+            const financieros = obtenerDatosFinancierosFormulario();
+            return {
+                ...financieros,
+                categorias: normalizarCategorias(categorias)
+            };
+        }
+
+        function datosParaVisualizar() {
+            return datosGuardados || {
+                mes: document.getElementById("mes").value || mesActual(),
+                trabajo: numero("trabajo"),
+                extras: numero("extras"),
+                gastos: numero("gastos"),
+                deudas: numero("deudas"),
+                ingresos: numero("trabajo") + numero("extras"),
+                saldo: saldo,
+                categorias: normalizarCategorias(categorias)
+            };
+        }
+
+
+        /* ============================================================
+           LOCAL STORAGE
+        ============================================================ */
+
+        function leerHistorial() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function guardarMes(mostrarNotificacion = false) {
+            const datos = construirDatosGuardables();
+            datosGuardados = JSON.parse(JSON.stringify(datos));
+
+            const historial = leerHistorial();
+            historial[datos.mes] = datos;
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(historial));
+
+            presupuestoModificado = false;
+            datosFinancierosModificados = false;
+
+            actualizarHistorial();
+            actualizarFlujoResumen();
+            actualizarFlujoResumen();
+
+            if (mostrarNotificacion) {
+                mostrarGuardado();
+            }
+        }
+
+        function guardarActual() {
+            guardarMes(true);
+            calcular(false);
+            actualizarFlujoResumen();
+        }
+
+        function cargarMes(mes) {
+            const historial = leerHistorial();
+            const datos = historial[mes];
+
+            if (!datos) return;
+
+            document.getElementById("mes").value = datos.mes;
+            document.getElementById("trabajo").value = datos.trabajo;
+            document.getElementById("extras").value = datos.extras;
+            document.getElementById("gastos").value = datos.gastos;
+            document.getElementById("deudas").value = datos.deudas;
+
+            datosGuardados = JSON.parse(JSON.stringify({
+                ...datos,
+                categorias: normalizarCategorias(datos.categorias)
+            }));
+
+            categorias = normalizarCategorias(datos.categorias);
+
+            saldo = Number(datos.saldo) || 0;
+            presupuestoModificado = false;
+            datosFinancierosModificados = false;
+
+            renderizarTodo();
+            actualizarFlujoResumen();
+            abrirTab("inicio");
+        }
+
+        function borrarMes(mes) {
+
+            abrirModal(
+                "Eliminar registro",
+                "¿De verdad quieres borrar este mes? Esta acción no se puede deshacer.",
+                () => {
+                    const historial = leerHistorial();
+
+                    delete historial[mes];
+
+                    localStorage.setItem(
+                        STORAGE_KEY,
+                        JSON.stringify(historial)
+                    );
+
+                    actualizarHistorial();
+
+                    if (document.getElementById("mes").value === mes) {
+                        limpiarMes(false);
+                    }
+
+                    mostrarMensajeTemporal("Mes eliminado.");
+                }
+            );
+        }
+
+        function borrarHistorial() {
+
+            abrirModal(
+                "Eliminar historial",
+                "¿Seguro que quieres borrar todo el historial mensual? Esta acción no se puede deshacer.",
+                () => {
+                    localStorage.removeItem(STORAGE_KEY);
+
+                    actualizarHistorial();
+
+                    mostrarMensajeTemporal("Historial eliminado.");
+                }
+            );
+        }
+
+
+        /* ============================================================
+           CALCULAR
+        ============================================================ */
+
+        function calcularYGuardar() {
+            const datos = obtenerDatosFinancierosFormulario();
+
+            if (datos.saldo <= 0) {
+                calcular(false);
+                mostrarMensajeTemporal("⚠️ El saldo disponible debe ser positivo antes de continuar.");
+                return;
+            }
+
+            guardarMes(true);
+            calcular(false);
+            actualizarFlujoResumen();
+        }
+
+
+        function calcular(usarFormulario = true) {
+            const datos = usarFormulario
+                ? obtenerDatosFinancierosFormulario()
+                : (datosGuardados || obtenerDatosFinancierosFormulario());
+
+            saldo = Number(datos.saldo) || 0;
+
+            actualizarKPIs(datos);
+            crearCategorias();
+            actualizarDistribucionResumen(datos);
+            actualizarEstadoSaldo(datos);
+            actualizarEstadoPresupuesto();
+        }
+
+        function renderizarTodo() {
+            const datos = datosParaVisualizar();
+            saldo = Number(datos.saldo) || 0;
+            actualizarKPIs(datos);
+            crearCategorias();
+            actualizarDistribucionResumen(datos);
+            actualizarEstadoSaldo(datos);
+            actualizarEstadoPresupuesto();
+        }
+
+        function actualizarEstadoSaldo(datos) {
+            const estado = document.getElementById("estadoSaldo");
+            if (!estado) return;
+
+            if (datos.saldo <= 0) {
+                estado.innerHTML =
+                    `<div class="limit-message complete" style="background:#fff0f1;color:#b42318;">
+                        ⚠️ El saldo disponible es ${euros(datos.saldo)}.
+                        Revisa los ingresos, gastos y deudas.
+                    </div>`;
+            } else {
+                estado.innerHTML =
+                    `<div class="limit-message complete">
+                        ✅ Tienes ${euros(datos.saldo)} disponibles para distribuir.
+                    </div>`;
+            }
+        }
+
+        function actualizarEstadoPresupuesto() {
+            // Los cambios se guardan automáticamente después de avanzar.
+        }
+
+
+        function actualizarKPIs(datos = null) {
+
+            datos = datos || datosParaVisualizar();
+
+            const ingresos = Number(datos.ingresos) || 0;
+            const gastos = Number(datos.gastos) || 0;
+            const deudas = Number(datos.deudas) || 0;
+
+            document.getElementById("kpiIngresos").textContent = euros(ingresos);
+            document.getElementById("kpiGastos").textContent = euros(gastos);
+            document.getElementById("kpiDeudas").textContent = euros(deudas);
+
+            const kpiSaldo = document.getElementById("kpiSaldo");
+
+            kpiSaldo.textContent = euros(saldo);
+
+            kpiSaldo.className =
+                saldo >= 0 ? "positive" : "negative";
+        }
+
+
+        /* ============================================================
+           CATEGORÍAS Y LÍMITE DEL 100 %
+        ============================================================ */
+
+        function crearCategorias() {
+            const contenedor = document.getElementById("categorias");
+            contenedor.innerHTML = "";
+
+            categorias.forEach((cat, index) => {
+                const modoCantidad = cat.modo === "cantidad";
+                const cantidadActual = modoCantidad
+                    ? Number(cat.cantidad) || 0
+                    : saldo * Number(cat.porcentaje) / 100;
+
+                contenedor.innerHTML += `
+                    <div class="budget-item">
+                        <div class="budget-top">
+                            <div class="budget-name">
+                                ${cat.nombre}
+                                
+                            </div>
+
+                            <div class="budget-value">
+                                <span id="porcentaje-${index}" style="${modoCantidad ? "" : "display:none;"}">
+                                    ${Number(cat.porcentaje).toFixed(2).replace(".", ",")} %
+                                </span>
+                                <strong id="euros-${index}" style="${modoCantidad ? "display:none;" : ""}">
+                                    ${euros(cantidadActual)}
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div class="budget-controls">
+                            <div>
+                                <div class="budget-mode">
+                                    <button type="button"
+                                        class="mode-btn ${!modoCantidad ? "active" : ""}"
+                                        onclick="cambiarModoCategoria(${index}, 'porcentaje')">
+                                        % Porcentaje
+                                    </button>
+                                    <button type="button"
+                                        class="mode-btn ${modoCantidad ? "active" : ""}"
+                                        onclick="cambiarModoCategoria(${index}, 'cantidad')">
+                                        € Cantidad exacta
+                                    </button>
+                                </div>
+
+                                <input
+                                    id="range-${index}"
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    value="${Number(cat.porcentaje) || 0}"
+                                    step="0.01"
+                                    ${modoCantidad ? "disabled" : ""}
+                                    oninput="cambiarPorcentaje(${index}, this.value)"
+                                >
+                            </div>
+
+                            <div class="amount-control">
+                                <input
+                                    id="amount-${index}"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value="${modoCantidad ? (Number(cat.cantidad) || 0) : ""}"
+                                    placeholder="${modoCantidad ? "300,00" : "Cantidad opcional"}"
+                                    ${modoCantidad ? "" : "disabled"}
+                                >
+                                <button
+                                    type="button"
+                                    class="amount-apply"
+                                    ${modoCantidad ? "" : "disabled"}
+                                    onclick="aplicarCantidad(${index})">
+                                    Añadir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            actualizarSliders();
+        }
+
+        function cambiarModoCategoria(index, modo) {
+            const cat = categorias[index];
+
+            if (modo === "cantidad") {
+                cat.modo = "cantidad";
+                cat.cantidad = Math.round((saldo * Number(cat.porcentaje) / 100) * 100) / 100;
+            } else {
+                cat.modo = "porcentaje";
+                cat.porcentaje = saldo > 0
+                    ? Math.round((Number(cat.cantidad || 0) / saldo) * 10000) / 100
+                    : 0;
+                limitarPorcentaje(index);
+            }
+
+            crearCategorias();
+            actualizarDistribucionResumen(datosParaVisualizar());
+
+            if (datosGuardados) {
+                guardarMes(false);
+            }
+        }
+
+        function limitarPorcentaje(index) {
+            let nuevo = Number(categorias[index].porcentaje) || 0;
+            let otros = 0;
+
+            categorias.forEach((cat, i) => {
+                if (i !== index) otros += Number(cat.porcentaje) || 0;
+            });
+
+            const maxPermitido = Math.max(0, 100 - otros);
+            categorias[index].porcentaje =
+                Math.round(Math.max(0, Math.min(nuevo, maxPermitido)) * 100) / 100;
+        }
+
+        function cambiarPorcentaje(index, valor) {
+            categorias[index].modo = "porcentaje";
+            categorias[index].porcentaje = Number(valor) || 0;
+
+            limitarPorcentaje(index);
+
+            categorias[index].cantidad =
+                Math.round((saldo * categorias[index].porcentaje / 100) * 100) / 100;
+
+            actualizarSliders();
+            actualizarDistribucionResumen(datosParaVisualizar());
+
+            if (datosGuardados) {
+                guardarMes(false);
+            }
+        }
+
+        function aplicarCantidad(index) {
+            const input = document.getElementById("amount-" + index);
+            if (!input) return;
+
+            const escrito = Math.max(0, Number(input.value) || 0);
+            cambiarCantidad(index, escrito);
+
+            const aplicado = Number(categorias[index].cantidad) || 0;
+
+            mostrarMensajeTemporal(
+                categorias[index].nombre + ": " + euros(aplicado) + " asignados."
+            );
+        }
+
+        function cambiarCantidad(index, valor) {
+            const cantidad = Math.max(0, Number(valor) || 0);
+
+            categorias[index].modo = "cantidad";
+            categorias[index].cantidad = Math.round(cantidad * 100) / 100;
+
+            // El porcentaje refleja la cantidad real, incluso si provoca
+            // que la liquidez quede en negativo.
+            categorias[index].porcentaje = saldo > 0
+                ? Math.round((categorias[index].cantidad / saldo) * 10000) / 100
+                : 0;
+
+            crearCategorias();
+            actualizarDistribucionResumen(datosParaVisualizar());
+            actualizarSliders();
+
+            if (datosGuardados) {
+                guardarMes(false);
+            }
+        }
+
+
+        function actualizarSliders() {
+            let totalPorcentaje = 0;
+
+            categorias.forEach(cat => {
+                totalPorcentaje += Number(cat.porcentaje) || 0;
+            });
+
+            const libre = 100 - totalPorcentaje;
+            const restanteEuros = saldo * libre / 100;
+
+            categorias.forEach((cat, index) => {
+                const range = document.getElementById("range-" + index);
+                if (!range) return;
+
+                const otros = totalPorcentaje - (Number(cat.porcentaje) || 0);
+                range.max = Math.max(0, 100 - otros);
+                range.value = Number(cat.porcentaje) || 0;
+
+                const cantidad = cat.modo === "cantidad"
+                    ? Number(cat.cantidad) || 0
+                    : saldo * (Number(cat.porcentaje) || 0) / 100;
+
+                const porcentajeEl = document.getElementById("porcentaje-" + index);
+                const eurosEl = document.getElementById("euros-" + index);
+
+                porcentajeEl.textContent =
+                    Number(cat.porcentaje || 0).toFixed(2).replace(".", ",") + " %";
+
+                eurosEl.textContent = euros(cantidad);
+
+                porcentajeEl.style.display =
+                    cat.modo === "cantidad" ? "block" : "none";
+
+                eurosEl.style.display =
+                    cat.modo === "cantidad" ? "none" : "block";
+
+                const amount = document.getElementById("amount-" + index);
+                if (amount && cat.modo === "cantidad") {
+                    amount.value = Number(cat.cantidad || 0).toFixed(2);
+                }
+            });
+
+            const restante = document.getElementById("restante");
+            const liquidityBox = restante.closest(".liquidity");
+
+            restante.textContent =
+                euros(restanteEuros) + " (" +
+                Number(libre).toFixed(2).replace(".", ",") + "%)";
+
+            if (restanteEuros < 0) {
+                liquidityBox.classList.add("liquidity-negative");
+            } else {
+                liquidityBox.classList.remove("liquidity-negative");
+            }
+
+            const mensaje = document.getElementById("mensajeLimite");
+
+            if (restanteEuros < 0) {
+                mensaje.className = "limit-message complete";
+                mensaje.style.background = "#fff0f1";
+                mensaje.style.color = "#7f1d1d";
+                mensaje.textContent =
+                    "⚠️ Has asignado más dinero del saldo disponible. La liquidez está en negativo.";
+            } else if (Math.abs(restanteEuros) < 0.005) {
+                mensaje.className = "limit-message complete";
+                mensaje.style.background = "";
+                mensaje.style.color = "";
+                mensaje.textContent =
+                    "🔒 Presupuesto completo: has asignado el 100 %. No queda liquidez.";
+            } else {
+                mensaje.className = "limit-message";
+                mensaje.style.background = "";
+                mensaje.style.color = "";
+                mensaje.textContent =
+                    "Puedes repartir el saldo disponible. Queda " +
+                    Number(libre).toFixed(2).replace(".", ",") +
+                    "% por asignar.";
+            }
+        }
+
+
+        /* ============================================================
+           DISTRIBUCIÓN DEL RESUMEN
+        ============================================================ */
+
+        function calcularCantidadCategoria(cat, saldoBase) {
+            if (cat.modo === "cantidad") return Number(cat.cantidad) || 0;
+            return saldoBase * (Number(cat.porcentaje) || 0) / 100;
+        }
+
+        function actualizarDistribucionResumen(datos = null) {
+            const contenedor = document.getElementById("resumenDistribucion");
+            if (!contenedor) return;
+
+            datos = datos || datosParaVisualizar();
+            const saldoBase = Number(datos.saldo) || 0;
+
+            if (saldoBase <= 0) {
+                contenedor.innerHTML =
+                    `<div class="empty">Calcula y guarda primero un saldo positivo.</div>`;
+                return;
+            }
+
+            let totalAsignado = 0;
+            let html = "";
+
+            categorias.forEach(cat => {
+                const cantidad = calcularCantidadCategoria(cat, saldoBase);
+                const porcentajeReal = saldoBase > 0 ? cantidad / saldoBase * 100 : 0;
+                totalAsignado += cantidad;
+
+                html += `
+                    <div class="bar-wrap">
+                        <div class="bar-label">
+                            <span>${cat.nombre}</span>
+                            <strong>
+                                ${Number(porcentajeReal).toFixed(2).replace(".", ",")}% · ${euros(cantidad)}
+                            </strong>
+                        </div>
+                        <div class="bar">
+                            <div class="bar-fill"
+                                style="width:${Math.min(100, porcentajeReal)}%">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const liquidez = saldoBase - totalAsignado;
+            const porcentajeLiquidez = saldoBase > 0 ? liquidez / saldoBase * 100 : 0;
+
+            html += `
+                <div class="bar-wrap">
+                    <div class="bar-label">
+                        <span>🙏🏻 Liquidez</span>
+                        <strong>
+                            ${Number(porcentajeLiquidez).toFixed(2).replace(".", ",")}% · ${euros(liquidez)}
+                        </strong>
+                    </div>
+                    <div class="bar">
+                        <div class="bar-fill"
+                            style="width:${Math.min(100, porcentajeLiquidez)}%">
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            contenedor.innerHTML = html;
+        }
+
+
+        /* ============================================================
+           INFORME
+        ============================================================ */
+
+        function actualizarInforme() {
+            const datos = datosGuardados;
+
+            if (!datos) {
+                document.getElementById("reportPeriodo").textContent = "Periodo: —";
+                document.getElementById("tablaResumen").innerHTML =
+                    `<tr><td colspan="2">Todavía no hay un presupuesto guardado.</td></tr>`;
+                document.getElementById("tablaDistribucion").innerHTML =
+                    `<tr><td colspan="3">Pulsa Guardar y calcular / Guardar presupuesto para generar el informe.</td></tr>`;
+                document.getElementById("conclusionInforme").textContent =
+                    "El informe utiliza exclusivamente la última información guardada.";
+                return;
+            }
+
+            document.getElementById("reportPeriodo").textContent =
+                "Periodo: " + nombreMes(datos.mes);
+
+            document.getElementById("tablaResumen").innerHTML = `
+                <tr>
+                    <td>Ingresos por trabajo</td>
+                    <td>${euros(datos.trabajo)}</td>
+                </tr>
+                <tr>
+                    <td>Ingresos extras</td>
+                    <td>${euros(datos.extras)}</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Ingresos totales</td>
+                    <td>${euros(datos.ingresos)}</td>
+                </tr>
+                <tr>
+                    <td>Gastos fijos</td>
+                    <td>${euros(datos.gastos)}</td>
+                </tr>
+                <tr>
+                    <td>Deudas</td>
+                    <td>${euros(datos.deudas)}</td>
+                </tr>
+                <tr class="total-row">
+                    <td>Saldo disponible</td>
+                    <td>${euros(datos.saldo)}</td>
+                </tr>
+            `;
+
+            let totalImporte = 0;
+            let filas = "";
+
+            normalizarCategorias(datos.categorias).forEach(cat => {
+                const cantidad = calcularCantidadCategoria(cat, datos.saldo);
+                const porcentaje = datos.saldo > 0 ? cantidad / datos.saldo * 100 : 0;
+                totalImporte += cantidad;
+
+                filas += `
+                    <tr>
+                        <td>${cat.nombre}</td>
+                        <td>${Number(porcentaje).toFixed(2).replace(".", ",")}%</td>
+                        <td>${euros(cantidad)}</td>
+                    </tr>
+                `;
+            });
+
+            const liquidez = datos.saldo - totalImporte;
+            const libre = datos.saldo > 0 ? liquidez / datos.saldo * 100 : 0;
+
+            filas += `
+                <tr class="total-row">
+                    <td>🙏🏻 Liquidez restante</td>
+                    <td>${Number(libre).toFixed(2).replace(".", ",")}%</td>
+                    <td>${euros(liquidez)}</td>
+                </tr>
+            `;
+
+            document.getElementById("tablaDistribucion").innerHTML = filas;
+
+            let conclusion = "";
+
+            if (datos.saldo <= 0) {
+                conclusion =
+                    "El mes presenta un saldo disponible igual o inferior a cero. " +
+                    "Se recomienda revisar los gastos, las deudas y los ingresos.";
+            } else if (liquidez < 0) {
+                conclusion =
+                    "La distribución supera el saldo disponible en " +
+                    euros(Math.abs(liquidez)) +
+                    ". La liquidez resultante es negativa.";
+            } else if (liquidez <= 0.005) {
+                conclusion =
+                    "Se ha asignado prácticamente el 100 % del saldo disponible entre las categorías. " +
+                    "No queda liquidez sin asignar.";
+            } else {
+                conclusion =
+                    "Se ha asignado el " +
+                    Number(totalImporte / datos.saldo * 100).toFixed(2).replace(".", ",") +
+                    "% del saldo disponible. Queda un " +
+                    Number(libre).toFixed(2).replace(".", ",") +
+                    "% de liquidez sin asignar, equivalente a " +
+                    euros(liquidez) + ".";
+            }
+
+            document.getElementById("conclusionInforme").textContent = conclusion;
+        }
+
+
+        /* ============================================================
+           HISTORIAL
+        ============================================================ */
+
+        function actualizarHistorial() {
+
+            const historial = leerHistorial();
+
+            const meses =
+                Object.keys(historial).sort().reverse();
+
+            const tbody =
+                document.getElementById("tablaHistorial");
+
+            if (meses.length === 0) {
+
+                tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty">
+                    No hay meses guardados todavía.
+                </td>
+            </tr>
+        `;
+
+                return;
+            }
+
+            tbody.innerHTML = meses.map(mes => {
+
+                const d = historial[mes];
+
+                return `
+            <tr>
+                <td><strong>${nombreMes(mes)}</strong></td>
+                <td>${euros(d.ingresos)}</td>
+                <td>${euros(d.gastos)}</td>
+                <td>${euros(d.deudas)}</td>
+                <td class="${d.saldo >= 0 ? "positive" : "negative"}">
+                    ${euros(d.saldo)}
+                </td>
+                <td class="no-print">
+                    <button
+                        class="btn btn-light"
+                        onclick="cargarMes('${mes}')">
+                        Abrir
+                    </button>
+
+                    <button
+                        class="btn btn-danger"
+                        onclick="borrarMes('${mes}')">
+                        Borrar
+                    </button>
+                </td>
+            </tr>
+        `;
+
+            }).join("");
+        }
+
+
+        /* ============================================================
+           PESTAÑAS
+        ============================================================ */
+
+        function abrirTab(tab) {
+
+            document.querySelectorAll(".tab-content")
+                .forEach(x => x.classList.remove("active"));
+
+            document.querySelectorAll(".tab-btn")
+                .forEach(x => x.classList.remove("active"));
+
+            document.getElementById("tab-" + tab)
+                .classList.add("active");
+
+            const boton =
+                document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+
+            if (boton) boton.classList.add("active");
+
+            if (tab === "inicio") {
+                actualizarFlujoResumen();
+            }
+
+            if (tab === "informe") {
+                actualizarInforme();
+            }
+
+            if (tab === "historial") {
+                actualizarHistorial();
+            }
+        }
+
+        document.querySelectorAll(".tab-btn").forEach(boton => {
+
+            boton.addEventListener("click", () => {
+                abrirTab(boton.dataset.tab);
+            });
+
+        });
+
+
+        function actualizarFlujoResumen() {
+            const pasoResumen = document.getElementById("pasoResumen");
+            if (!pasoResumen) return;
+            pasoResumen.style.display = datosGuardados ? "block" : "none";
+        }
+
+
+        /* ============================================================
+           IR AL INFORME
+        ============================================================ */
+
+        function irAInforme() {
+            actualizarInforme();
+            abrirTab("informe");
+        }
+
+
+        /* ============================================================
+           DESCARGA DIRECTA DEL PDF
+           No abre la ventana de impresión.
+        ============================================================ */
+
+        function textoPDF(texto) {
+            /*
+            jsPDF con las fuentes estándar no representa bien emojis.
+            Los quitamos solamente del PDF, no de la interfaz.
+            */
+            return String(texto || "")
+                .replace(/[\u{1F300}-\u{1FAFF}]/gu, "")
+                .replace(/[\u2600-\u27BF]/g, "")
+                .trim();
+        }
+
+        function descargarPDF() {
+
+            actualizarInforme();
+
+            if (!datosGuardados) {
+                mostrarMensajeTemporal("Guarda primero los cambios para poder descargar el informe.");
+                return;
+            }
+
+            if (!window.jspdf || !window.jspdf.jsPDF) {
+
+                alert(
+                    "No se ha podido cargar el generador de PDF. " +
+                    "Comprueba que tienes conexión a Internet y vuelve a intentarlo."
+                );
+
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const datos = datosGuardados;
+
+            const fecha = new Date();
+
+            const tituloMes = nombreMes(datos.mes);
+
+            /* CABECERA */
+            doc.setFontSize(23);
+            doc.setFont(undefined, "bold");
+            doc.text("FESP", 105, 20, { align: "center" });
+
+            doc.setFontSize(15);
+            doc.text(
+                "Informe financiero mensual",
+                105, 30,
+                { align: "center" }
+            );
+
+            doc.setFontSize(10);
+            doc.setFont(undefined, "normal");
+            doc.text(
+                "Periodo: " + tituloMes,
+                105, 37,
+                { align: "center" }
+            );
+
+            /* RESUMEN */
+            doc.setFontSize(13);
+            doc.setFont(undefined, "bold");
+            doc.text("1. Resumen financiero", 14, 51);
+
+            doc.autoTable({
+                startY: 57,
+                head: [["Concepto", "Importe"]],
+                body: [
+                    ["Ingresos por trabajo", euros(datos.trabajo)],
+                    ["Ingresos extras", euros(datos.extras)],
+                    ["Ingresos totales", euros(datos.ingresos)],
+                    ["Gastos fijos", euros(datos.gastos)],
+                    ["Deudas", euros(datos.deudas)],
+                    ["Saldo disponible", euros(datos.saldo)]
+                ],
+                theme: "grid",
+                styles: { fontSize: 10 }
+            });
+
+            /* DISTRIBUCIÓN */
+            let y = doc.lastAutoTable.finalY + 14;
+
+            doc.setFontSize(13);
+            doc.setFont(undefined, "bold");
+            doc.text("2. Distribución del dinero", 14, y);
+
+            let total = 0;
+            const filas = [];
+
+            normalizarCategorias(datos.categorias).forEach(cat => {
+
+                const cantidad = calcularCantidadCategoria(cat, datos.saldo);
+                const porcentaje = datos.saldo > 0
+                    ? cantidad / datos.saldo * 100
+                    : 0;
+
+                total += porcentaje;
+
+                filas.push([
+                    textoPDF(cat.nombre),
+                    Number(porcentaje).toFixed(2).replace(".", ",") + " %",
+                    euros(cantidad)
+                ]);
+            });
+
+            const libre = Math.max(0, 100 - total);
+            const liquidez = datos.saldo * libre / 100;
+
+            filas.push([
+                "Liquidez restante",
+                libre + " %",
+                euros(liquidez)
+            ]);
+
+            doc.autoTable({
+                startY: y + 6,
+                head: [["Destino", "Porcentaje", "Importe"]],
+                body: filas,
+                theme: "grid",
+                styles: { fontSize: 10 }
+            });
+
+            /* CONCLUSIÓN */
+            y = doc.lastAutoTable.finalY + 14;
+
+            doc.setFontSize(13);
+            doc.setFont(undefined, "bold");
+            doc.text("3. Conclusión", 14, y);
+
+            doc.setFontSize(10);
+            doc.setFont(undefined, "normal");
+
+            let conclusion;
+
+            if (datos.saldo <= 0) {
+
+                conclusion =
+                    "El mes presenta un saldo disponible igual o inferior a cero. " +
+                    "Se recomienda revisar los gastos, las deudas y los ingresos.";
+
+            } else if (liquidez < 0) {
+
+                conclusion =
+                    "La distribución supera el saldo disponible en " +
+                    euros(Math.abs(liquidez)) +
+                    ". La liquidez resultante es negativa.";
+
+            } else if (libre === 0) {
+
+                conclusion =
+                    "Se ha asignado el 100 % del saldo disponible. " +
+                    "No queda liquidez sin asignar.";
+
+            } else {
+
+                conclusion =
+                    "Se ha asignado el " + total + "% del saldo disponible. " +
+                    "Queda un " + libre + "% de liquidez sin asignar, equivalente a " +
+                    euros(liquidez) + ".";
+            }
+
+            const lineas = doc.splitTextToSize(conclusion, 180);
+
+            doc.text(lineas, 14, y + 8);
+
+            /* PIE */
+            doc.setFontSize(8);
+            doc.text(
+                "FESP · Informe generado automáticamente · " +
+                fecha.toLocaleDateString("es-ES"),
+                105, 287,
+                { align: "center" }
+            );
+
+            /* DESCARGA DIRECTA */
+            doc.save(
+                "Informe-FESP-" +
+                datos.mes +
+                ".pdf"
+            );
+
+            mostrarMensajeTemporal("PDF descargado correctamente.");
+        }
+
+
+        /* ============================================================
+           MODAL PERSONALIZADO
+        ============================================================ */
+
+        let modalCallback = null;
+
+        function abrirModal(titulo, mensaje, callback) {
+
+            modalCallback = callback;
+
+            document.getElementById("modalTitle").textContent =
+                titulo;
+
+            document.getElementById("modalMessage").textContent =
+                mensaje;
+
+            const modal =
+                document.getElementById("confirmModal");
+
+            modal.classList.add("show");
+
+            modal.setAttribute("aria-hidden", "false");
+        }
+
+        function cerrarModal() {
+
+            const modal =
+                document.getElementById("confirmModal");
+
+            modal.classList.remove("show");
+
+            modal.setAttribute("aria-hidden", "true");
+
+            modalCallback = null;
+        }
+
+        function confirmarModal() {
+
+            const callback = modalCallback;
+
+            cerrarModal();
+
+            if (typeof callback === "function") {
+                callback();
+            }
+        }
+
+        document.getElementById("confirmModal")
+            .addEventListener("click", function (e) {
+
+                if (e.target === this) {
+                    cerrarModal();
+                }
+
+            });
+
+        document.addEventListener("keydown", function (e) {
+
+            if (e.key === "Escape") {
+                cerrarModal();
+            }
+
+        });
+
+
+        /* ============================================================
+           NOTIFICACIÓN GUARDADO
+        ============================================================ */
+
+        function mostrarGuardado() {
+
+            const toast =
+                document.getElementById("saveToast");
+
+            /*
+            Reiniciamos la animación si se pulsa varias veces seguidas.
+            */
+            toast.classList.remove("show");
+
+            void toast.offsetWidth;
+
+            toast.classList.add("show");
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2000);
+        }
+
+
+        /* ============================================================
+           NUEVO MES
+        ============================================================ */
+
+        function limpiarMes(confirmar = true) {
+
+            if (confirmar) {
+
+                abrirModal(
+                    "Nuevo mes",
+                    "¿Quieres limpiar los datos actuales para empezar otro mes?",
+                    () => limpiarMes(false)
+                );
+
+                return;
+            }
+
+            document.getElementById("mes").value = mesActual();
+            document.getElementById("trabajo").value = "";
+            document.getElementById("extras").value = "";
+            document.getElementById("gastos").value = "";
+            document.getElementById("deudas").value = "";
+
+            categorias = normalizarCategorias(categoriasBase);
+
+            datosGuardados = null;
+            saldo = 0;
+            presupuestoModificado = true;
+            datosFinancierosModificados = true;
+
+            renderizarTodo();
+            actualizarFlujoResumen();
+
+            mostrarMensajeTemporal(
+                "Formulario preparado para un nuevo mes. Pulsa Guardar y calcular para continuar."
+            );
+        }
+
+
+        /* ============================================================
+           MENSAJE TEMPORAL
+        ============================================================ */
+
+        function mostrarMensajeTemporal(texto) {
+
+            const existente =
+                document.getElementById("mensajeTemporal");
+
+            if (existente) existente.remove();
+
+            const div =
+                document.createElement("div");
+
+            div.id = "mensajeTemporal";
+
+            div.textContent = texto;
+
+            div.style.cssText = `
+        position:fixed;
+        right:20px;
+        bottom:20px;
+        z-index:1000;
+        background:#244650;
+        color:white;
+        padding:13px 17px;
+        border-radius:9px;
+        box-shadow:0 7px 20px rgba(0,0,0,.2);
+        font-size:14px;
+    `;
+
+            document.body.appendChild(div);
+
+            setTimeout(() => {
+                div.remove();
+            }, 2200);
+        }
+
+
+        /* ============================================================
+           CAMBIOS EN CAMPOS
+        ============================================================ */
+
+        ["trabajo", "extras", "gastos", "deudas"].forEach(id => {
+            document.getElementById(id).addEventListener("input", () => {
+                const datos = obtenerDatosFinancierosFormulario();
+
+                if (datosGuardados) {
+                    guardarMes(false);
+                    calcular(false);
+                } else {
+                    saldo = datos.saldo;
+                    actualizarKPIs(datos);
+                    actualizarEstadoSaldo(datos);
+                }
+            });
+        });
+
+        document.getElementById("mes").addEventListener("change", () => {
+            const mes = document.getElementById("mes").value;
+            const historial = leerHistorial();
+
+            if (historial[mes]) {
+                cargarMes(mes);
+            } else {
+                categorias = normalizarCategorias(categoriasBase);
+                datosGuardados = null;
+                saldo = 0;
+                presupuestoModificado = false;
+                datosFinancierosModificados = false;
+                renderizarTodo();
+                actualizarFlujoResumen();
+                actualizarInforme();
+            }
+        });
+
+
+        /* ============================================================
+           CARGA INICIAL
+        ============================================================ */
+
+        function iniciar() {
+            document.getElementById("mes").value = mesActual();
+
+            const historial = leerHistorial();
+            const mes = mesActual();
+
+            if (historial[mes]) {
+                cargarMes(mes);
+            } else {
+                datosGuardados = null;
+                categorias = normalizarCategorias(categoriasBase);
+                saldo = 0;
+                renderizarTodo();
+                actualizarInforme();
+            }
+
+            actualizarHistorial();
+            actualizarEstadoPresupuesto();
+        }
+
+        iniciar();
+
+
+
+
+
+
+
+
+
+
+        // Bloquear clic derecho
+        document.addEventListener("contextmenu", e => e.preventDefault());
+
+        // Bloquear selección de texto
+        document.addEventListener("selectstart", e => e.preventDefault());
+
+        // Bloquear arrastrar
+        document.addEventListener("dragstart", e => e.preventDefault());
+
+        // Bloquear copiar
+        document.addEventListener("copy", e => e.preventDefault());
+
+        // Bloquear cortar
+        document.addEventListener("cut", e => e.preventDefault());
+
+        // Bloquear pegar
+        document.addEventListener("paste", e => e.preventDefault());
+
+        // Bloquear algunos atajos habituales
+        document.addEventListener("keydown", function (e) {
+
+            const key = e.key.toLowerCase();
+
+            if (
+                e.key === "F12" ||
+                (e.ctrlKey && e.shiftKey && key === "i") ||
+                (e.ctrlKey && e.shiftKey && key === "j") ||
+                (e.ctrlKey && e.shiftKey && key === "c") ||
+                (e.ctrlKey && key === "u")
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Limpiar consola periódicamente
+        setInterval(() => {
+            console.clear();
+        }, 1000);
+
+
+
+        // Anti iframe
+        if (window.top !== window.self) {
+            document.body.innerHTML = "";
+        }
+
+
+    </script>
+
+</body>
+
+</html>
