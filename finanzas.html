@@ -805,6 +805,60 @@
             background: #022976;
             transform: translateY(-2px);
         }
+
+
+
+
+
+        /* OBSERVACIONES */
+        .observaciones-field {
+            margin-top: 18px;
+        }
+
+        .observaciones-field textarea {
+            width: 100%;
+            min-height: 150px;
+            resize: vertical;
+            border: 1px solid #ccd7dc;
+            border-radius: 9px;
+            padding: 13px;
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.55;
+            color: var(--text);
+            background: white;
+
+            /* MUY IMPORTANTE:
+       conserva saltos de línea y espacios */
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+        }
+
+        .observaciones-field textarea:focus {
+            border-color: var(--fesp);
+            box-shadow: 0 0 0 3px rgba(47, 89, 100, .12);
+            outline: none;
+        }
+
+
+
+
+
+
+
+
+
+        .report-observaciones {
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            word-break: normal;
+            line-height: 1.6;
+            padding: 14px;
+            border: 1px solid #dce6ea;
+            border-radius: 10px;
+            background: #f8fafb;
+            min-height: 50px;
+        }
     </style>
 </head>
 
@@ -875,6 +929,14 @@
                         luz del mes anterior o compra en 3 pagos.</strong>
                 </div>
 
+
+                <!-- OBSERVACIONES -->
+                <div class="field observaciones-field">
+                    <label for="observaciones">📝 Observaciones</label>
+                    <textarea id="observaciones" rows="6"
+                        placeholder="Escribe aquí tus observaciones sobre la situación económica..."
+                        spellcheck="false"></textarea>
+                </div>
 
 
 
@@ -986,6 +1048,15 @@
                     </div>
 
                 </div>
+
+
+                <!-- OBSERVACIONES DEL INFORME -->
+                <div class="report-section" id="reportObservacionesSection">
+                    <h3>Observaciones</h3>
+
+                    <div id="reportObservaciones" class="report-observaciones"></div>
+                </div>
+
 
                 <div class="report-section">
 
@@ -1168,6 +1239,9 @@
             const gastos = numero("gastos");
             const deudas = numero("deudas");
 
+            const observaciones =
+                document.getElementById("observaciones")?.value || "";
+
             const ingresos = trabajo + extras;
             const saldoCalculado = ingresos - gastos - deudas;
 
@@ -1177,6 +1251,7 @@
                 extras,
                 gastos,
                 deudas,
+                observaciones,
                 ingresos,
                 saldo: saldoCalculado
             };
@@ -1269,6 +1344,12 @@
             document.getElementById("extras").value = datos.extras;
             document.getElementById("gastos").value = datos.gastos;
             document.getElementById("deudas").value = datos.deudas;
+
+
+            document.getElementById("observaciones").value =
+                datos.observaciones || "";
+
+
 
             datosGuardados = JSON.parse(JSON.stringify({
                 ...datos,
@@ -1760,6 +1841,30 @@
             document.getElementById("reportPeriodo").textContent =
                 "Periodo: " + nombreMes(datos.mes);
 
+
+
+
+
+
+            const observacionesEl =
+                document.getElementById("reportObservaciones");
+
+            const observacionesSection =
+                document.getElementById("reportObservacionesSection");
+
+            const observaciones =
+                datos.observaciones || "";
+
+            if (observaciones.trim()) {
+                observacionesEl.textContent = observaciones;
+                observacionesSection.style.display = "block";
+            } else {
+                observacionesEl.textContent = "Sin observaciones.";
+                observacionesSection.style.display = "block";
+            }
+
+
+
             document.getElementById("tablaResumen").innerHTML = `
                 <tr>
                     <td>Ingresos por trabajo</td>
@@ -1966,143 +2071,383 @@
 
 
         /* ============================================================
-           DESCARGA DIRECTA DEL PDF
-           No abre la ventana de impresión.
+           TEXTO SEGURO PARA PDF
+           jsPDF usa fuentes estándar que no soportan todos los emojis.
+           Los sustituimos para evitar errores/corrupción del PDF.
         ============================================================ */
 
         function textoPDF(texto) {
-            /*
-            jsPDF con las fuentes estándar no representa bien emojis.
-            Los quitamos solamente del PDF, no de la interfaz.
-            */
             return String(texto || "")
-                .replace(/[\u{1F300}-\u{1FAFF}]/gu, "")
-                .replace(/[\u2600-\u27BF]/g, "")
+                .replace(/[📊🏖️💻💰📚🙏🏻]/gu, "")
+                .replace(/\s{2,}/g, " ")
                 .trim();
         }
+
+
+        /* ============================================================
+           DESCARGA DIRECTA DEL PDF
+           No abre la ventana de impresión.
+        ============================================================ */
 
         function descargarPDF() {
 
             actualizarInforme();
 
             if (!datosGuardados) {
-                mostrarMensajeTemporal("Guarda primero los cambios para poder descargar el informe.");
+                mostrarMensajeTemporal(
+                    "Guarda primero los cambios para poder descargar el informe."
+                );
                 return;
             }
 
             if (!window.jspdf || !window.jspdf.jsPDF) {
-
                 alert(
-                    "No se ha podido cargar el generador de PDF. " +
+                    "No se ha podido cargar el generador de PDF.\n\n" +
                     "Comprueba que tienes conexión a Internet y vuelve a intentarlo."
                 );
-
                 return;
             }
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
+            if (typeof doc.autoTable !== "function") {
+                alert(
+                    "No se ha podido cargar el componente de tablas del PDF.\n\n" +
+                    "Recarga la página y comprueba que tienes conexión a Internet."
+                );
+                return;
+            }
+
             const datos = datosGuardados;
-
             const fecha = new Date();
-
             const tituloMes = nombreMes(datos.mes);
 
-            /* CABECERA */
+            /* ============================================================
+               CABECERA
+            ============================================================ */
+
             doc.setFontSize(23);
             doc.setFont(undefined, "bold");
-            doc.text("FESP", 105, 20, { align: "center" });
+
+            doc.text(
+                "FESP",
+                105,
+                20,
+                { align: "center" }
+            );
 
             doc.setFontSize(15);
+
             doc.text(
                 "Informe financiero mensual",
-                105, 30,
+                105,
+                30,
                 { align: "center" }
             );
 
             doc.setFontSize(10);
             doc.setFont(undefined, "normal");
+
             doc.text(
                 "Periodo: " + tituloMes,
-                105, 37,
+                105,
+                37,
                 { align: "center" }
             );
 
-            /* RESUMEN */
+
+            /* ============================================================
+               1. RESUMEN FINANCIERO
+            ============================================================ */
+
             doc.setFontSize(13);
             doc.setFont(undefined, "bold");
-            doc.text("1. Resumen financiero", 14, 51);
+
+            doc.text(
+                "1. Resumen financiero",
+                14,
+                51
+            );
 
             doc.autoTable({
+
                 startY: 57,
-                head: [["Concepto", "Importe"]],
-                body: [
-                    ["Ingresos por trabajo", euros(datos.trabajo)],
-                    ["Ingresos extras", euros(datos.extras)],
-                    ["Ingresos totales", euros(datos.ingresos)],
-                    ["Gastos fijos", euros(datos.gastos)],
-                    ["Deudas", euros(datos.deudas)],
-                    ["Saldo disponible", euros(datos.saldo)]
+
+                head: [
+                    ["Concepto", "Importe"]
                 ],
+
+                body: [
+
+                    [
+                        "Ingresos por trabajo",
+                        euros(datos.trabajo)
+                    ],
+
+                    [
+                        "Ingresos extras",
+                        euros(datos.extras)
+                    ],
+
+                    [
+                        "Ingresos totales",
+                        euros(datos.ingresos)
+                    ],
+
+                    [
+                        "Gastos fijos",
+                        euros(datos.gastos)
+                    ],
+
+                    [
+                        "Deudas",
+                        euros(datos.deudas)
+                    ],
+
+                    [
+                        "Saldo disponible",
+                        euros(datos.saldo)
+                    ]
+
+                ],
+
                 theme: "grid",
-                styles: { fontSize: 10 }
+
+                styles: {
+                    fontSize: 10
+                }
+
             });
 
-            /* DISTRIBUCIÓN */
+
+            /* ============================================================
+               2. DISTRIBUCIÓN DEL DINERO
+            ============================================================ */
+
             let y = doc.lastAutoTable.finalY + 14;
 
             doc.setFontSize(13);
             doc.setFont(undefined, "bold");
-            doc.text("2. Distribución del dinero", 14, y);
+
+            doc.text(
+                "2. Distribución del dinero",
+                14,
+                y
+            );
+
 
             let total = 0;
+
             const filas = [];
+
 
             normalizarCategorias(datos.categorias).forEach(cat => {
 
-                const cantidad = calcularCantidadCategoria(cat, datos.saldo);
-                const porcentaje = datos.saldo > 0
-                    ? cantidad / datos.saldo * 100
-                    : 0;
+                const cantidad =
+                    calcularCantidadCategoria(
+                        cat,
+                        datos.saldo
+                    );
+
+                const porcentaje =
+                    datos.saldo > 0
+                        ? cantidad / datos.saldo * 100
+                        : 0;
 
                 total += porcentaje;
 
+
                 filas.push([
+
                     textoPDF(cat.nombre),
-                    Number(porcentaje).toFixed(2).replace(".", ",") + " %",
+
+                    Number(porcentaje)
+                        .toFixed(2)
+                        .replace(".", ",") + " %",
+
                     euros(cantidad)
+
                 ]);
+
             });
 
-            const libre = Math.max(0, 100 - total);
-            const liquidez = datos.saldo * libre / 100;
+
+            /* ============================================================
+               LIQUIDEZ RESTANTE
+            ============================================================ */
+
+            const libre = 100 - total;
+
+            const liquidez =
+                datos.saldo * libre / 100;
+
 
             filas.push([
+
                 "Liquidez restante",
-                libre + " %",
+
+                Number(libre)
+                    .toFixed(2)
+                    .replace(".", ",") + " %",
+
                 euros(liquidez)
+
             ]);
 
+
             doc.autoTable({
+
                 startY: y + 6,
-                head: [["Destino", "Porcentaje", "Importe"]],
+
+                head: [
+                    [
+                        "Destino",
+                        "Porcentaje",
+                        "Importe"
+                    ]
+                ],
+
                 body: filas,
+
                 theme: "grid",
-                styles: { fontSize: 10 }
+
+                styles: {
+                    fontSize: 10
+                }
+
             });
 
-            /* CONCLUSIÓN */
-            y = doc.lastAutoTable.finalY + 14;
+
+            /* ============================================================
+               3. OBSERVACIONES
+            ============================================================ */
+
+            let observaciones =
+                String(datos.observaciones || "")
+                    .replace(/\r\n/g, "\n")
+                    .replace(/\r/g, "\n")
+                    .replace(/\t/g, "    ");
+
+
+            let yObservaciones =
+                doc.lastAutoTable.finalY + 12;
+
 
             doc.setFontSize(13);
             doc.setFont(undefined, "bold");
-            doc.text("3. Conclusión", 14, y);
+
+            doc.text(
+                "Observaciones",
+                14,
+                yObservaciones
+            );
+
 
             doc.setFontSize(10);
             doc.setFont(undefined, "normal");
 
+
+            if (observaciones.trim()) {
+
+                const lineasObservaciones = [];
+
+
+                observaciones
+                    .split("\n")
+                    .forEach(linea => {
+
+                        if (linea.trim() === "") {
+
+                            lineasObservaciones.push("");
+
+                            return;
+                        }
+
+
+                        const espaciosIniciales =
+                            linea.match(/^\s*/)?.[0] || "";
+
+
+                        const contenido =
+                            linea.slice(
+                                espaciosIniciales.length
+                            );
+
+
+                        const textoConSangria =
+                            espaciosIniciales + contenido;
+
+
+                        const lineas =
+                            doc.splitTextToSize(
+                                textoConSangria,
+                                180
+                            );
+
+
+                        lineasObservaciones.push(
+                            ...lineas
+                        );
+
+                    });
+
+
+                doc.text(
+                    lineasObservaciones,
+                    14,
+                    yObservaciones + 8
+                );
+
+            } else {
+
+                doc.text(
+                    "Sin observaciones.",
+                    14,
+                    yObservaciones + 8
+                );
+
+            }
+
+
+            /* ============================================================
+               4. CONCLUSIÓN
+            ============================================================ */
+
+            const alturaObservaciones =
+                observaciones.trim()
+                    ? Math.max(
+                        1,
+                        doc.splitTextToSize(
+                            observaciones,
+                            180
+                        ).length
+                    ) * 5
+                    : 5;
+
+
+            y =
+                yObservaciones +
+                alturaObservaciones +
+                18;
+
+
+            doc.setFontSize(13);
+            doc.setFont(undefined, "bold");
+
+            doc.text(
+                "3. Conclusión",
+                14,
+                y
+            );
+
+
+            doc.setFontSize(10);
+            doc.setFont(undefined, "normal");
+
+
             let conclusion;
+
 
             if (datos.saldo <= 0) {
 
@@ -2110,48 +2455,93 @@
                     "El mes presenta un saldo disponible igual o inferior a cero. " +
                     "Se recomienda revisar los gastos, las deudas y los ingresos.";
 
-            } else if (liquidez < 0) {
+            }
+
+            else if (liquidez < 0) {
 
                 conclusion =
                     "La distribución supera el saldo disponible en " +
                     euros(Math.abs(liquidez)) +
                     ". La liquidez resultante es negativa.";
 
-            } else if (libre === 0) {
+            }
+
+            else if (libre === 0) {
 
                 conclusion =
                     "Se ha asignado el 100 % del saldo disponible. " +
                     "No queda liquidez sin asignar.";
 
-            } else {
-
-                conclusion =
-                    "Se ha asignado el " + total + "% del saldo disponible. " +
-                    "Queda un " + libre + "% de liquidez sin asignar, equivalente a " +
-                    euros(liquidez) + ".";
             }
 
-            const lineas = doc.splitTextToSize(conclusion, 180);
+            else {
 
-            doc.text(lineas, 14, y + 8);
+                conclusion =
+                    "Se ha asignado el " +
+                    Number(total).toFixed(2) +
+                    "% del saldo disponible. " +
 
-            /* PIE */
-            doc.setFontSize(8);
+                    "Queda un " +
+                    Number(libre).toFixed(2) +
+                    "% de liquidez sin asignar, equivalente a " +
+
+                    euros(liquidez) +
+                    ".";
+
+            }
+
+
+            const lineasConclusion =
+                doc.splitTextToSize(
+                    conclusion,
+                    180
+                );
+
+
             doc.text(
-                "FESP · Informe generado automáticamente · " +
-                fecha.toLocaleDateString("es-ES"),
-                105, 287,
-                { align: "center" }
+                lineasConclusion,
+                14,
+                y + 8
             );
 
-            /* DESCARGA DIRECTA */
+
+            /* ============================================================
+               PIE DE PÁGINA
+            ============================================================ */
+
+            doc.setFontSize(8);
+            doc.setFont(undefined, "normal");
+
+            doc.text(
+
+                "FESP · Informe generado automáticamente · " +
+                fecha.toLocaleDateString("es-ES"),
+
+                105,
+                287,
+
+                {
+                    align: "center"
+                }
+
+            );
+
+
+            /* ============================================================
+               DESCARGAR
+            ============================================================ */
+
             doc.save(
                 "Informe-FESP-" +
                 datos.mes +
                 ".pdf"
             );
 
-            mostrarMensajeTemporal("PDF descargado correctamente.");
+
+            mostrarMensajeTemporal(
+                "PDF descargado correctamente."
+            );
+
         }
 
 
@@ -2266,6 +2656,8 @@
             document.getElementById("extras").value = "";
             document.getElementById("gastos").value = "";
             document.getElementById("deudas").value = "";
+
+            document.getElementById("observaciones").value = "";
 
             categorias = normalizarCategorias(categoriasBase);
 
