@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>AVANCE — Entorno 3D</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111a20;color:#edf7fb;font-family:Arial, sans-serif}
+#app{height:100dvh;display:flex;flex-direction:column}
+header{height:46px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:#0b151d;border-bottom:1px solid #34434c}
+.brand{font-size:12px;font-weight:900;letter-spacing:.2em;color:#c9e6ef}#status{font-size:10px;color:#b1c3ca}.stats{display:flex;gap:14px;align-items:center;font-size:10px;color:#d4e2e7}.stats strong{color:#fff;font-size:12px;font-variant-numeric:tabular-nums}
+#view{position:relative;flex:1;overflow:hidden;background:#9eb9c2}canvas{display:block;width:100%;height:100%;touch-action:none}
+#overlay{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#101b2433,transparent 12%,transparent 88%,#101b2433),linear-gradient(0deg,#050b1288,transparent 24%,transparent 82%,#07121a33)}
+#caption{position:absolute;left:12px;bottom:10px;color:#eef8f9;font-size:10px;letter-spacing:.12em;text-shadow:0 2px 4px #000}
+footer{flex:none;background:#0b151d;border-top:1px solid #34434c;padding:8px 12px 10px}
+.controls{display:flex;gap:9px;justify-content:center;margin-bottom:8px}
+button{flex:1;max-width:220px;border:1px solid #71858f;border-radius:7px;padding:10px;background:#1a2b35;color:#f2f8fa;font-weight:800;letter-spacing:.1em}
+button.primary{background:#c5e5ed;color:#0c1920;border-color:#c5e5ed}
+.settings{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:center;gap:12px;max-width:1000px;margin:0 auto}
+.setting{display:grid;grid-template-columns:auto minmax(45px,1fr) auto;align-items:center;justify-content:center;gap:6px;font-size:10px;color:#c1d0d6;min-width:0;white-space:nowrap}.setting select{grid-column:1/-1;width:100%;max-width:none;background:#1a2b35;color:#f2f8fa;border:1px solid #71858f;border-radius:5px;padding:6px}
+input{width:100%;min-width:35px;accent-color:#bfe7ef}output{min-width:18px;color:white;font-weight:bold;text-align:right}
+@media(max-width:700px){header{height:48px;padding:0 7px}.brand{font-size:9px}.stats{gap:6px;font-size:8px}.stats strong{font-size:10px}footer{padding:7px}.controls{margin-bottom:6px}button{font-size:10px;padding:10px 4px}.settings{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 12px}.setting{font-size:8px;gap:4px}input{width:100%}.setting select{font-size:9px;padding:4px}}
+</style>
+</head>
+<body><div id="app">
+<header><div class="brand">ABATE <span style="font-weight:400;color:#8298a2">/ SI TE ES CÓMODO SUBE LA EXIGENCIA</span></div><div class="stats"><span id="status">RECORRIDO ACTIVO · 0 FIGURAS</span><span>TIEMPO <strong id="timer">00:00</strong></span><span>TOTAL <strong id="total">0</strong></span></div></header>
+<main id="view"><div id="overlay"></div><div id="caption"> · ABATE LAS FIGURAS ARMADAS</div></main>
+<footer>
+<div class="controls"><button  style="cursor: pointer;" id="pause">Ⅱ PAUSAR</button><button class="primary" style="cursor: pointer;" id="advance">▶ AVANZAR</button></div>
+<div class="settings">
+<label class="setting">NIVEL <select id="level"><option value="basic">BÁSICO</option><option value="medium">MEDIO</option><option value="advanced">AVANZADO</option></select></label>
+<label class="setting">VELOCIDAD <input id="speed" type="range" min="1" max="20" value="10"><output id="speedVal">10</output></label>
+<label class="setting">FRECUENCIA <input id="frequency" type="range" min="1" max="50" value="15"><output id="freqVal">15</output></label>
+<label class="setting">SILUETAS MÁX. <input id="maxFigures" type="range" min="3" max="12" value="6"><output id="maxVal">6</output></label>
+</div></footer></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script>
+(() => {
+const view=document.getElementById('view'),status=document.getElementById('status');
+if(!window.THREE){status.textContent='NO SE PUDO CARGAR THREE.JS · COMPRUEBA INTERNET Y RECARGA';return;}
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x9dbbc8);scene.fog=new THREE.Fog(0x9dbbc8,38,150);
+const camera=new THREE.PerspectiveCamera(72,view.clientWidth/view.clientHeight,.1,250);
+camera.position.set(0,1.68,8);camera.rotation.order='YXZ';
+const renderer=new THREE.WebGLRenderer({antialias:false,alpha:false,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.25));renderer.setSize(view.clientWidth,view.clientHeight);renderer.shadowMap.enabled=false;
+renderer.outputColorSpace=THREE.SRGBColorSpace;view.prepend(renderer.domElement);
+renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();paused=true;status.textContent='RECURSOS GRÁFICOS PERDIDOS · RECARGA LA PÁGINA';});
+
+scene.add(new THREE.HemisphereLight(0xe4f4ff,0x59624a,2.0));
+const sun=new THREE.DirectionalLight(0xfff1d9,2.2);sun.position.set(-25,45,15);sun.castShadow=false;scene.add(sun);
+const mat=(color,roughness=1)=>new THREE.MeshStandardMaterial({color,roughness});
+const groundMat=mat(0x555d60),roadMat=mat(0x343b40),sidewalkMat=mat(0x858887),kerbMat=mat(0xb5b4aa),lineMat=mat(0xd9d8c8);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(500,500),groundMat);ground.rotation.x=-Math.PI/2;ground.position.y=-.12;ground.receiveShadow=true;scene.add(ground);
+const road=new THREE.Mesh(new THREE.PlaneGeometry(16,300),roadMat);road.rotation.x=-Math.PI/2;road.position.set(0,0,-110);road.receiveShadow=true;scene.add(road);
+function box(w,h,d,material,x,y,z,parent=scene){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);m.position.set(x,y,z);m.castShadow=false;m.receiveShadow=false;parent.add(m);return m}
+const scenery=[];
+const sidewalks=[];
+
+// Calles laterales de la bifurcación: se activan visualmente en cada cruce.
+const junctions=[];
+function makeBranch(side,z){
+ const group=new THREE.Group();
+ group.position.set(0,0,z);
+ const asphalt=new THREE.Mesh(new THREE.PlaneGeometry(13,34),roadMat);
+ asphalt.rotation.x=-Math.PI/2;
+ asphalt.rotation.z=side<0?Math.PI/4:-Math.PI/4;
+ asphalt.position.set(side*10,-.006,0);
+ group.add(asphalt);
+ const edgeMat=mat(0xd9d8c8);
+ for(const offset of [-1,1]){
+  const edge=new THREE.Mesh(new THREE.BoxGeometry(.12,.025,29),edgeMat);
+  edge.rotation.y=side<0?-.72:.72;
+  edge.position.set(side*10+offset*3.9,.012,0);
+  group.add(edge);
+ }
+ scene.add(group);
+ junctions.push(group);
+ return group;
+}
+for(const side of [-1,1]){
+ const pavement=new THREE.Mesh(new THREE.PlaneGeometry(4.0,300),sidewalkMat);pavement.rotation.x=-Math.PI/2;pavement.position.set(side*10.1,-.025,-110);scene.add(pavement);
+ const kerb=new THREE.Mesh(new THREE.BoxGeometry(.18,.18,300),kerbMat);kerb.position.set(side*8.12,.06,-110);scene.add(kerb);
+}
+for(let z=-10;z>-220;z-=20){
+ // Residential street frontage on the left: varied façades, windows, doors and balconies.
+ const left=new THREE.Group();left.position.set(-13.2,0,z);
+ const floors=2+Math.floor(Math.random()*2),height=floors*2.65;
+ const facadeMat=mat([0xb7aa91,0x9b9d99,0xc2b8a7,0x8f9698][Math.floor(Math.random()*4)]);
+ box(7.2,height,8,facadeMat,0,height/2,0,left);
+ box(7.35,.22,8.12,mat(0x454b4d),0,height+.08,0,left);
+ const windowMat=mat(0x344b59),frameMat=mat(0xe0d9c8);
+ for(let f=0;f<floors;f++)for(let col=0;col<2;col++){
+  const wx=-1.7+col*3.4,wy=1.05+f*2.65;
+  box(1.05,1.25,.08,frameMat,wx,wy,4.06,left);
+  box(.82,1.02,.04,windowMat,wx,wy,4.12,left);
+  box(.04,1.05,.04,frameMat,wx,wy,4.15,left);
+  box(1.1,.08,.35,mat(0x6c7474),wx,wy-.68,4.22,left);
+  if(Math.random()>.58){box(1.15,.12,.7,mat(0x4d5558),wx,wy-.78,4.35,left)}
+ }
+ box(1.15,2.1,.12,mat(0x51483e),0,1.05,4.08,left);
+ scenery.push(left);scene.add(left);
+
+ // Large industrial premises on the right: long warehouse wall, loading bays and high windows.
+ const factory=new THREE.Group();factory.position.set(13.5,0,z-4);
+ const industrial=mat(0x747d80),dark=mat(0x414c51),glass=mat(0x425b66),metal=mat(0x9ca5a5);
+ box(9,7.2,15,industrial,0,3.6,0,factory);
+ box(9.15,.35,15.15,dark,0,7.25,0,factory);
+ for(let bay=0;bay<2;bay++){
+  const bx=-1.8+bay*3.6;
+  box(2.25,3.1,.12,dark,bx,1.85,7.58,factory);
+  box(1.95,2.75,.06,metal,bx,1.85,7.67,factory);
+  for(let slat=0;slat<4;slat++)box(1.85,.035,.025,dark,bx,0.65+slat*.36,7.72,factory);
+ }
+ for(let wx=-2.5;wx<=2.5;wx+=2.5){
+  box(1.15,.8,.08,glass,wx,5.8,7.58,factory);
+  box(1.22,.09,.12,metal,wx,6.25,7.63,factory);
+ }
+ box(9.4,.22,15.4,mat(0x525c60),0,7.45,0,factory);
+ scenery.push(factory);scene.add(factory);
+}
+// Street furniture: restrained lamps and utility cabinets, with no trees or vegetation.
+const poleMat=mat(0x303b40),lampMat=new THREE.MeshStandardMaterial({color:0xffedc0,emissive:0x9b783c,emissiveIntensity:.45});
+for(let z=-15;z>-210;z-=45)for(const side of [-1,1]){
+ const pole=new THREE.Group();pole.position.set(side*9.2,0,z);
+ const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.055,.08,5.2,8),poleMat);shaft.position.y=2.6;pole.add(shaft);
+ const arm=box(.9,.07,.08,poleMat,side*.38,5.12,0,pole);
+ const lamp=new THREE.Mesh(new THREE.BoxGeometry(.42,.12,.3),lampMat);lamp.position.set(side*.72,5.05,0);pole.add(lamp);
+ scene.add(pole);scenery.push(pole);
+}
+// Supplied transparent PNG figures are used as camera-facing sprites in three separated lanes.
+const urls=[
+"1-removebg-preview.png","10-removebg-preview.png","10.1-removebg-preview.png","11-removebg-preview.png","12-removebg-preview.png","12.1-removebg-preview.png","2-removebg-preview.png","3-removebg-preview.png","3.1-removebg-preview.png","4.1-removebg-preview.png","5-removebg-preview.png","6-removebg-preview.png","7-removebg-preview.png","8-removebg-preview.png","8.1-removebg-preview.png",
+...Array.from({length:9},(_,i)=>`${100+i}.png`),...Array.from({length:12},(_,i)=>`${111+i}.png`),"122.png"
+].map(n=>`https://raw.githubusercontent.com/Domingo99vg/simuladordetiro/refs/heads/main/${n}`);
+const loader=new THREE.TextureLoader();loader.crossOrigin='anonymous';
+const textures=[];
+const maxAnisotropy=Math.min(2,renderer.capabilities.getMaxAnisotropy());
+urls.slice(0,12).forEach((u)=>loader.load(u,t=>{
+ t.colorSpace=THREE.SRGBColorSpace;
+ t.magFilter=THREE.LinearFilter;
+ t.minFilter=THREE.LinearMipmapLinearFilter;
+ t.generateMipmaps=true;
+ t.anisotropy=maxAnisotropy;
+ textures.push(t);
+},undefined,()=>{}));
+const active=[];const laneXs=[-3.25,0,3.25];let paused=false,lastSpawn=0,clock=new THREE.Clock(),elapsed=0,totalFigures=0;
+const timerEl=document.getElementById('timer');
+const totalEl=document.getElementById('total');
+function setStatus(){
+ const mm=String(Math.floor(elapsed/60)).padStart(2,'0');
+ const ss=String(Math.floor(elapsed%60)).padStart(2,'0');
+ timerEl.textContent=mm+':'+ss;
+ totalEl.textContent=String(totalFigures);
+ status.textContent=(paused?'PAUSADO':'AVANCE RECTO')+' · '+active.length+' FIGURAS';
+}
+
+let lastHudUpdate=0;
+let heading=0,distanceTravelled=0;
+function rotateWorld(delta){
+ // Rotación rígida del entorno alrededor del observador.
+ // Importante: aplicar el giro mediante quaternion mundial evita inclinar
+ // accidentalmente planos horizontales que ya tienen rotation.x = -PI/2.
+ const c=Math.cos(delta), sn=Math.sin(delta);
+ const yawQ=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),delta);
+ for(const obj of scene.children){
+  if(obj.isLight || obj===camera) continue;
+  const dx=obj.position.x-camera.position.x;
+  const dz=obj.position.z-camera.position.z;
+  obj.position.x=camera.position.x+dx*c+dz*sn;
+  obj.position.z=camera.position.z-dx*sn+dz*c;
+  obj.quaternion.premultiply(yawQ);
+  obj.updateMatrix();
+ }
+ heading+=delta;
+}
+function getBasis(){
+ return {forward:{x:-Math.sin(heading),z:-Math.cos(heading)},right:{x:Math.cos(heading),z:-Math.sin(heading)}};
+}
+function clearPreviousStreet(){
+ // Elimina las figuras anteriores y oculta la calle vieja. Si no se hace,
+ // la carretera original sigue debajo del jugador y parece que nunca cambia
+ // de calle, aunque la cámara haya girado 90 grados.
+ for(let i=active.length-1;i>=0;i--){
+  const a=active[i];scene.remove(a.sprite);a.sprite.material.dispose();
+ }
+ active.length=0;
+ for(const obj of scene.children){
+  if(obj===ground || obj.isLight) continue;
+  obj.visible=false;
+ }
+ setStatus();
+}
+function createBranch(){
+ // Calle nueva completa, construida en el eje de avance posterior al giro.
+ // El centro del tramo queda a 150 m: la calzada empieza justo en el cruce
+ // y continúa 300 m por la nueva dirección.
+ const basis=getBasis(),f=basis.forward;
+ const group=new THREE.Group();
+ group.position.set(camera.position.x+f.x*150,0,camera.position.z+f.z*150);
+ group.quaternion.setFromAxisAngle(new THREE.Vector3(0,1,0),heading);
+
+ const asphalt=new THREE.Mesh(new THREE.PlaneGeometry(16,300),roadMat);
+ asphalt.rotation.x=-Math.PI/2;asphalt.position.y=-.012;group.add(asphalt);
+ for(const side of [-1,1]){
+  const pavement=new THREE.Mesh(new THREE.PlaneGeometry(4,300),sidewalkMat);
+  pavement.rotation.x=-Math.PI/2;pavement.position.set(side*10.1,-.025,0);group.add(pavement);
+  const kerb=new THREE.Mesh(new THREE.BoxGeometry(.18,.18,300),kerbMat);
+  kerb.position.set(side*8.12,.06,0);group.add(kerb);
+ }
+ // Nuevas fachadas y naves a lo largo de ESTA calle, no reutilización visual
+ // de los edificios de la calle anterior.
+ for(let z=-25;z>=-265;z-=40){
+  const left=new THREE.Group();left.position.set(-13.2,0,z);
+  const floors=2+Math.floor(Math.random()*2),h=floors*2.65;
+  const facade=mat([0xb7aa91,0x9b9d99,0xc2b8a7,0x8f9698][Math.floor(Math.random()*4)]);
+  box(7.2,h,8,facade,0,h/2,0,left);
+  box(7.35,.22,8.12,mat(0x454b4d),0,h+.08,0,left);
+  for(let floor=0;floor<floors;floor++)for(let col=0;col<2;col++){
+   const wx=-1.7+col*3.4,wy=1.05+floor*2.65;
+   box(1.05,1.25,.08,mat(0x344b59),wx,wy,4.08,left);
+   box(1.1,.08,.35,mat(0x6c7474),wx,wy-.68,4.22,left);
+  }
+  box(1.15,2.1,.12,mat(0x51483e),0,1.05,4.08,left);group.add(left);
+
+  const factory=new THREE.Group();factory.position.set(13.5,0,z-4);
+  box(9,7.2,15,mat(0x747d80),0,3.6,0,factory);
+  box(9.15,.35,15.15,mat(0x414c51),0,7.25,0,factory);
+  for(let bay=0;bay<2;bay++){
+   const bx=-1.8+bay*3.6;
+   box(2.25,3.1,.12,mat(0x414c51),bx,1.85,7.58,factory);
+   box(1.95,2.75,.06,mat(0x9ca5a5),bx,1.85,7.67,factory);
+  }
+  group.add(factory);
+ }
+ // Alumbrado propio del nuevo tramo.
+ for(let z=-35;z>=-275;z-=60)for(const side of [-1,1]){
+  const pole=new THREE.Group();pole.position.set(side*9.2,0,z);
+  const shaft=new THREE.Mesh(new THREE.CylinderGeometry(.055,.08,5.2,8),poleMat);shaft.position.y=2.6;pole.add(shaft);
+  box(.9,.07,.08,poleMat,side*.38,5.12,0,pole);
+  const lamp=new THREE.Mesh(new THREE.BoxGeometry(.42,.12,.3),lampMat);lamp.position.set(side*.72,5.05,0);pole.add(lamp);
+  group.add(pole);
+ }
+ scene.add(group);junctions.push(group);
+ status.textContent='NUEVA CALLE · '+(currentTurnSide<0?'GIRO A LA IZQUIERDA':'GIRO A LA DERECHA');
+}
+function updateJunction(dt){ /* Giros automáticos desactivados: avance recto permanente. */ }
+function spawn(){
+ if(paused||active.length>=+document.getElementById("maxFigures").value||textures.length===0)return;
+ // Se admiten varias figuras por carril, separadas en profundidad para evitar solapamientos.
+ const level=document.getElementById('level').value;
+ const spawnZ=level==='advanced'?-13.5:level==='medium'?-20.25:-27;
+ const basis=getBasis();
+ const free=[0,1,2].filter(lane=>active.every(a=>{
+  if(a.lane!==lane)return true;
+  const dx=a.sprite.position.x-camera.position.x, dz=a.sprite.position.z-camera.position.z;
+  const depth=dx*basis.forward.x+dz*basis.forward.z;
+  return Math.abs(depth-spawnZ)>5.5;
+ }));
+ if(!free.length)return;
+ // Carril elegido al azar en cada aparición; cada figura mantiene su carril sin hacer zigzag.
+ const lane=free[Math.floor(Math.random()*free.length)],tex=textures[Math.floor(Math.random()*textures.length)];
+ const levelStart=spawnZ;
+ const levelEnd=3.5;
+ const baseLife=Math.max(1.05,2.95-(+document.getElementById('speed').value-1)*.075);
+ const life=level==='advanced'?baseLife*.5:level==='medium'?baseLife*.75:baseLife;
+ const material=new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false,depthTest:true,fog:false,toneMapped:false,opacity:1});
+ const sprite=new THREE.Sprite(material);
+ sprite.position.set(camera.position.x+basis.right.x*laneXs[lane]+basis.forward.x*(-levelStart),1.0,camera.position.z+basis.right.z*laneXs[lane]+basis.forward.z*(-levelStart));
+ sprite.scale.set(1.0,1.8,1);scene.add(sprite);
+ const aspect=tex.image&&tex.image.height?tex.image.width/tex.image.height:.48;
+ active.push({sprite,lane,age:0,life,startZ:levelStart,endZ:levelEnd,aspect,baseY:1.7,phase:Math.random()*Math.PI*2});
+ totalFigures++;setStatus();
+}
+function updateFigures(dt){
+ for(let i=active.length-1;i>=0;i--){
+  const a=active[i];a.age+=dt;const p=Math.min(1,a.age/a.life);
+  // Se acercan desde una distancia menor y recorren la calle con rapidez.
+  const z=a.startZ+(a.endZ-a.startZ)*p;
+  // Escala progresiva contenida para mantener la silueta completa dentro del encuadre.
+  const height=1.9+1.65*p;
+  const run=a.age*13+a.phase;
+  const bob=Math.abs(Math.sin(run))*.10;
+  const stride=Math.sin(run)*.035;
+  const basis=getBasis();
+  a.sprite.position.set(camera.position.x+basis.right.x*(laneXs[a.lane]+stride)+basis.forward.x*(-z),1.0+(.18*p)+bob,camera.position.z+basis.right.z*(laneXs[a.lane]+stride)+basis.forward.z*(-z));
+  a.sprite.scale.set(Math.min(1.8,Math.max(.9,a.aspect*height)),height,1);
+  a.sprite.material.rotation=Math.sin(run)*.035;
+  const distance=Math.max(0,-z);
+  // Full opacity at distance; fade to 28% inside the final 12 metres.
+  const nearFade=THREE.MathUtils.clamp((12-distance)/7,0,1);
+  const approachFade=p<.025?p/.025:1;
+  a.sprite.material.opacity=approachFade*(1-.72*nearFade);
+  if(p>=1){scene.remove(a.sprite);a.sprite.material.dispose();active.splice(i,1);setStatus()}
+ }
+}
+function moveWorld(dt){
+ const speed=1.8+(+document.getElementById('speed').value)*1.45;
+ const basis=getBasis(),mx=-basis.forward.x,mz=-basis.forward.z;
+ distanceTravelled+=speed*dt;
+ road.position.x+=mx*speed*dt;road.position.z+=mz*speed*dt;
+ const roadAlong=road.position.x*mx+road.position.z*mz;
+ if(roadAlong>35){road.position.x-=mx*130;road.position.z-=mz*130;}
+ ground.position.x+=mx*speed*dt*.12;ground.position.z+=mz*speed*dt*.12;
+ scenery.forEach(o=>{
+  o.position.x+=mx*speed*dt;o.position.z+=mz*speed*dt;
+  const along=o.position.x*mx+o.position.z*mz;
+  if(along>12){
+   const lateral=o.position.x*(-mz)+o.position.z*mx;
+   o.position.x=-mx*180-mz*lateral;
+   o.position.z=-mz*180+mx*lateral;
+  }
+ });
+ junctions.forEach(o=>{
+  o.position.x+=mx*speed*dt;o.position.z+=mz*speed*dt;
+  const along=o.position.x*mx+o.position.z*mz;
+  if(along>190){scene.remove(o);const i=junctions.indexOf(o);if(i>=0)junctions.splice(i,1);}
+ });
+}
+function animate(){
+ requestAnimationFrame(animate);const raw=clock.getDelta();const dt=paused?0:Math.min(raw,.05);
+ if(!paused){
+  elapsed+=dt;moveWorld(dt);updateFigures(dt);
+  if(elapsed-lastHudUpdate>=0.2){setStatus();lastHudUpdate=elapsed;}
+  const freq=+document.getElementById('frequency').value;
+  const interval=Math.max(.12,5.4-(freq-1)*.105);
+  if(elapsed-lastSpawn>=interval){spawn();lastSpawn=elapsed}
+  camera.position.y=1.68+Math.sin(elapsed*1.4)*.012;
+ }
+ renderer.render(scene,camera);
+}
+document.getElementById('pause').onclick=()=>{paused=!paused;document.getElementById('pause').textContent=paused?'▶ REANUDAR':'Ⅱ PAUSAR';setStatus()};
+document.getElementById('advance').onclick=()=>{if(paused){paused=false;document.getElementById('pause').textContent='Ⅱ PAUSAR'}moveWorld(.55);spawn();setStatus()};
+for(const [id,out] of [['speed','speedVal'],['frequency','freqVal'],['maxFigures','maxVal']]){
+ const el=document.getElementById(id);document.getElementById(out).value=el.value;
+ el.addEventListener('input',()=>{document.getElementById(out).value=el.value;setStatus()});
+}
+document.getElementById('level').addEventListener('change',()=>{lastSpawn=elapsed;setStatus()});
+function resize(){const w=view.clientWidth,h=view.clientHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)}
+new ResizeObserver(resize).observe(view);setStatus();animate();
+})();
+</script></body></html>
